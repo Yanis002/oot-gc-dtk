@@ -28,7 +28,7 @@ from tools.project import (
 # Game versions
 DEFAULT_VERSION = 0
 VERSIONS = [
-    "GAMEID",  # 0
+    "D43J01",  # 0
 ]
 
 parser = argparse.ArgumentParser()
@@ -151,21 +151,21 @@ config.ldflags = [
 cflags_base = [
     "-nodefaults",
     "-proc gekko",
-    "-align powerpc",
+    # "-align powerpc",
     "-enum int",
-    "-fp hardware",
+    "-fp hardware", # -fp hard
     "-Cpp_exceptions off",
-    # "-W all",
+    # # "-W all",
     "-O4,p",
     "-inline auto",
-    '-pragma "cats off"',
-    '-pragma "warn_notinlined off"',
-    "-maxerrors 1",
-    "-nosyspath",
-    "-RTTI off",
+    # '-pragma "cats off"',
+    # '-pragma "warn_notinlined off"',
+    # "-maxerrors 1",
+    # "-nosyspath",
+    # "-RTTI off",
     "-fp_contract on",
-    "-str reuse",
-    "-multibyte",  # For Wii compilers, replace with `-enc SJIS`
+    # "-str reuse",
+    # "-multibyte",  # For Wii compilers, replace with `-enc SJIS`
     "-i include",
     f"-i build/{config.version}/include",
     f"-DVERSION={version_num}",
@@ -180,11 +180,12 @@ else:
 # Metrowerks library flags
 cflags_runtime = [
     *cflags_base,
-    "-use_lmw_stmw on",
-    "-str reuse,pool,readonly",
-    "-gccinc",
-    "-common off",
-    "-inline auto",
+    "-msgstyle gcc",
+    # "-use_lmw_stmw on",
+    # "-str reuse,pool,readonly",
+    # "-gccinc",
+    # "-common off",
+    "-inline auto,deferred",
 ]
 
 # REL flags
@@ -194,7 +195,7 @@ cflags_rel = [
     "-sdata2 0",
 ]
 
-config.linker_version = "GC/1.3.2"
+config.linker_version = "GC/1.1"
 
 
 # Helper function for Dolphin libraries
@@ -231,6 +232,7 @@ config.libs = [
         "cflags": cflags_runtime,
         "host": False,
         "objects": [
+            Object(NonMatching, "xlCoreGCN.c"),  # TODO: move to its own lib?
             Object(NonMatching, "Runtime.PPCEABI.H/global_destructor_chain.c"),
             Object(NonMatching, "Runtime.PPCEABI.H/__init_cpp_exceptions.cpp"),
         ],
