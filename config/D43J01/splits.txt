@@ -46,27 +46,27 @@ simGCN.c:
 	.data       start:0x800DA3E0 end:0x800EB680
 	.bss        start:0x800F58E0 end:0x800F5A40
 	.sdata      start:0x8018AF88 end:0x8018B050
-	.sbss       start:0x8018B870 end:0x8018B8B0
+	.sbss       start:0x8018B870 end:0x8018B8A0
 	.sdata2     start:0x8018BF58 end:0x8018BFB0
 
 movie.c:
 	.text       start:0x8000F5A8 end:0x8000F66C
 	.data       start:0x800EB680 end:0x800EB6A0
-	.sbss       start:0x8018B8B0 end:0x8018B8B4
+	.sbss       start:0x8018B8A0 end:0x8018B8A8
 
 THPPlayer.c:
 	.text       start:0x8000F66C end:0x80010B78
 	.data       start:0x800EB6A0 end:0x800EB940
 	.bss        start:0x800F5A40 end:0x800FB1B0
 	.sdata      start:0x8018B050 end:0x8018B058
-	.sbss       start:0x8018B8B4 end:0x8018B8D8
+	.sbss       start:0x8018B8A8 end:0x8018B8C8
 	.sdata2     start:0x8018BFB0 end:0x8018BFB8
 
 THPAudioDecode.c:
 	.text       start:0x80010B78 end:0x80010F14
 	.data       start:0x800EB940 end:0x800EB968
 	.bss        start:0x800FB1B0 end:0x800FC520
-	.sbss       start:0x8018B8D8 end:0x8018B8DC
+	.sbss       start:0x8018B8C8 end:0x8018B8D0
 
 THPDraw.c:
 	.text       start:0x80010F14 end:0x80011714
@@ -77,27 +77,27 @@ THPRead.c:
 	.rodata     start:0x800D1D10 end:0x800D1DA0
 	.data       start:0x800EB968 end:0x800EB9D8
 	.bss        start:0x800FC520 end:0x800FD910
-	.sbss       start:0x8018B8DC end:0x8018B8F4
+	.sbss       start:0x8018B8D0 end:0x8018B8E8
 	.sdata2     start:0x8018BFE0 end:0x8018C018
 
 THPVideoDecode.c:
 	.text       start:0x80012CFC end:0x8001321C
 	.data       start:0x800EB9D8 end:0x800EBA00
 	.bss        start:0x800FD910 end:0x800FECC0
-	.sbss       start:0x8018B8F4 end:0x8018B8FC
+	.sbss       start:0x8018B8E8 end:0x8018B8F0
 
 mcardGCN.c:
 	.text       start:0x8001321C end:0x8001C1FC
 	.data       start:0x800EBA00 end:0x800EBC80
 	.bss        start:0x800FECC0 end:0x801094E0
 	.sdata      start:0x8018B058 end:0x8018B060
-	.sbss       start:0x8018B8FC end:0x8018B91C
+	.sbss       start:0x8018B8F0 end:0x8018B910
 
 codeGCN.c:
 	.text       start:0x8001C1FC end:0x8001C250
 	.data       start:0x800EBC80 end:0x800EBC90
 	.sdata      start:0x8018B060 end:0x8018B068
-	.sbss       start:0x8018B91C end:0x8018B924
+	.sbss       start:0x8018B910 end:0x8018B918
 
 soundGCN.c:
 	.text       start:0x8001C250 end:0x8001D0FC
@@ -112,7 +112,7 @@ frame.c:
 	.data       start:0x800EBCF0 end:0x800EC7B8
 	.bss        start:0x80109900 end:0x80131C40 align:32
 	.sdata      start:0x8018B078 end:0x8018B100
-	.sbss       start:0x8018B924 end:0x8018B968
+	.sbss       start:0x8018B918 end:0x8018B968
 	.sdata2     start:0x8018C040 end:0x8018C1D0
 
 system.c:
@@ -204,22 +204,22 @@ serial.c:
 
 library.c:
 	.text       start:0x8008E814 end:0x80096F70
-	.data       start:0x800EFFC0 end:0x800F147C
+	.data       start:0x800EFFC0 end:0x800F1470
 	.sdata      start:0x8018B5B8 end:0x8018B600
 	.sdata2     start:0x8018C2B8 end:0x8018C318
 
 peripheral.c:
 	.text       start:0x80096F70 end:0x80097564
-	.data       start:0x800F147C end:0x800F1618
+	.data       start:0x800F1470 end:0x800F1550
 
 _frameGCNcc.c:
 	.text       start:0x80097564 end:0x80097E6C
-	.data       start:0x800F1618 end:0x800F1920
+	.data       start:0x800F1550 end:0x800F1910
 	.sdata      start:0x8018B600 end:0x8018B690
 
 _buildtev.c:
 	.text       start:0x80097E6C end:0x8009B284
-	.data       start:0x800F1920 end:0x800F1AE8
-	.bss        start:0x80131FB0 end:0x80132280
+	.data       start:0x800F1910 end:0x800F1AA0
+	.bss        start:0x80131FB0 end:0x80187280
 	.sdata      start:0x8018B690 end:0x8018B700
 	.sdata2     start:0x8018C318 end:0x8018C320
