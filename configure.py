@@ -236,7 +236,7 @@ config.libs = [
         "objects": [
             Object(NonMatching, "xlCoreGCN.c"),
             Object(Matching, "xlPostGCN.c"),
-            Object(NonMatching, "xlFileGCN.c"),
+            Object(Matching, "xlFileGCN.c"),
             Object(NonMatching, "xlList.c"),
             Object(NonMatching, "xlHeap.c"),
             Object(NonMatching, "xlObject.c"),
