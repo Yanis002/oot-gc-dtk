@@ -69,6 +69,7 @@ parser.add_argument(
     "--map",
     action="store_true",
     help="generate map file(s)",
+    default=True,
 )
 parser.add_argument(
     "--no-asm",
@@ -228,13 +229,13 @@ config.warn_missing_config = True
 config.warn_missing_source = False
 config.libs = [
     {
-        "lib": "Runtime.PPCEABI.H",
+        "lib": "main",
         "mw_version": config.linker_version,
         "cflags": cflags_runtime,
         "host": False,
         "objects": [
-            Object(NonMatching, "xlCoreGCN.c"),  # TODO: move to its own lib?
-            Object(NonMatching, "xlPostGCN.c"),
+            Object(NonMatching, "xlCoreGCN.c"),
+            Object(Matching, "xlPostGCN.c"),
             Object(NonMatching, "xlFileGCN.c"),
             Object(NonMatching, "xlList.c"),
             Object(NonMatching, "xlHeap.c"),
@@ -269,6 +270,14 @@ config.libs = [
             Object(NonMatching, "peripheral.c"),
             Object(NonMatching, "_frameGCNcc.c"),
             Object(NonMatching, "_buildtev.c"),
+        ],
+    },
+    {
+        "lib": "Runtime.PPCEABI.H",
+        "mw_version": config.linker_version,
+        "cflags": cflags_runtime,
+        "host": False,
+        "objects": [
             Object(NonMatching, "Runtime.PPCEABI.H/global_destructor_chain.c"),
             Object(NonMatching, "Runtime.PPCEABI.H/__init_cpp_exceptions.cpp"),
         ],
