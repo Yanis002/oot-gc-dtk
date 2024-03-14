@@ -19,7 +19,6 @@ xlCoreGCN.c:
 
 xlPostGCN.c:
 	.text       start:0x80005D64 end:0x80005DC8
-	.bss        start:0x800F5300 end:0x800F5300
 
 xlFileGCN.c:
 	.text       start:0x80005DC8 end:0x800061E0

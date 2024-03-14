@@ -143,6 +143,7 @@ config.asflags = [
 config.ldflags = [
     "-fp hardware",
     "-nodefaults",
+    "-warn off" # TODO: this is a temp solution until ``note.split`` is fixed
     # "-listclosure", # Uncomment for Wii linkers
 ]
 
