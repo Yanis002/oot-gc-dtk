@@ -598,7 +598,7 @@ s32 systemSetupGameALL(System* pSystem) {
                 #if VERSION == 0 // D43J01
                     mcardOpen(&mCard, "ZELDA", ZELDA_GC_JP,
                             mCard.saveIcon, mCard.saveBanner, "ZELDAX",
-                            &gSystemRomConfigurationList[i].currentControllerConfig, 0xC000, 0x8000);
+                            &gSystemRomConfigurationList[i].currentControllerConfig, 0x18000, 0x8000);
                 #else
                     mcardOpen(&mCard, "ZELDA1", ZELDA_GC_JP,
                             mCard.saveIcon, mCard.saveBanner, "ZELDAX",
@@ -622,8 +622,8 @@ s32 systemSetupGameALL(System* pSystem) {
                 simulatorUnpackTexPalette((__anon_0xDB69*)mCard.saveBanner);
                 #if VERSION == 0 // D43J01
                     mcardOpen(&mCard, "ZELDA", ZELDA_GC_JP,
-                            mCard.saveIcon, mCard.saveBanner, "ZELDAX",
-                            &gSystemRomConfigurationList[i].currentControllerConfig, 0xC000, 0x8000);
+                            mCard.saveIcon, mCard.saveBanner, "ZELDA",
+                            &gSystemRomConfigurationList[i].currentControllerConfig, 0x18000, 0x8000);
                 #else
                     mcardOpen(&mCard, "ZELDA1", ZELDA_GC_JP,
                             mCard.saveIcon, mCard.saveBanner, "ZELDAX",
@@ -1685,7 +1685,6 @@ inline s32 systemClearExceptions(System* pSystem) {
     return 1;
 }
 
-// non matching
 s32 systemEvent(System* pSystem, s32 nEvent, void* pArgument) {
     Cpu* pCPU;
     SystemException exception;
@@ -1702,9 +1701,28 @@ s32 systemEvent(System* pSystem, s32 nEvent, void* pArgument) {
             pSystem->pFrame = gpFrame;
             pSystem->pSound = gpSound;
 
-            for (eObject = 0; eObject < SOT_COUNT; eObject++) {
-                pSystem->apObject[eObject] = NULL;
-            }
+            #if VERSION == 0 // D43J01
+                pSystem->apObject[SOT_CPU] = NULL;
+                pSystem->apObject[SOT_PIF] = NULL;
+                pSystem->apObject[SOT_RAM] = NULL;
+                pSystem->apObject[SOT_ROM] = NULL;
+                pSystem->apObject[SOT_RSP] = NULL;
+                pSystem->apObject[SOT_RDP] = NULL;
+                pSystem->apObject[SOT_MIPS] = NULL;
+                pSystem->apObject[SOT_DISK] = NULL;
+                pSystem->apObject[SOT_FLASH] = NULL;
+                pSystem->apObject[SOT_SRAM] = NULL;
+                pSystem->apObject[SOT_AUDIO] = NULL;
+                pSystem->apObject[SOT_VIDEO] = NULL;
+                pSystem->apObject[SOT_SERIAL] = NULL;
+                pSystem->apObject[SOT_LIBRARY] = NULL;
+                pSystem->apObject[SOT_PERIPHERAL] = NULL;
+                pSystem->apObject[SOT_RDB] = NULL;
+            #else
+                for (eObject = 0; eObject < SOT_COUNT; eObject++) {
+                    pSystem->apObject[eObject] = NULL;
+                }
+            #endif
 
             systemClearExceptions(pSystem);
 

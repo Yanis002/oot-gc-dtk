@@ -251,7 +251,7 @@ config.libs = [
             Object(Matching, "codeGCN.c"),
             Object(NonMatching, "soundGCN.c"),
             Object(NonMatching, "frame.c"),
-            Object(NonMatching, "system.c"), # 1 left: systemEvent
+            Object(Matching, "system.c"),
             Object(NonMatching, "cpu.c"),
             Object(NonMatching, "pif.c"),
             Object(Matching, "ram.c"),
