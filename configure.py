@@ -257,7 +257,7 @@ config.libs = [
             Object(Matching, "ram.c"),
             Object(Matching, "rom.c"),
             Object(NonMatching, "rdp.c"),
-            Object(NonMatching, "rdb.c"),
+            Object(Matching, "rdb.c"),
             Object(NonMatching, "rsp.c"),
             Object(NonMatching, "mips.c"),
             Object(NonMatching, "disk.c"),
