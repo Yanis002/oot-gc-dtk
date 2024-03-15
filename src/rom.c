@@ -465,7 +465,11 @@ static s32 romCacheGame(Rom* pROM) {
                     pROM->nCountOffsetBlocks = 0xC6;
                 }
             #endif
-        } else  {
+        } else 
+        #if VERSION > 0 // D43J01
+            if (!bIsCZLE)
+        #endif
+        {
             pROM->anOffsetBlock = ganOffsetBlock_URAZLJ;
             pROM->nCountOffsetBlocks = 0xC6;
         }
