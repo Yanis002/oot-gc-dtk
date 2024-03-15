@@ -254,8 +254,8 @@ config.libs = [
             Object(NonMatching, "system.c"), # 1 left: systemEvent
             Object(NonMatching, "cpu.c"),
             Object(NonMatching, "pif.c"),
-            Object(NonMatching, "ram.c"),
-            Object(NonMatching, "rom.c"),
+            Object(Matching, "ram.c"),
+            Object(Matching, "rom.c"),
             Object(NonMatching, "rdp.c"),
             Object(NonMatching, "rdb.c"),
             Object(NonMatching, "rsp.c"),
