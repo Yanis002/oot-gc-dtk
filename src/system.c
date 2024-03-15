@@ -177,24 +177,47 @@ static s32 systemSetupGameRAM(System* pSystem) {
     if (romTestCode(pROM, "CZLJ") || romTestCode(pROM, "CZLE") || romTestCode(pROM, "NZSJ") ||
         romTestCode(pROM, "NZSE")) {
         switch (nCode) {
-            case 0x5CAC1C8F:
-                gnFlagZelda = 2;
-                break;
-            case 0x184CED80:
-                gnFlagZelda = 3;
-                break;
-            case 0x54A59B56:
-            case 0x421EB8E9:
-                gnFlagZelda = 4;
-                break;
-            case 0x7E8BEE60:
-                gnFlagZelda = 5;
-                break;
+            #if VERSION == 0 // D43J01
+                case 0x5CAC1CF7:
+                    gnFlagZelda = 2;
+                    break;
+                case 0x184CED80:
+                    gnFlagZelda = 3;
+                    bExpansion = 1;
+                    break;
+                case 0x5CAC1C8F:
+                    gnFlagZelda = 0;
+                    break;
+                case 0x184CED18:
+                    gnFlagZelda = 1;
+                    bExpansion = 1;
+                    break;
+                case 0x7E8BEE60:
+                    gnFlagZelda = 1;
+                    bExpansion = 1;
+                    break;
+            #else
+                case 0x5CAC1C8F:
+                    gnFlagZelda = 2;
+                    break;
+                case 0x184CED80:
+                    gnFlagZelda = 3;
+                    break;
+                case 0x54A59B56:
+                case 0x421EB8E9:
+                    gnFlagZelda = 4;
+                    break;
+                case 0x7E8BEE60:
+                    gnFlagZelda = 5;
+                    break;
+            #endif
         }
 
-        if (gnFlagZelda & 1) {
-            bExpansion = 1;
-        }
+        #if VERSION > 0 // D43J01
+            if (gnFlagZelda & 1) {
+                bExpansion = 1;
+            }
+        #endif
     }
 
     // Conker's Bad Fur Day
@@ -264,47 +287,66 @@ s32 systemGetInitialConfiguration(System* pSystem, Rom* pROM, s32 index) {
     systemSetControllerConfiguration(&gSystemRomConfigurationList[index], 0, 0);
     gSystemRomConfigurationList[index].storageDevice = SOT_CPU;
 
+    #if VERSION == 0 // D43J01
+        if (!simulatorGetArgument(SAT_VIBRATION, &szText) || (*szText == '1')) {
+            if (!simulatorGetArgument(SAT_CONTROLLER, &szText) || (*szText == '0')) {
+                systemSetControllerConfiguration(&gSystemRomConfigurationList[index], 0x82828282, 1);
+            } else {
+                systemSetControllerConfiguration(&gSystemRomConfigurationList[index], 0x80808080, 1);
+            }
+        } else {
+            if (!simulatorGetArgument(SAT_CONTROLLER, &szText) || (*szText == '0')) {
+                systemSetControllerConfiguration(&gSystemRomConfigurationList[index], 0x02020202, 1);
+            } else {
+                systemSetControllerConfiguration(&gSystemRomConfigurationList[index], 0, 1);
+            }
+        }
+    #endif
+
     if (romTestCode(pROM, "NSME") || romTestCode(pROM, "NSMJ")) {
         // Super Mario 64
         systemSetControllerConfiguration(&gSystemRomConfigurationList[index], 0x01010101, 0);
-        gSystemRomConfigurationList[index].storageDevice = SOT_RSP;
-
+        #if VERSION > 0 // D43J01
+            gSystemRomConfigurationList[index].storageDevice = SOT_RSP;
+        #endif
     } else if (romTestCode(pROM, "CZLE") || romTestCode(pROM, "CZLJ")) {
         // Ocarina of Time
         gSystemRomConfigurationList[index].storageDevice = SOT_PIF;
 
-        if (!simulatorGetArgument(SAT_VIBRATION, &szText) || (*szText == '1')) {
-            if (!simulatorGetArgument(SAT_CONTROLLER, &szText) || (*szText == '0')) {
-                systemSetControllerConfiguration(&gSystemRomConfigurationList[index], 0x82828282, 1);
+        #if VERSION > 0 // D43J01
+            if (!simulatorGetArgument(SAT_VIBRATION, &szText) || (*szText == '1')) {
+                if (!simulatorGetArgument(SAT_CONTROLLER, &szText) || (*szText == '0')) {
+                    systemSetControllerConfiguration(&gSystemRomConfigurationList[index], 0x82828282, 1);
+                } else {
+                    systemSetControllerConfiguration(&gSystemRomConfigurationList[index], 0x80808080, 1);
+                }
             } else {
-                systemSetControllerConfiguration(&gSystemRomConfigurationList[index], 0x80808080, 1);
+                if (!simulatorGetArgument(SAT_CONTROLLER, &szText) || (*szText == '0')) {
+                    systemSetControllerConfiguration(&gSystemRomConfigurationList[index], 0x02020202, 1);
+                } else {
+                    systemSetControllerConfiguration(&gSystemRomConfigurationList[index], 0, 1);
+                }
             }
-        } else {
-            if (!simulatorGetArgument(SAT_CONTROLLER, &szText) || (*szText == '0')) {
-                systemSetControllerConfiguration(&gSystemRomConfigurationList[index], 0x02020202, 1);
-            } else {
-                systemSetControllerConfiguration(&gSystemRomConfigurationList[index], 0, 1);
-            }
-        }
-
+        #endif
     } else if (romTestCode(pROM, "NZSJ") || romTestCode(pROM, "NZSE")) {
         // Majora's Mask
         gSystemRomConfigurationList[index].storageDevice = SOT_RAM;
 
-        if (!simulatorGetArgument(SAT_VIBRATION, &szText) || (*szText == '1')) {
-            if (!simulatorGetArgument(SAT_CONTROLLER, &szText) || (*szText == '0')) {
-                systemSetControllerConfiguration(&gSystemRomConfigurationList[index], 0x82828282, 1);
+        #if VERSION > 0 // D43J01
+            if (!simulatorGetArgument(SAT_VIBRATION, &szText) || (*szText == '1')) {
+                if (!simulatorGetArgument(SAT_CONTROLLER, &szText) || (*szText == '0')) {
+                    systemSetControllerConfiguration(&gSystemRomConfigurationList[index], 0x82828282, 1);
+                } else {
+                    systemSetControllerConfiguration(&gSystemRomConfigurationList[index], 0x80808080, 1);
+                }
             } else {
-                systemSetControllerConfiguration(&gSystemRomConfigurationList[index], 0x80808080, 1);
+                if (!simulatorGetArgument(SAT_CONTROLLER, &szText) || (*szText == '0')) {
+                    systemSetControllerConfiguration(&gSystemRomConfigurationList[index], 0x02020202, 1);
+                } else {
+                    systemSetControllerConfiguration(&gSystemRomConfigurationList[index], 0, 1);
+                }
             }
-        } else {
-            if (!simulatorGetArgument(SAT_CONTROLLER, &szText) || (*szText == '0')) {
-                systemSetControllerConfiguration(&gSystemRomConfigurationList[index], 0x02020202, 1);
-            } else {
-                systemSetControllerConfiguration(&gSystemRomConfigurationList[index], 0, 1);
-            }
-        }
-
+        #endif
     } else if (romTestCode(pROM, "NPWE")) {
         // Pilotwings 64
         gSystemRomConfigurationList[index].storageDevice = SOT_RSP;
@@ -361,7 +403,9 @@ s32 systemGetInitialConfiguration(System* pSystem, Rom* pROM, s32 index) {
     return 1;
 }
 
-static s32 systemSetupGameALL(System* pSystem) {
+//! TODO: temp (static)
+s32 systemSetupGameALL(System* pSystem);
+s32 systemSetupGameALL(System* pSystem) {
     s32 nSizeSound;
     s32 iController;
     s32 nSize;
@@ -475,31 +519,13 @@ static s32 systemSetupGameALL(System* pSystem) {
         pSystem->eTypeROM = SRT_ZELDA1;
         nSizeSound = 0x1000;
 
-        if (gnFlagZelda & 1) {
-            if (romTestCode(pROM, "CZLE")) {
+        #if VERSION == 0 // D43J01
+            if ((gnFlagZelda & 1)) {
                 if (!cpuSetCodeHack(pCPU, 0x80062D64, 0x94639680, -1)) {
                     return 0;
-                }
+                } 
 
                 if (!cpuSetCodeHack(pCPU, 0x8006E468, 0x97040000, -1)) {
-                    return 0;
-                }
-            } else {
-                if (!cpuSetCodeHack(pCPU, 0x80062D64, 0x94639680, -1)) {
-                    return 0;
-                }
-
-                if (!cpuSetCodeHack(pCPU, 0x8006E468, 0x97040000, -1)) {
-                    return 0;
-                }
-            }
-        } else {
-            if (romTestCode(pROM, "CZLE")) {
-                if (!cpuSetCodeHack(pCPU, 0x8005BB14, ((gnFlagZelda & 2) ? 0x9463D040 : 0x9463D000), -1)) {
-                    return 0;
-                }
-
-                if (!cpuSetCodeHack(pCPU, 0x80066638, 0x97040000, -1)) {
                     return 0;
                 }
             } else {
@@ -511,7 +537,45 @@ static s32 systemSetupGameALL(System* pSystem) {
                     return 0;
                 }
             }
-        }
+        #else
+            if (gnFlagZelda & 1) {
+                if (romTestCode(pROM, "CZLE")) {
+                    if (!cpuSetCodeHack(pCPU, 0x80062D64, 0x94639680, -1)) {
+                        return 0;
+                    }
+
+                    if (!cpuSetCodeHack(pCPU, 0x8006E468, 0x97040000, -1)) {
+                        return 0;
+                    }
+                } else {
+                    if (!cpuSetCodeHack(pCPU, 0x80062D64, 0x94639680, -1)) {
+                        return 0;
+                    }
+
+                    if (!cpuSetCodeHack(pCPU, 0x8006E468, 0x97040000, -1)) {
+                        return 0;
+                    }
+                }
+            } else {
+                if (romTestCode(pROM, "CZLE")) {
+                    if (!cpuSetCodeHack(pCPU, 0x8005BB14, ((gnFlagZelda & 2) ? 0x9463D040 : 0x9463D000), -1)) {
+                        return 0;
+                    }
+
+                    if (!cpuSetCodeHack(pCPU, 0x80066638, 0x97040000, -1)) {
+                        return 0;
+                    }
+                } else {
+                    if (!cpuSetCodeHack(pCPU, 0x8005BB34, 0x9463D040, -1)) {
+                        return 0;
+                    }
+
+                    if (!cpuSetCodeHack(pCPU, 0x80066658, 0x97040000, -1)) {
+                        return 0;
+                    }
+                }
+            }
+        #endif
 
         if (!(gnFlagZelda & 1)) {
             if (!(gnFlagZelda & 2)) {
@@ -531,9 +595,15 @@ static s32 systemSetupGameALL(System* pSystem) {
 
                 DVDClose(&fileInfo);
                 simulatorUnpackTexPalette((__anon_0xDB69*)mCard.saveBanner);
-                mcardOpen(&mCard, "ZELDA1", ZELDA_GC_JP,
-                          mCard.saveIcon, mCard.saveBanner, "ZELDAX",
-                          &gSystemRomConfigurationList[i].currentControllerConfig, 0xC000, 0x8000);
+                #if VERSION == 0 // D43J01
+                    mcardOpen(&mCard, "ZELDA", ZELDA_GC_JP,
+                            mCard.saveIcon, mCard.saveBanner, "ZELDAX",
+                            &gSystemRomConfigurationList[i].currentControllerConfig, 0xC000, 0x8000);
+                #else
+                    mcardOpen(&mCard, "ZELDA1", ZELDA_GC_JP,
+                            mCard.saveIcon, mCard.saveBanner, "ZELDAX",
+                            &gSystemRomConfigurationList[i].currentControllerConfig, 0xC000, 0x8000);
+                #endif
             } else {
                 if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
                     !simulatorDVDRead(&fileInfo, mCard.saveIcon, (gz_iconSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
@@ -550,9 +620,15 @@ static s32 systemSetupGameALL(System* pSystem) {
 
                 DVDClose(&fileInfo);
                 simulatorUnpackTexPalette((__anon_0xDB69*)mCard.saveBanner);
-                mcardOpen(&mCard, "ZELDA1", ZELDA_GC_JP,
-                          mCard.saveIcon, mCard.saveBanner, "ZELDA",
-                          &gSystemRomConfigurationList[i].currentControllerConfig, 0xC000, 0x8000);
+                #if VERSION == 0 // D43J01
+                    mcardOpen(&mCard, "ZELDA", ZELDA_GC_JP,
+                            mCard.saveIcon, mCard.saveBanner, "ZELDAX",
+                            &gSystemRomConfigurationList[i].currentControllerConfig, 0xC000, 0x8000);
+                #else
+                    mcardOpen(&mCard, "ZELDA1", ZELDA_GC_JP,
+                            mCard.saveIcon, mCard.saveBanner, "ZELDAX",
+                            &gSystemRomConfigurationList[i].currentControllerConfig, 0xC000, 0x8000);
+                #endif
             }
         } else {
             // debug rom?
@@ -857,9 +933,11 @@ static s32 systemSetupGameALL(System* pSystem) {
                 pCPU->nCompileFlag = (s32)(pCPU->nCompileFlag | 0x10);
             } else if (romTestCode(pROM, "NK4E")) {
                 // Kirby 64
-                if (!audioEnable(SYSTEM_AUDIO(pSystem), 0)) {
-                    return 0;
-                }
+                #if VERSION > 0 // D43J01
+                    if (!audioEnable(SYSTEM_AUDIO(pSystem), 0)) {
+                        return 0;
+                    }
+                #endif
                 if (!cpuSetCodeHack(pCPU, 0x80020BCC, 0x8DF80034, -1)) {
                     return 0;
                 }
@@ -1472,19 +1550,25 @@ s32 systemReset(System* pSystem) {
             return 0;
         }
 
-        for (eObject = 0; eObject < SOT_COUNT; eObject++) {
-            if (pSystem->apObject[eObject] != NULL && !xlObjectEvent(pSystem->apObject[eObject], 0x1003, NULL)) {
+        #if VERSION == 0 // D43J01
+            if (!libraryUpdate(SYSTEM_LIBRARY(pSystem))) {
                 return 0;
             }
-        }
+        #else
+            for (eObject = 0; eObject < SOT_COUNT; eObject++) {
+                if (pSystem->apObject[eObject] != NULL && !xlObjectEvent(pSystem->apObject[eObject], 0x1003, NULL)) {
+                    return 0;
+                }
+            }
 
-        if (!xlObjectEvent(pSystem->pFrame, 0x1003, NULL)) {
-            return 0;
-        }
+            if (!xlObjectEvent(pSystem->pFrame, 0x1003, NULL)) {
+                return 0;
+            }
 
-        if (!xlObjectEvent(pSystem->pSound, 0x1003, NULL)) {
-            return 0;
-        }
+            if (!xlObjectEvent(pSystem->pSound, 0x1003, NULL)) {
+                return 0;
+            }
+        #endif
     }
 
     return 1;
@@ -1601,6 +1685,7 @@ inline s32 systemClearExceptions(System* pSystem) {
     return 1;
 }
 
+// non matching
 s32 systemEvent(System* pSystem, s32 nEvent, void* pArgument) {
     Cpu* pCPU;
     SystemException exception;
@@ -1807,7 +1892,9 @@ s32 systemEvent(System* pSystem, s32 nEvent, void* pArgument) {
         case 5:
         case 6:
         case 7:
+    #if VERSION > 0 // D43J01
         case 0x1003:
+    #endif
             break;
         default:
             return 0;
