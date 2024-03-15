@@ -4,3 +4,7 @@ hash: 7bfa2acdf675b5c5442890688d1e0293817ad63f
 symbols: config/D43J01/symbols.txt
 splits: config/D43J01/splits.txt
 mw_comment_version: 8
+
+extract:
+- symbol: gTgPcTPL
+  header: gTgPcTPL.inc
