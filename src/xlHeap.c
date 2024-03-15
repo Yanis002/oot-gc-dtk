@@ -6,9 +6,7 @@ static u32* gpHeapBlockLast;
 static s32 gnHeapTakeCount;
 static s32 gnHeapFreeCount;
 static s32 gnHeapTakeCacheCount;
-
-//! NOTE: on CE-J this variable is static
-u32* gapHeapBlockCache[11][32];
+static u32* gapHeapBlockCache[11][32];
 
 s32 gnSizeHeap;
 

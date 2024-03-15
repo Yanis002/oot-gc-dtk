@@ -4,7 +4,6 @@
 #include "dolphin.h"
 
 extern s32 gnSizeHeap;
-extern u32* gapHeapBlockCache[11][32];
 
 s32 xlHeapTake(void** ppHeap, s32 nByteCount);
 s32 xlHeapFree(void** ppHeap);
