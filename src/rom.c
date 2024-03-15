@@ -456,10 +456,15 @@ static s32 romCacheGame(Rom* pROM) {
 
     if (IS_OOT) {
         if (gnFlagZelda & 2) {
+            #if VERSION == 0 // D43J01
                 pROM->anOffsetBlock = ganOffsetBlock_ZLJ;
                 pROM->nCountOffsetBlocks = 0xC6;
-            // if (!bIsCZLE) {
-            // }
+            #else
+                if (!bIsCZLE) {
+                    pROM->anOffsetBlock = ganOffsetBlock_ZLJ;
+                    pROM->nCountOffsetBlocks = 0xC6;
+                }
+            #endif
         } else  {
             pROM->anOffsetBlock = ganOffsetBlock_URAZLJ;
             pROM->nCountOffsetBlocks = 0xC6;
