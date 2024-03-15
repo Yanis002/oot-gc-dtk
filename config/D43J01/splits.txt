@@ -28,11 +28,11 @@ xlFileGCN.c:
 
 xlList.c:
 	.text       start:0x800061E0 end:0x800065A8
-	.bss        start:0x800F5300 end:0x800F58A0
+	.bss        start:0x800F5300 end:0x800F5310 align:32
 
 xlHeap.c:
 	.text       start:0x800065A8 end:0x80007B20
-	.bss        start:0x800F58A0 end:0x800F58E0
+	.bss        start:0x800F5310 end:0x800F58A0
 	.sbss       start:0x8018B848 end:0x8018B868
 
 xlObject.c:
@@ -43,7 +43,7 @@ simGCN.c:
 	.text       start:0x80007EE0 end:0x8000F5A8
 	.rodata     start:0x800D1BC0 end:0x800D1D10
 	.data       start:0x800DA3E0 end:0x800EB680 align:32
-	.bss        start:0x800F58E0 end:0x800F5A40
+	.bss        start:0x800F58A0 end:0x800F5A40 align:32
 	.sdata      start:0x8018AF88 end:0x8018B050
 	.sbss       start:0x8018B870 end:0x8018B8A0
 	.sdata2     start:0x8018BF58 end:0x8018BFB0
