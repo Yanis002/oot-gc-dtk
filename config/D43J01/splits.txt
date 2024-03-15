@@ -220,5 +220,5 @@ _buildtev.c:
 	.text       start:0x80097E6C end:0x8009B284
 	.data       start:0x800F1910 end:0x800F1AA0
 	.bss        start:0x80131FB0 end:0x80132280
-	.sdata      start:0x8018B690 end:0x8018B700
+	.sdata      start:0x8018B690 end:0x8018B6A0
 	.sdata2     start:0x8018C318 end:0x8018C320
