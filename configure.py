@@ -180,6 +180,18 @@ if config.debug:
 else:
     cflags_base.append("-DNDEBUG=1")
 
+cflags_dolphin = [
+    *cflags_base,
+    "-align powerpc",
+    '-pragma "cats off"',
+    '-pragma "warn_notinlined off"',
+    "-maxerrors 1",
+    "-nosyspath",
+    "-RTTI off",
+    "-str reuse",
+    "-multibyte",  # For Wii compilers, replace with `-enc SJIS`
+]
+
 # Metrowerks library flags
 cflags_runtime = [
     *cflags_base,
@@ -201,12 +213,23 @@ cflags_rel = [
 config.linker_version = "GC/1.1"
 
 
+# Helper function for SIM objects
+def SIM(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
+    return {
+        "lib": lib_name,
+        "mw_version": config.linker_version,
+        "cflags": cflags_runtime,
+        "host": False,
+        "objects": objects,
+    }
+
+
 # Helper function for Dolphin libraries
 def DolphinLib(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
     return {
         "lib": lib_name,
         "mw_version": "GC/1.2.5n",
-        "cflags": cflags_base,
+        "cflags": cflags_dolphin,
         "host": False,
         "objects": objects,
     }
@@ -229,18 +252,20 @@ NonMatching = False
 config.warn_missing_config = True
 config.warn_missing_source = False
 config.libs = [
-    {
-        "lib": "main",
-        "mw_version": config.linker_version,
-        "cflags": cflags_runtime,
-        "host": False,
-        "objects": [
+    SIM(
+        "Core",
+        [
             Object(Matching, "Core/xlCoreGCN.c"),
             Object(Matching, "Core/xlPostGCN.c"),
             Object(Matching, "Core/xlFileGCN.c"),
             Object(Matching, "Core/xlList.c"),
             Object(Matching, "Core/xlHeap.c"),
             Object(Matching, "Core/xlObject.c"),
+        ]
+    ),
+    SIM(
+        "Fire",
+        [
             Object(NonMatching, "Fire/simGCN.c"),
             Object(Matching, "Fire/movie.c"),
             Object(NonMatching, "Fire/THPPlayer.c"),
@@ -272,36 +297,142 @@ config.libs = [
             Object(NonMatching, "Fire/_frameGCNcc.c"),
             Object(NonMatching, "Fire/_buildtev.c"),
         ],
-    },
-    {
-        "lib": "TRK_MINNOW_DOLPHIN",
-        "mw_version": "GC/1.3.2",
-        "cflags": cflags_runtime,
-        "host": False,
-        "objects": [
-            Object(NonMatching, "TRK_MINNOW_DOLPHIN/Portable/mainloop.c"),
-            Object(NonMatching, "TRK_MINNOW_DOLPHIN/Portable/nubevent.c"),
-            Object(NonMatching, "TRK_MINNOW_DOLPHIN/Portable/nubinit.c"),
-            Object(NonMatching, "TRK_MINNOW_DOLPHIN/Portable/msg.c"),
-            Object(NonMatching, "TRK_MINNOW_DOLPHIN/Portable/msgbuf.c"),
-            Object(NonMatching, "TRK_MINNOW_DOLPHIN/Portable/serpoll.c"),
-            Object(NonMatching, "TRK_MINNOW_DOLPHIN/Portable/usr_put.c"),
-            Object(NonMatching, "TRK_MINNOW_DOLPHIN/Portable/dispatch.c"),
-            Object(NonMatching, "TRK_MINNOW_DOLPHIN/Portable/msghndlr.c"),
-            Object(NonMatching, "TRK_MINNOW_DOLPHIN/Portable/support.c"),
-            Object(NonMatching, "TRK_MINNOW_DOLPHIN/Portable/mutex_TRK.c"),
-            Object(NonMatching, "TRK_MINNOW_DOLPHIN/Portable/notify.c"),
-            Object(NonMatching, "TRK_MINNOW_DOLPHIN/ppc/Generic/flush_cache.c"),
-            Object(NonMatching, "TRK_MINNOW_DOLPHIN/Portable/mem_TRK.c"),
-            Object(NonMatching, "TRK_MINNOW_DOLPHIN/ppc/Generic/__exception.c"),
-            Object(NonMatching, "TRK_MINNOW_DOLPHIN/ppc/Generic/targimpl.c"),
-            Object(NonMatching, "TRK_MINNOW_DOLPHIN/Os/dolphin/dolphin_trk.c"),
-            Object(NonMatching, "TRK_MINNOW_DOLPHIN/ppc/Generic/mpc_7xx_603e.c"),
-            Object(NonMatching, "TRK_MINNOW_DOLPHIN/Portable/main_TRK.c"),
-            Object(NonMatching, "TRK_MINNOW_DOLPHIN/Os/dolphin/dolphin_trk_glue.c"),
-            Object(NonMatching, "TRK_MINNOW_DOLPHIN/Os/dolphin/targcont.c"),
+    ),
+    DolphinLib(
+        "base",
+        [
+            Object(NonMatching, "dolphin/base/PPCArch.c"),
         ],
-    },
+    ),
+    DolphinLib(
+        "os",
+        [
+            Object(NonMatching, "dolphin/os/OS.c"),
+            Object(NonMatching, "dolphin/os/OSAlarm.c"),
+            Object(NonMatching, "dolphin/os/OSAlloc.c"),
+            Object(NonMatching, "dolphin/os/OSArena.c"),
+            Object(NonMatching, "dolphin/os/OSAudioSystem.c"),
+            Object(NonMatching, "dolphin/os/OSCache.c"),
+            Object(NonMatching, "dolphin/os/OSContext.c"),
+            Object(NonMatching, "dolphin/os/OSError.c"),
+            Object(NonMatching, "dolphin/os/OSFont.c"),
+            Object(NonMatching, "dolphin/os/OSInterrupt.c"),
+            Object(NonMatching, "dolphin/os/OSLink.c"),
+            Object(NonMatching, "dolphin/os/OSMessage.c"),
+            Object(NonMatching, "dolphin/os/OSMemory.c"),
+            Object(NonMatching, "dolphin/os/OSMutex.c"),
+            Object(NonMatching, "dolphin/os/OSReboot.c"),
+            Object(NonMatching, "dolphin/os/OSReset.c"),
+            Object(NonMatching, "dolphin/os/OSResetSW.c"),
+            Object(NonMatching, "dolphin/os/OSRtc.c"),
+            Object(NonMatching, "dolphin/os/OSSync.c"),
+            Object(NonMatching, "dolphin/os/OSThread.c"),
+            Object(NonMatching, "dolphin/os/OSTime.c"),
+            Object(NonMatching, "dolphin/os/__start.c"),
+            Object(NonMatching, "dolphin/os/__ppc_eabi_init.cpp"),
+        ],
+    ),
+    DolphinLib(
+        "exi",
+        [
+            Object(NonMatching, "dolphin/exi/EXIBios.c"),
+            Object(NonMatching, "dolphin/exi/EXIUart.c"),
+        ],
+    ),
+    DolphinLib(
+        "si",
+        [
+            Object(NonMatching, "dolphin/si/SIBios.c"),
+            Object(NonMatching, "dolphin/si/SISamplingRate.c"),
+        ],
+    ),
+    DolphinLib(
+        "vi",
+        [
+            Object(NonMatching, "dolphin/vi/vi.c"),
+        ],
+    ),
+    DolphinLib(
+        "db",
+        [
+            Object(NonMatching, "dolphin/db/db.c"),
+        ],
+    ),
+    DolphinLib(
+        "mtx",
+        [
+            Object(NonMatching, "dolphin/mtx/mtx.c", cflags=[*cflags_base, "-fp_contract off"]),
+            Object(NonMatching, "dolphin/mtx/mtxvec.c"),
+            Object(NonMatching, "dolphin/mtx/mtx44.c"),
+        ],
+    ),
+    DolphinLib(
+        "gx",
+        [
+            Object(NonMatching, "dolphin/gx/GXInit.c"),
+            Object(NonMatching, "dolphin/gx/GXFifo.c"),
+            Object(NonMatching, "dolphin/gx/GXAttr.c"),
+            Object(NonMatching, "dolphin/gx/GXMisc.c"),
+            Object(NonMatching, "dolphin/gx/GXGeometry.c"),
+            Object(NonMatching, "dolphin/gx/GXFrameBuf.c"),
+            Object(NonMatching, "dolphin/gx/GXLight.c"),
+            Object(NonMatching, "dolphin/gx/GXTexture.c"),
+            Object(NonMatching, "dolphin/gx/GXBump.c"),
+            Object(NonMatching, "dolphin/gx/GXTev.c"),
+            Object(NonMatching, "dolphin/gx/GXPixel.c"),
+            Object(NonMatching, "dolphin/gx/GXTransform.c"),
+            Object(NonMatching, "dolphin/gx/GXPerf.c"),
+        ],
+    ),
+    DolphinLib(
+        "pad",
+        [
+            Object(NonMatching, "dolphin/pad/Padclamp.c"),
+            Object(NonMatching, "dolphin/pad/Pad.c"),
+        ],
+    ),
+    DolphinLib(
+        "dvd",
+        [
+            Object(NonMatching, "dolphin/dvd/dvdlow.c"),
+            Object(NonMatching, "dolphin/dvd/dvdfs.c"),
+            Object(NonMatching, "dolphin/dvd/dvd.c"),
+            Object(NonMatching, "dolphin/dvd/dvdqueue.c"),
+            Object(NonMatching, "dolphin/dvd/dvderror.c"),
+            Object(NonMatching, "dolphin/dvd/dvdidutils.c"),
+            Object(NonMatching, "dolphin/dvd/dvdFatal.c"),
+            Object(NonMatching, "dolphin/dvd/fstload.c"),
+        ],
+    ),
+    # {
+    #     "lib": "TRK_MINNOW_DOLPHIN",
+    #     "mw_version": "GC/1.3.2",
+    #     "cflags": cflags_runtime,
+    #     "host": False,
+    #     "objects": [
+    #         Object(NonMatching, "TRK_MINNOW_DOLPHIN/Portable/mainloop.c"),
+    #         Object(NonMatching, "TRK_MINNOW_DOLPHIN/Portable/nubevent.c"),
+    #         Object(NonMatching, "TRK_MINNOW_DOLPHIN/Portable/nubinit.c"),
+    #         Object(NonMatching, "TRK_MINNOW_DOLPHIN/Portable/msg.c"),
+    #         Object(NonMatching, "TRK_MINNOW_DOLPHIN/Portable/msgbuf.c"),
+    #         Object(NonMatching, "TRK_MINNOW_DOLPHIN/Portable/serpoll.c"),
+    #         Object(NonMatching, "TRK_MINNOW_DOLPHIN/Portable/usr_put.c"),
+    #         Object(NonMatching, "TRK_MINNOW_DOLPHIN/Portable/dispatch.c"),
+    #         Object(NonMatching, "TRK_MINNOW_DOLPHIN/Portable/msghndlr.c"),
+    #         Object(NonMatching, "TRK_MINNOW_DOLPHIN/Portable/support.c"),
+    #         Object(NonMatching, "TRK_MINNOW_DOLPHIN/Portable/mutex_TRK.c"),
+    #         Object(NonMatching, "TRK_MINNOW_DOLPHIN/Portable/notify.c"),
+    #         Object(NonMatching, "TRK_MINNOW_DOLPHIN/ppc/Generic/flush_cache.c"),
+    #         Object(NonMatching, "TRK_MINNOW_DOLPHIN/Portable/mem_TRK.c"),
+    #         Object(NonMatching, "TRK_MINNOW_DOLPHIN/ppc/Generic/__exception.c"),
+    #         Object(NonMatching, "TRK_MINNOW_DOLPHIN/ppc/Generic/targimpl.c"),
+    #         Object(NonMatching, "TRK_MINNOW_DOLPHIN/Os/dolphin/dolphin_trk.c"),
+    #         Object(NonMatching, "TRK_MINNOW_DOLPHIN/ppc/Generic/mpc_7xx_603e.c"),
+    #         Object(NonMatching, "TRK_MINNOW_DOLPHIN/Portable/main_TRK.c"),
+    #         Object(NonMatching, "TRK_MINNOW_DOLPHIN/Os/dolphin/dolphin_trk_glue.c"),
+    #         Object(NonMatching, "TRK_MINNOW_DOLPHIN/Os/dolphin/targcont.c"),
+    #     ],
+    # },
     {
         "lib": "Runtime.PPCEABI.H",
         "mw_version": "GC/1.3.2",
@@ -314,47 +445,47 @@ config.libs = [
             Object(NonMatching, "PowerPC_EABI_Support/Runtime/Src/runtime.c"),
         ],
     },
-    {
-        "lib": "MSL_C",
-        "mw_version": "GC/1.3.2",
-        "cflags": cflags_runtime,
-        "host": False,
-        "objects": [
-            Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/abort_exit.c"),
-            Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/ansi_files.c"),
-            Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Src/ansi_fp.c", extra_cflags=["-inline noauto"]),
-            Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/buffer_io.c"),
-            Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/critical_regions.ppc_eabi.c"),
-            Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/ctype.c"),
-            Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/direct_io.c"),
-            Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/errno.c"),
-            Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/mbstring.c", extra_cflags=["-inline noauto"]),
-            Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/mem.c"),
-            Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/mem_funcs.c"),
-            Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/misc_io.c"),
-            Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/printf.c"),
-            Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/scanf.c"),
-            Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/string.c"),
-            Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/strtoul.c"),
-            Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Src/uart_console_io.c"),
-            Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/float.c"),
-            Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/wchar_io.c"),
-            Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/e_asin.c"),
-            Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/e_pow.c"),
-            Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/fminmaxdim.c"),
-            Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/s_ceil.c"),
-            Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/s_copysign.c"),
-            Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/s_floor.c"),
-            Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/s_frexp.c"),
-            Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/s_ldexp.c"),
-            Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/w_pow.c"),
-            Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/hyperbolicsf.c"),
-            Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/log10f.c"),
-            Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/trigf.c"),
-            Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/math_inlines.c"),
-            Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/common_float_tables.c"),
-        ],
-    },
+    # {
+    #     "lib": "MSL_C",
+    #     "mw_version": "GC/1.3.2",
+    #     "cflags": cflags_runtime,
+    #     "host": False,
+    #     "objects": [
+    #         Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/abort_exit.c"),
+    #         Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/ansi_files.c"),
+    #         Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Src/ansi_fp.c", extra_cflags=["-inline noauto"]),
+    #         Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/buffer_io.c"),
+    #         Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/critical_regions.ppc_eabi.c"),
+    #         Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/ctype.c"),
+    #         Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/direct_io.c"),
+    #         Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/errno.c"),
+    #         Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/mbstring.c", extra_cflags=["-inline noauto"]),
+    #         Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/mem.c"),
+    #         Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/mem_funcs.c"),
+    #         Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/misc_io.c"),
+    #         Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/printf.c"),
+    #         Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/scanf.c"),
+    #         Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/string.c"),
+    #         Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/strtoul.c"),
+    #         Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Src/uart_console_io.c"),
+    #         Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/float.c"),
+    #         Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/wchar_io.c"),
+    #         Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/e_asin.c"),
+    #         Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/e_pow.c"),
+    #         Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/fminmaxdim.c"),
+    #         Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/s_ceil.c"),
+    #         Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/s_copysign.c"),
+    #         Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/s_floor.c"),
+    #         Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/s_frexp.c"),
+    #         Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/s_ldexp.c"),
+    #         Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/w_pow.c"),
+    #         Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/hyperbolicsf.c"),
+    #         Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/log10f.c"),
+    #         Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/trigf.c"),
+    #         Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/math_inlines.c"),
+    #         Object(NonMatching, "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/common_float_tables.c"),
+    #     ],
+    # },
     {
         "lib": "amcstubs",
         "mw_version": "GC/1.3.2",
