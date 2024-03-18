@@ -272,11 +272,14 @@ config.libs = [
         [
             Object(NonMatching, "Fire/simGCN.c"),
             Object(Matching, "Fire/movie.c"),
+
+            # BUG: these files should be in the THP lib
             Object(NonMatching, "Fire/THPPlayer.c"),
             Object(NonMatching, "Fire/THPAudioDecode.c"),
             Object(NonMatching, "Fire/THPDraw.c"),
             Object(NonMatching, "Fire/THPRead.c"),
             Object(NonMatching, "Fire/THPVideoDecode.c"),
+
             Object(NonMatching, "Fire/mcardGCN.c"),
             Object(Matching, "Fire/codeGCN.c"),
             Object(NonMatching, "Fire/soundGCN.c"),
@@ -416,6 +419,60 @@ config.libs = [
             Object(NonMatching, "dolphin/demo/DEMOFont.c"),
             Object(NonMatching, "dolphin/demo/DEMOPad.c"),
             Object(NonMatching, "dolphin/demo/DEMOStats.c"),
+        ],
+    ),
+    DolphinLib(
+        "ai",
+        [
+            Object(NonMatching, "dolphin/ai/ai.c"),
+        ],
+    ),
+    DolphinLib(
+        "ar",
+        [
+            Object(NonMatching, "dolphin/ar/ar.c"),
+        ],
+    ),
+    DolphinLib(
+        "dsp",
+        [
+            Object(NonMatching, "dolphin/dsp/dsp.c"),
+            Object(NonMatching, "dolphin/dsp/dsp_debug.c"),
+            Object(NonMatching, "dolphin/dsp/dsp_task.c"),
+        ],
+    ),
+    DolphinLib(
+        "card",
+        [
+            Object(NonMatching, "dolphin/card/CARDBios.c"),
+            Object(NonMatching, "dolphin/card/CARDUnlock.c"),
+            Object(NonMatching, "dolphin/card/CARDRdwr.c"),
+            Object(NonMatching, "dolphin/card/CARDBlock.c"),
+            Object(NonMatching, "dolphin/card/CARDDir.c"),
+            Object(NonMatching, "dolphin/card/CARDCheck.c"),
+            Object(NonMatching, "dolphin/card/CARDMount.c"),
+            Object(NonMatching, "dolphin/card/CARDFormat.c"),
+            Object(NonMatching, "dolphin/card/CARDOpen.c"),
+            Object(NonMatching, "dolphin/card/CARDCreate.c"),
+            Object(NonMatching, "dolphin/card/CARDRead.c"),
+            Object(NonMatching, "dolphin/card/CARDWrite.c"),
+            Object(NonMatching, "dolphin/card/CARDDelete.c"),
+            Object(NonMatching, "dolphin/card/CARDStat.c"),
+            Object(NonMatching, "dolphin/card/CARDRename.c"),
+            Object(NonMatching, "dolphin/card/CARDNet.c"),
+        ],
+    ),
+    DolphinLib(
+        "thp",
+        [
+            Object(NonMatching, "dolphin/thp/THPDec.c"),
+            Object(NonMatching, "dolphin/thp/THPAudio.c"),
+        ],
+    ),
+    DolphinLib(
+        "dolphin",
+        [
+            Object(NonMatching, "dolphin/texPalette.c"),
         ],
     ),
     # {

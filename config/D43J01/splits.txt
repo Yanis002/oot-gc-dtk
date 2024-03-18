@@ -477,7 +477,7 @@ dolphin/dvd/fstload.c:
 dolphin/demo/DEMOInit.c:
 	.text       start:0x800B4B28 end:0x800B564C
 	.data       start:0x800F3A00 end:0x800F3B80
-	.bss        start:0x80188968 end:0x801889A8
+	.bss        start:0x80188968 end:0x801889A8 align:4
 	.sdata      start:0x8018B7A8 end:0x8018B7B0
 	.sbss       start:0x8018BCB0 end:0x8018BCD8
 	.sdata2     start:0x8018C408 end:0x8018C418
@@ -490,12 +490,12 @@ dolphin/demo/DEMOPuts.c:
 
 dolphin/demo/DEMOFont.c:
 	.text       start:0x800B5B84 end:0x800B5C48
-	.data       start:0x800F3B80 end:0x800F4780
+	.data       start:0x800F3B80 end:0x800F4780 align:32
 
 dolphin/demo/DEMOPad.c:
 	.text       start:0x800B5C48 end:0x800B5F80
 	.data       start:0x800F4780 end:0x800F4790
-	.bss        start:0x801889C8 end:0x80188A70
+	.bss        start:0x801889C8 end:0x80188A70 align:4
 	.sbss       start:0x8018BCE0 end:0x8018BCE8
 
 dolphin/demo/DEMOStats.c:
@@ -504,6 +504,100 @@ dolphin/demo/DEMOStats.c:
 	.sdata      start:0x8018B7B0 end:0x8018B7B8
 	.sbss       start:0x8018BCE8 end:0x8018BD50
 	.sdata2     start:0x8018C438 end:0x8018C448
+
+dolphin/ai/ai.c:
+	.text       start:0x800B6CD8 end:0x800B75F8
+	.data       start:0x800F48E8 end:0x800F4930
+	.sdata      start:0x8018B7B8 end:0x8018B7C0
+	.sbss       start:0x8018BD50 end:0x8018BD90
+
+dolphin/ar/ar.c:
+	.text       start:0x800B75F8 end:0x800B905C
+	.data       start:0x800F4930 end:0x800F4978
+	.sdata      start:0x8018B7C0 end:0x8018B7C8
+	.sbss       start:0x8018BD90 end:0x8018BDB0
+
+dolphin/dsp/dsp.c:
+	.text       start:0x800B905C end:0x800B91DC
+	.data       start:0x800F4978 end:0x800F49F8
+	.sdata      start:0x8018B7C8 end:0x8018B7D0
+	.sbss       start:0x8018BDB0 end:0x8018BDB8
+
+dolphin/dsp/dsp_debug.c:
+	.text       start:0x800B91DC end:0x800B922C
+
+dolphin/dsp/dsp_task.c:
+	.text       start:0x800B922C end:0x800B9AB0
+	.data       start:0x800F49F8 end:0x800F4B38
+	.sbss       start:0x8018BDB8 end:0x8018BDD0
+
+dolphin/card/CARDBios.c:
+	.text       start:0x800B9AB0 end:0x800BAD94
+	.data       start:0x800F4B38 end:0x800F4BA0
+	.bss        start:0x80188A70 end:0x80188CC0
+	.sdata      start:0x8018B7D0 end:0x8018B7D8
+	.sbss       start:0x8018BDD0 end:0x8018BDE0
+
+dolphin/card/CARDUnlock.c:
+	.text       start:0x800BAD94 end:0x800BBFF4
+	.data       start:0x800F4BA0 end:0x800F4D00
+	.sdata      start:0x8018B7D8 end:0x8018B7E0
+
+dolphin/card/CARDNet.c:
+	.sdata      start:0x8018B7E0 end:0x8018B7E8
+
+dolphin/card/CARDRdwr.c:
+	.text       start:0x800BBFF4 end:0x800BC28C
+
+dolphin/card/CARDBlock.c:
+	.text       start:0x800BC28C end:0x800BC690
+
+dolphin/card/CARDDir.c:
+	.text       start:0x800BC690 end:0x800BC8F4
+
+dolphin/card/CARDCheck.c:
+	.text       start:0x800BC8F4 end:0x800BD85C
+
+dolphin/card/CARDMount.c:
+	.text       start:0x800BD85C end:0x800BE31C
+	.data       start:0x800F4D00 end:0x800F4D40
+
+dolphin/card/CARDFormat.c:
+	.text       start:0x800BE31C end:0x800BEB00
+
+dolphin/card/CARDOpen.c:
+	.text       start:0x800BEB00 end:0x800BEF54
+
+dolphin/card/CARDCreate.c:
+	.text       start:0x800BEF54 end:0x800BF2A4
+
+dolphin/card/CARDRead.c:
+	.text       start:0x800BF2A4 end:0x800BF71C
+
+dolphin/card/CARDWrite.c:
+	.text       start:0x800BF71C end:0x800BFA50
+
+dolphin/card/CARDDelete.c:
+	.text       start:0x800BFA50 end:0x800BFC04
+
+dolphin/card/CARDStat.c:
+	.text       start:0x800BFC04 end:0x800C009C
+
+dolphin/thp/THPDec.c:
+	.text       start:0x800C009C end:0x800C7604
+	.rodata     start:0x800D1DF0 end:0x800D1E80
+	.data       start:0x800F4D40 end:0x800F4D80
+	.bss        start:0x80188CC0 end:0x80188DF0
+	.sdata      start:0x8018B7E8 end:0x8018B7F0
+	.sbss       start:0x8018BDE0 end:0x8018BEF8 align:32
+	.sdata2     start:0x8018C448 end:0x8018C468
+
+dolphin/thp/THPAudio.c:
+	.text       start:0x800C7604 end:0x800C7B34
+
+dolphin/texPalette.c:
+	.text       start:0x800C7B34 end:0x800C7C18
+	.sdata2     start:0x8018C468 end:0x8018C470
 
 PowerPC_EABI_Support/Runtime/Src/__va_arg.c:
 	.text       start:0x800CC370 end:0x800CC464
