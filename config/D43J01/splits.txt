@@ -412,11 +412,11 @@ dolphin/gx/GXTev.c:
 dolphin/gx/GXPixel.c:
 	.text       start:0x800ACC34 end:0x800AD3D4
 	.data       start:0x800F34A0 end:0x800F34C0
-	.sdata2     start:0x8018C3A0 end:0x8018C3D0
+	.sdata2     start:0x8018C3A0 end:0x8018C3F8
 
 dolphin/gx/GXTransform.c:
 	.text       start:0x800AD3D4 end:0x800AD9C0
-	.sdata2     start:0x8018C3D0 end:0x8018C3F8
+	.sdata2     start:0x8018C3F8 end:0x8018C408
 
 dolphin/gx/GXPerf.c:
 	.text       start:0x800AD9C0 end:0x800AE9F8
@@ -473,6 +473,37 @@ dolphin/dvd/fstload.c:
 	.bss        start:0x801888F8 end:0x80188968 align:4
 	.sdata      start:0x8018B798 end:0x8018B7A8
 	.sbss       start:0x8018BCA0 end:0x8018BCB0
+
+dolphin/demo/DEMOInit.c:
+	.text       start:0x800B4B28 end:0x800B564C
+	.data       start:0x800F3A00 end:0x800F3B80
+	.bss        start:0x80188968 end:0x801889A8
+	.sdata      start:0x8018B7A8 end:0x8018B7B0
+	.sbss       start:0x8018BCB0 end:0x8018BCD8
+	.sdata2     start:0x8018C408 end:0x8018C418
+
+dolphin/demo/DEMOPuts.c:
+	.text       start:0x800B564C end:0x800B5B84
+	.bss        start:0x801889A8 end:0x801889C8
+	.sbss       start:0x8018BCD8 end:0x8018BCE0
+	.sdata2     start:0x8018C418 end:0x8018C438
+
+dolphin/demo/DEMOFont.c:
+	.text       start:0x800B5B84 end:0x800B5C48
+	.data       start:0x800F3B80 end:0x800F4780
+
+dolphin/demo/DEMOPad.c:
+	.text       start:0x800B5C48 end:0x800B5F80
+	.data       start:0x800F4780 end:0x800F4790
+	.bss        start:0x801889C8 end:0x80188A70
+	.sbss       start:0x8018BCE0 end:0x8018BCE8
+
+dolphin/demo/DEMOStats.c:
+	.text       start:0x800B5F80 end:0x800B6CD8
+	.data       start:0x800F4790 end:0x800F48E8
+	.sdata      start:0x8018B7B0 end:0x8018B7B8
+	.sbss       start:0x8018BCE8 end:0x8018BD50
+	.sdata2     start:0x8018C438 end:0x8018C448
 
 PowerPC_EABI_Support/Runtime/Src/__va_arg.c:
 	.text       start:0x800CC370 end:0x800CC464

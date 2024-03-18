@@ -28,8 +28,12 @@ from tools.project import (
 # Game versions
 DEFAULT_VERSION = 0
 VERSIONS = [
-    "D43J01",  # 0
-    "PZLJ01",  # 1
+    "D43J01",  # 0, OoT MQ-JP (Master Quest)
+    # "D43E01",  # 1, OoT MQ-US (Master Quest)
+    # "D43P01",  # 2, OoT MQ-EU (Master Quest)
+    # "PZLJ01",  # 3, Zelda: CE-JP (Collector's Edition)
+    # "PZLE01",  # 4, Zelda: CE-US (Collector's Edition)
+    # "PZLP01",  # 5, Zelda: CE-EU (Collector's Edition)
 ]
 
 parser = argparse.ArgumentParser()
@@ -402,6 +406,16 @@ config.libs = [
             Object(NonMatching, "dolphin/dvd/dvdidutils.c"),
             Object(NonMatching, "dolphin/dvd/dvdFatal.c"),
             Object(NonMatching, "dolphin/dvd/fstload.c"),
+        ],
+    ),
+    DolphinLib(
+        "demo",
+        [
+            Object(NonMatching, "dolphin/demo/DEMOInit.c"),
+            Object(NonMatching, "dolphin/demo/DEMOPuts.c"),
+            Object(NonMatching, "dolphin/demo/DEMOFont.c"),
+            Object(NonMatching, "dolphin/demo/DEMOPad.c"),
+            Object(NonMatching, "dolphin/demo/DEMOStats.c"),
         ],
     ),
     # {
