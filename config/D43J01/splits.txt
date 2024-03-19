@@ -1,14 +1,14 @@
 Sections:
-	.init       type:code
-	.text       type:code
-	.ctors      type:rodata
-	.dtors      type:rodata
-	.rodata     type:rodata
-	.data       type:data
-	.bss        type:bss
-	.sdata      type:data
-	.sbss       type:bss
-	.sdata2     type:rodata
+	.init       type:code align:4
+	.text       type:code align:4
+	.ctors      type:rodata align:4
+	.dtors      type:rodata align:4
+	.rodata     type:rodata align:8
+	.data       type:data align:32
+	.bss        type:bss align:32
+	.sdata      type:data align:8
+	.sbss       type:bss align:32
+	.sdata2     type:rodata align:8
 
 dolphin/os/__start.c:
 	.init       start:0x80003100 end:0x80003354
@@ -31,7 +31,7 @@ Core/xlFileGCN.c:
 
 Core/xlList.c:
 	.text       start:0x800061E0 end:0x800065A8
-	.bss        start:0x800F5300 end:0x800F5310 align:32
+	.bss        start:0x800F5300 end:0x800F5310
 
 Core/xlHeap.c:
 	.text       start:0x800065A8 end:0x80007B20
@@ -45,8 +45,8 @@ Core/xlObject.c:
 Fire/simGCN.c:
 	.text       start:0x80007EE0 end:0x8000F5A8
 	.rodata     start:0x800D1BC0 end:0x800D1D10
-	.data       start:0x800DA3E0 end:0x800EB680 align:32
-	.bss        start:0x800F58A0 end:0x800F5A40 align:32
+	.data       start:0x800DA3E0 end:0x800EB680
+	.bss        start:0x800F58A0 end:0x800F5A40
 	.sdata      start:0x8018AF88 end:0x8018B050
 	.sbss       start:0x8018B870 end:0x8018B8A0
 	.sdata2     start:0x8018BF58 end:0x8018BFB0
@@ -104,7 +104,7 @@ Fire/codeGCN.c:
 Fire/soundGCN.c:
 	.text       start:0x8001C250 end:0x8001D0FC
 	.data       start:0x800EBC90 end:0x800EBCF0
-	.bss        start:0x801094E0 end:0x80109900 align:32
+	.bss        start:0x801094E0 end:0x80109900
 	.sdata      start:0x8018B068 end:0x8018B078
 	.sdata2     start:0x8018C018 end:0x8018C040
 
@@ -112,7 +112,7 @@ Fire/frame.c:
 	.text       start:0x8001D0FC end:0x8002C67C
 	.rodata     start:0x800D1DA0 end:0x800D1DE0
 	.data       start:0x800EBCF0 end:0x800EC7B8
-	.bss        start:0x80109900 end:0x80131C40 align:32
+	.bss        start:0x80109900 end:0x80131C40
 	.sdata      start:0x8018B078 end:0x8018B100
 	.sbss       start:0x8018B918 end:0x8018B968
 	.sdata2     start:0x8018C040 end:0x8018C1D0
@@ -232,7 +232,7 @@ dolphin/base/PPCArch.c:
 dolphin/os/OS.c:
 	.text       start:0x8009B368 end:0x8009BCB0
 	.data       start:0x800F1AE8 end:0x800F1CF0
-	.bss        start:0x80187280 end:0x801872D0 align:32
+	.bss        start:0x80187280 end:0x801872D0
 	.sdata      start:0x8018B6A0 end:0x8018B6A8
 	.sbss       start:0x8018BA40 end:0x8018BA70
 
@@ -266,7 +266,7 @@ dolphin/os/OSContext.c:
 dolphin/os/OSError.c:
 	.text       start:0x8009DBC4 end:0x8009E1F0
 	.data       start:0x800F2510 end:0x800F2830
-	.bss        start:0x801872D0 end:0x80187320 align:4
+	.bss        start:0x801872D0 end:0x80187320
 	.sdata      start:0x8018B6B8 end:0x8018B6C0
 
 dolphin/os/OSFont.c:
@@ -293,7 +293,7 @@ dolphin/os/OSMutex.c:
 
 dolphin/os/OSReboot.c:
 	.text       start:0x8009F020 end:0x8009F204
-	.bss        start:0x80187320 end:0x80187340 align:32
+	.bss        start:0x80187320 end:0x80187340
 	.sbss       start:0x8018BAA8 end:0x8018BAB8
 
 dolphin/os/OSReset.c:
@@ -328,7 +328,7 @@ dolphin/os/__ppc_eabi_init.cpp:
 dolphin/exi/EXIBios.c:
 	.text       start:0x800A1998 end:0x800A3274
 	.data       start:0x800F28D0 end:0x800F29A0
-	.bss        start:0x80187D90 end:0x80187E50 align:4
+	.bss        start:0x80187D90 end:0x80187E50
 	.sdata      start:0x8018B6D0 end:0x8018B6D8
 
 dolphin/exi/EXIUart.c:
@@ -338,7 +338,7 @@ dolphin/exi/EXIUart.c:
 dolphin/si/SIBios.c:
 	.text       start:0x800A34EC end:0x800A4BDC
 	.data       start:0x800F29A0 end:0x800F2AB8
-	.bss        start:0x80187E50 end:0x80188050 align:4
+	.bss        start:0x80187E50 end:0x80188050
 	.sdata      start:0x8018B6D8 end:0x8018B6E0
 	.sbss       start:0x8018BB00 end:0x8018BB10
 
@@ -350,7 +350,7 @@ dolphin/si/SISamplingRate.c:
 dolphin/vi/vi.c:
 	.text       start:0x800A4CE4 end:0x800A67C0
 	.data       start:0x800F2B50 end:0x800F2F20
-	.bss        start:0x80188050 end:0x80188198 align:4
+	.bss        start:0x80188050 end:0x80188198
 	.sdata      start:0x8018B6E0 end:0x8018B6F0
 	.sbss       start:0x8018BB18 end:0x8018BB70
 
@@ -374,7 +374,7 @@ dolphin/mtx/mtx44.c:
 dolphin/gx/GXInit.c:
 	.text       start:0x800A6D64 end:0x800A7F34
 	.data       start:0x800F2F38 end:0x800F3068
-	.bss        start:0x80188198 end:0x80188710 align:4
+	.bss        start:0x80188198 end:0x80188710
 	.sdata      start:0x8018B6F8 end:0x8018B700
 	.sbss       start:0x8018BB78 end:0x8018BB88
 	.sdata2     start:0x8018C340 end:0x8018C368
@@ -436,7 +436,7 @@ dolphin/pad/Padclamp.c:
 dolphin/pad/Pad.c:
 	.text       start:0x800AEC3C end:0x800B070C
 	.data       start:0x800F3608 end:0x800F3660
-	.bss        start:0x80188710 end:0x80188760 align:4
+	.bss        start:0x80188710 end:0x80188760
 	.sdata      start:0x8018B750 end:0x8018B770
 	.sbss       start:0x8018BBC0 end:0x8018BBE8
 
@@ -455,13 +455,13 @@ dolphin/dvd/dvdfs.c:
 dolphin/dvd/dvd.c:
 	.text       start:0x800B1DB4 end:0x800B4430
 	.data       start:0x800F37C8 end:0x800F3948
-	.bss        start:0x80188840 end:0x801888D8 align:32
+	.bss        start:0x80188840 end:0x801888D8
 	.sdata      start:0x8018B780 end:0x8018B798
 	.sbss       start:0x8018BC50 end:0x8018BC98
 
 dolphin/dvd/dvdqueue.c:
 	.text       start:0x800B4430 end:0x800B4628
-	.bss        start:0x801888D8 end:0x801888F8 align:4
+	.bss        start:0x801888D8 end:0x801888F8
 
 dolphin/dvd/dvderror.c:
 	.text       start:0x800B4628 end:0x800B47C0
@@ -477,14 +477,14 @@ dolphin/dvd/dvdFatal.c:
 dolphin/dvd/fstload.c:
 	.text       start:0x800B48E8 end:0x800B4B28
 	.data       start:0x800F3990 end:0x800F3A00
-	.bss        start:0x801888F8 end:0x80188968 align:4
+	.bss        start:0x801888F8 end:0x80188968
 	.sdata      start:0x8018B798 end:0x8018B7A8
 	.sbss       start:0x8018BCA0 end:0x8018BCB0
 
 dolphin/demo/DEMOInit.c:
 	.text       start:0x800B4B28 end:0x800B564C
 	.data       start:0x800F3A00 end:0x800F3B80
-	.bss        start:0x80188968 end:0x801889A8 align:4
+	.bss        start:0x80188968 end:0x801889A8
 	.sdata      start:0x8018B7A8 end:0x8018B7B0
 	.sbss       start:0x8018BCB0 end:0x8018BCD8
 	.sdata2     start:0x8018C408 end:0x8018C418
@@ -497,12 +497,12 @@ dolphin/demo/DEMOPuts.c:
 
 dolphin/demo/DEMOFont.c:
 	.text       start:0x800B5B84 end:0x800B5C48
-	.data       start:0x800F3B80 end:0x800F4780 align:32
+	.data       start:0x800F3B80 end:0x800F4780
 
 dolphin/demo/DEMOPad.c:
 	.text       start:0x800B5C48 end:0x800B5F80
 	.data       start:0x800F4780 end:0x800F4790
-	.bss        start:0x801889C8 end:0x80188A70 align:4
+	.bss        start:0x801889C8 end:0x80188A70
 	.sbss       start:0x8018BCE0 end:0x8018BCE8
 
 dolphin/demo/DEMOStats.c:
@@ -596,7 +596,7 @@ dolphin/thp/THPDec.c:
 	.data       start:0x800F4D40 end:0x800F4D80
 	.bss        start:0x80188CC0 end:0x80188DF0
 	.sdata      start:0x8018B7E8 end:0x8018B7F0
-	.sbss       start:0x8018BDE0 end:0x8018BEF8 align:32
+	.sbss       start:0x8018BDE0 end:0x8018BEF8
 	.sdata2     start:0x8018C448 end:0x8018C468
 
 dolphin/thp/THPAudio.c:
@@ -616,7 +616,7 @@ TRK_MINNOW_DOLPHIN/Portable/nubevent.c:
 TRK_MINNOW_DOLPHIN/Portable/nubinit.c:
 	.text       start:0x800C7FDC end:0x800C8170
 	.rodata     start:0x800D1E80 end:0x800D1EA0
-	.bss        start:0x80188E18 end:0x80188E1C align:4
+	.bss        start:0x80188E18 end:0x80188E1C
 
 TRK_MINNOW_DOLPHIN/Portable/msg.c:
 	.text       start:0x800C8170 end:0x800C8198
@@ -635,7 +635,7 @@ TRK_MINNOW_DOLPHIN/Portable/usr_put.c:
 TRK_MINNOW_DOLPHIN/Portable/dispatch.c:
 	.text       start:0x800C8BAC end:0x800C8C44
 	.data       start:0x800F4D80 end:0x800F4E08
-	.bss        start:0x8018A7E8 end:0x8018A7EC align:4
+	.bss        start:0x8018A7E8 end:0x8018A7EC
 
 TRK_MINNOW_DOLPHIN/Portable/msghndlr.c:
 	.text       start:0x800C8C44 end:0x800C9EB0
@@ -674,7 +674,7 @@ TRK_MINNOW_DOLPHIN/ppc/Generic/mpc_7xx_603e.c:
 
 TRK_MINNOW_DOLPHIN/Portable/main_TRK.c:
 	.text       start:0x800CBF94 end:0x800CBFE4
-	.bss        start:0x8018AD70 end:0x8018AD74 align:4
+	.bss        start:0x8018AD70 end:0x8018AD74
 
 TRK_MINNOW_DOLPHIN/Os/dolphin/dolphin_trk_glue.c:
 	.text       start:0x800CBFE4 end:0x800CC33C
