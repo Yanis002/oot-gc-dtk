@@ -10,39 +10,36 @@ Sections:
 	.sbss       type:bss align:32
 	.sdata2     type:rodata align:8
 
-dolphin/os/__start.c:
-	.init       start:0x80003100 end:0x80003354
-
-Core/xlCoreGCN.c:
+emulator/Core/xlCoreGCN.c:
 	.text       start:0x80005500 end:0x80005D64
 	.data       start:0x800D2300 end:0x800DA3C0
 	.bss        start:0x800F5240 end:0x800F5300
 	.sbss       start:0x8018B820 end:0x8018B840
 	.sdata2     start:0x8018BF40 end:0x8018BF58
 
-Core/xlPostGCN.c:
+emulator/Core/xlPostGCN.c:
 	.text       start:0x80005D64 end:0x80005DC8
 
-Core/xlFileGCN.c:
+emulator/Core/xlFileGCN.c:
 	.text       start:0x80005DC8 end:0x800061E0
 	.data       start:0x800DA3C0 end:0x800DA3E0
 	.sdata      start:0x8018AF80 end:0x8018AF88
 	.sbss       start:0x8018B840 end:0x8018B848
 
-Core/xlList.c:
+emulator/Core/xlList.c:
 	.text       start:0x800061E0 end:0x800065A8
 	.bss        start:0x800F5300 end:0x800F5310
 
-Core/xlHeap.c:
+emulator/Core/xlHeap.c:
 	.text       start:0x800065A8 end:0x80007B20
 	.bss        start:0x800F5310 end:0x800F58A0
 	.sbss       start:0x8018B848 end:0x8018B868
 
-Core/xlObject.c:
+emulator/Core/xlObject.c:
 	.text       start:0x80007B20 end:0x80007EE0
 	.sbss       start:0x8018B868 end:0x8018B870
 
-Fire/simGCN.c:
+emulator/Fire/simGCN.c:
 	.text       start:0x80007EE0 end:0x8000F5A8
 	.rodata     start:0x800D1BC0 end:0x800D1D10
 	.data       start:0x800DA3E0 end:0x800EB680
@@ -51,12 +48,12 @@ Fire/simGCN.c:
 	.sbss       start:0x8018B870 end:0x8018B8A0
 	.sdata2     start:0x8018BF58 end:0x8018BFB0
 
-Fire/movie.c:
+emulator/Fire/movie.c:
 	.text       start:0x8000F5A8 end:0x8000F66C
 	.data       start:0x800EB680 end:0x800EB6A0
 	.sbss       start:0x8018B8A0 end:0x8018B8A8
 
-Fire/THPPlayer.c:
+emulator/Fire/THPPlayer.c:
 	.text       start:0x8000F66C end:0x80010B78
 	.data       start:0x800EB6A0 end:0x800EB940
 	.bss        start:0x800F5A40 end:0x800FB1B0
@@ -64,17 +61,17 @@ Fire/THPPlayer.c:
 	.sbss       start:0x8018B8A8 end:0x8018B8C8
 	.sdata2     start:0x8018BFB0 end:0x8018BFB8
 
-Fire/THPAudioDecode.c:
+emulator/Fire/THPAudioDecode.c:
 	.text       start:0x80010B78 end:0x80010F14
 	.data       start:0x800EB940 end:0x800EB968
 	.bss        start:0x800FB1B0 end:0x800FC520
 	.sbss       start:0x8018B8C8 end:0x8018B8D0
 
-Fire/THPDraw.c:
+emulator/Fire/THPDraw.c:
 	.text       start:0x80010F14 end:0x80011714
 	.sdata2     start:0x8018BFB8 end:0x8018BFE0
 
-Fire/THPRead.c:
+emulator/Fire/THPRead.c:
 	.text       start:0x80011714 end:0x80012CFC
 	.rodata     start:0x800D1D10 end:0x800D1DA0
 	.data       start:0x800EB968 end:0x800EB9D8
@@ -82,33 +79,33 @@ Fire/THPRead.c:
 	.sbss       start:0x8018B8D0 end:0x8018B8E8
 	.sdata2     start:0x8018BFE0 end:0x8018C018
 
-Fire/THPVideoDecode.c:
+emulator/Fire/THPVideoDecode.c:
 	.text       start:0x80012CFC end:0x8001321C
 	.data       start:0x800EB9D8 end:0x800EBA00
 	.bss        start:0x800FD910 end:0x800FECC0
 	.sbss       start:0x8018B8E8 end:0x8018B8F0
 
-Fire/mcardGCN.c:
+emulator/Fire/mcardGCN.c:
 	.text       start:0x8001321C end:0x8001C1FC
 	.data       start:0x800EBA00 end:0x800EBC80
 	.bss        start:0x800FECC0 end:0x801094E0
 	.sdata      start:0x8018B058 end:0x8018B060
 	.sbss       start:0x8018B8F0 end:0x8018B910
 
-Fire/codeGCN.c:
+emulator/Fire/codeGCN.c:
 	.text       start:0x8001C1FC end:0x8001C250
 	.data       start:0x800EBC80 end:0x800EBC90
 	.sdata      start:0x8018B060 end:0x8018B068
 	.sbss       start:0x8018B910 end:0x8018B918
 
-Fire/soundGCN.c:
+emulator/Fire/soundGCN.c:
 	.text       start:0x8001C250 end:0x8001D0FC
 	.data       start:0x800EBC90 end:0x800EBCF0
 	.bss        start:0x801094E0 end:0x80109900
 	.sdata      start:0x8018B068 end:0x8018B078
 	.sdata2     start:0x8018C018 end:0x8018C040
 
-Fire/frame.c:
+emulator/Fire/frame.c:
 	.text       start:0x8001D0FC end:0x8002C67C
 	.rodata     start:0x800D1DA0 end:0x800D1DE0
 	.data       start:0x800EBCF0 end:0x800EC7B8
@@ -117,7 +114,7 @@ Fire/frame.c:
 	.sbss       start:0x8018B918 end:0x8018B968
 	.sdata2     start:0x8018C040 end:0x8018C1D0
 
-Fire/system.c:
+emulator/Fire/system.c:
 	.text       start:0x8002C67C end:0x80030724
 	.data       start:0x800EC7B8 end:0x800ECB20
 	.bss        start:0x80131C40 end:0x80131DB8
@@ -125,7 +122,7 @@ Fire/system.c:
 	.sbss       start:0x8018B968 end:0x8018B970
 	.sdata2     start:0x8018C1D0 end:0x8018C1E0
 
-Fire/cpu.c:
+emulator/Fire/cpu.c:
 	.text       start:0x80030724 end:0x8006B6F0
 	.data       start:0x800ECB20 end:0x800EEB80
 	.bss        start:0x80131DB8 end:0x80186FB0
@@ -133,98 +130,101 @@ Fire/cpu.c:
 	.sbss       start:0x8018B970 end:0x8018B9F0
 	.sdata2     start:0x8018C1E0 end:0x8018C210
 
-Fire/pif.c:
+emulator/Fire/pif.c:
 	.text       start:0x8006B6F0 end:0x8006C614
 	.data       start:0x800EEB80 end:0x800EEB90
 	.sdata      start:0x8018B500 end:0x8018B508
 
-Fire/ram.c:
+emulator/Fire/ram.c:
 	.text       start:0x8006C614 end:0x8006CC1C
 	.data       start:0x800EEB90 end:0x800EEDB0
 	.sdata      start:0x8018B508 end:0x8018B510
 
-Fire/rom.c:
+emulator/Fire/rom.c:
 	.text       start:0x8006CC1C end:0x8006F6D0
 	.data       start:0x800EEDB0 end:0x800EF400
 	.sdata      start:0x8018B510 end:0x8018B540
 	.sbss       start:0x8018B9F0 end:0x8018BA00
 	.sdata2     start:0x8018C210 end:0x8018C248
 
-Fire/rdp.c:
+emulator/Fire/rdp.c:
 	.text       start:0x8006F6D0 end:0x80070DD4
 	.data       start:0x800EF400 end:0x800EF670
 	.sdata      start:0x8018B540 end:0x8018B548
 	.sbss       start:0x8018BA00 end:0x8018BA18
 	.sdata2     start:0x8018C248 end:0x8018C278
 
-Fire/rdb.c:
+emulator/Fire/rdb.c:
 	.text       start:0x80070DD4 end:0x800713B0
 	.data       start:0x800EF670 end:0x800EF6E0
 	.sdata      start:0x8018B548 end:0x8018B550
 
-Fire/rsp.c:
+emulator/Fire/rsp.c:
 	.text       start:0x800713B0 end:0x8008CA14
 	.data       start:0x800EF6E0 end:0x800EFB90
 	.sdata      start:0x8018B550 end:0x8018B578
 	.sbss       start:0x8018BA18 end:0x8018BA40
 	.sdata2     start:0x8018C278 end:0x8018C2B8
 
-Fire/mips.c:
+emulator/Fire/mips.c:
 	.text       start:0x8008CA14 end:0x8008CF48
 	.data       start:0x800EFB90 end:0x800EFC08
 	.sdata      start:0x8018B578 end:0x8018B580
 
-Fire/disk.c:
+emulator/Fire/disk.c:
 	.text       start:0x8008CF48 end:0x8008D1D0
 	.data       start:0x800EFC08 end:0x800EFC18
 	.sdata      start:0x8018B580 end:0x8018B588
 
-Fire/flash.c:
+emulator/Fire/flash.c:
 	.text       start:0x8008D1D0 end:0x8008D8E0
 	.data       start:0x800EFC18 end:0x800EFC28
 	.sdata      start:0x8018B588 end:0x8018B590
 
-Fire/sram.c:
+emulator/Fire/sram.c:
 	.text       start:0x8008D8E0 end:0x8008DC44
 	.data       start:0x800EFC28 end:0x800EFC38
 	.sdata      start:0x8018B590 end:0x8018B598
 
-Fire/audio.c:
+emulator/Fire/audio.c:
 	.text       start:0x8008DC44 end:0x8008DFD8
 	.data       start:0x800EFC38 end:0x800EFD30
 	.sdata      start:0x8018B598 end:0x8018B5A8
 
-Fire/video.c:
+emulator/Fire/video.c:
 	.text       start:0x8008DFD8 end:0x8008E54C
 	.data       start:0x800EFD30 end:0x800EFEE8
 	.sdata      start:0x8018B5A8 end:0x8018B5B0
 
-Fire/serial.c:
+emulator/Fire/serial.c:
 	.text       start:0x8008E54C end:0x8008E814
 	.data       start:0x800EFEE8 end:0x800EFFC0
 	.sdata      start:0x8018B5B0 end:0x8018B5B8
 
-Fire/library.c:
+emulator/Fire/library.c:
 	.text       start:0x8008E814 end:0x80096F70
 	.data       start:0x800EFFC0 end:0x800F1470
 	.sdata      start:0x8018B5B8 end:0x8018B600
 	.sdata2     start:0x8018C2B8 end:0x8018C318
 
-Fire/peripheral.c:
+emulator/Fire/peripheral.c:
 	.text       start:0x80096F70 end:0x80097564
 	.data       start:0x800F1470 end:0x800F1618
 
-Fire/_frameGCNcc.c:
+emulator/Fire/_frameGCNcc.c:
 	.text       start:0x80097564 end:0x80097E6C
 	.data       start:0x800F1618 end:0x800F1910
 	.sdata      start:0x8018B600 end:0x8018B690
 
-Fire/_buildtev.c:
+emulator/Fire/_buildtev.c:
 	.text       start:0x80097E6C end:0x8009B284
 	.data       start:0x800F1910 end:0x800F1AE8
 	.bss        start:0x80186FB0 end:0x80187280
 	.sdata      start:0x8018B690 end:0x8018B6A0
 	.sdata2     start:0x8018C318 end:0x8018C320
+
+dolphin/os/__start.c:
+	.init       start:0x80003100 end:0x80003354
 
 dolphin/base/PPCArch.c:
 	.text       start:0x8009B284 end:0x8009B368
@@ -606,6 +606,12 @@ dolphin/texPalette.c:
 	.text       start:0x800C7B34 end:0x800C7C18
 	.sdata2     start:0x8018C468 end:0x8018C470
 
+TRK_MINNOW_DOLPHIN/Portable/mem_TRK.c:
+	.init       start:0x800033A8 end:0x800033CC
+
+TRK_MINNOW_DOLPHIN/ppc/Generic/__exception.c:
+	.init       start:0x800033CC end:0x80005300
+
 TRK_MINNOW_DOLPHIN/Portable/mainloop.c:
 	.text       start:0x800C7C18 end:0x800C7D80
 
@@ -658,12 +664,6 @@ TRK_MINNOW_DOLPHIN/ppc/Generic/targimpl.c:
 	.data       start:0x800F4E08 end:0x800F4E38
 	.bss        start:0x8018A7F0 end:0x8018AD70
 
-TRK_MINNOW_DOLPHIN/Portable/mem_TRK.c:
-	.init       start:0x800033A8 end:0x800033CC
-
-TRK_MINNOW_DOLPHIN/ppc/Generic/__exception.c:
-	.init       start:0x800033CC end:0x80005300
-
 TRK_MINNOW_DOLPHIN/Os/dolphin/dolphin_trk.c:
 	.init       start:0x80005300 end:0x80005320
 	.text       start:0x800CBA30 end:0x800CBC24
@@ -680,9 +680,6 @@ TRK_MINNOW_DOLPHIN/Os/dolphin/dolphin_trk_glue.c:
 	.text       start:0x800CBFE4 end:0x800CC33C
 	.data       start:0x800F4E78 end:0x800F4E94
 
-PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Src/ansi_files.c:
-	.data       start:0x800F4E98 end:0x800F4F70
-
 TRK_MINNOW_DOLPHIN/Os/dolphin/targcont.c:
 	.text       start:0x800CC33C end:0x800CC370
 
@@ -696,6 +693,12 @@ PowerPC_EABI_Support/Runtime/Src/global_destructor_chain.c:
 PowerPC_EABI_Support/Runtime/Src/runtime.c:
 	.text       start:0x800CC4AC end:0x800CCBBC
 	.rodata     start:0x800D1EF0 end:0x800D1F08
+
+PowerPC_EABI_Support/Runtime/Src/__mem.c:
+	.init       start:0x80005320 end:0x80005464
+
+PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Src/ansi_files.c:
+	.data       start:0x800F4E98 end:0x800F4F70
 
 PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Src/abort_exit.c:
 	.text       start:0x800CCBBC end:0x800CCCC8
@@ -829,6 +832,3 @@ OdemuExi2/DebuggerDriver.c:
 
 odenotstub/odenotstub.c:
 	.text       start:0x800D1B5C end:0x800D1B64
-
-PowerPC_EABI_Support/Runtime/Src/__mem.c:
-	.init       start:0x80005320 end:0x80005464
