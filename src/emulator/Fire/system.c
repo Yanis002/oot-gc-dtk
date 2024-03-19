@@ -140,9 +140,13 @@ u32 gnFlagZelda;
 #if VERSION == 0 // D43J01
 // "ゼルダの伝説　時のオカリナＧＣ"
 #define ZELDA_GC_JP "\x83\x5B\x83\x8B\x83\x5F\x82\xCC\x93\x60\x90\xE0\x81\x40\x8E\x9E\x82\xCC\x83\x49\x83\x4A\x83\x8A\x83\x69\x82\x66\x82\x62"
+#define MCARD_FILE_NAME "ZELDA"
+#define MCARD_FILE_SIZE 0x18000
 #else
 // "ゼルダコレクション"
 #define ZELDA_GC_JP "\x83\x5b\x83\x8b\x83\x5f\x83\x52\x83\x8c\x83\x4e\x83\x56\x83\x87\x83\x93"
+#define MCARD_FILE_NAME "ZELDA1"
+#define MCARD_FILE_SIZE 0xC000
 #endif
 
 static s32 systemSetupGameRAM(System* pSystem) {
@@ -595,15 +599,10 @@ s32 systemSetupGameALL(System* pSystem) {
 
                 DVDClose(&fileInfo);
                 simulatorUnpackTexPalette((__anon_0xDB69*)mCard.saveBanner);
-                #if VERSION == 0 // D43J01
-                    mcardOpen(&mCard, "ZELDA", ZELDA_GC_JP,
-                            mCard.saveIcon, mCard.saveBanner, "ZELDAX",
-                            &gSystemRomConfigurationList[i].currentControllerConfig, 0x18000, 0x8000);
-                #else
-                    mcardOpen(&mCard, "ZELDA1", ZELDA_GC_JP,
-                            mCard.saveIcon, mCard.saveBanner, "ZELDAX",
-                            &gSystemRomConfigurationList[i].currentControllerConfig, 0xC000, 0x8000);
-                #endif
+                mcardOpen(&mCard, MCARD_FILE_NAME, ZELDA_GC_JP,
+                        mCard.saveIcon, mCard.saveBanner, "ZELDAX",
+                        &gSystemRomConfigurationList[i].currentControllerConfig, MCARD_FILE_SIZE, 0x8000);
+
             } else {
                 if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
                     !simulatorDVDRead(&fileInfo, mCard.saveIcon, (gz_iconSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
@@ -620,15 +619,9 @@ s32 systemSetupGameALL(System* pSystem) {
 
                 DVDClose(&fileInfo);
                 simulatorUnpackTexPalette((__anon_0xDB69*)mCard.saveBanner);
-                #if VERSION == 0 // D43J01
-                    mcardOpen(&mCard, "ZELDA", ZELDA_GC_JP,
-                            mCard.saveIcon, mCard.saveBanner, "ZELDA",
-                            &gSystemRomConfigurationList[i].currentControllerConfig, 0x18000, 0x8000);
-                #else
-                    mcardOpen(&mCard, "ZELDA1", ZELDA_GC_JP,
-                            mCard.saveIcon, mCard.saveBanner, "ZELDAX",
-                            &gSystemRomConfigurationList[i].currentControllerConfig, 0xC000, 0x8000);
-                #endif
+                mcardOpen(&mCard, MCARD_FILE_NAME, ZELDA_GC_JP,
+                        mCard.saveIcon, mCard.saveBanner, "ZELDA",
+                        &gSystemRomConfigurationList[i].currentControllerConfig, MCARD_FILE_SIZE, 0x8000);
             }
         } else {
             // debug rom?

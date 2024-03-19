@@ -31,7 +31,7 @@ VERSIONS = [
     "D43J01",  # 0, OoT MQ-JP (Master Quest)
     # "D43E01",  # 1, OoT MQ-US (Master Quest)
     # "D43P01",  # 2, OoT MQ-EU (Master Quest)
-    # "PZLJ01",  # 3, Zelda: CE-JP (Collector's Edition)
+    "PZLJ01",  # 3, Zelda: CE-JP (Collector's Edition)
     # "PZLE01",  # 4, Zelda: CE-US (Collector's Edition)
     # "PZLP01",  # 5, Zelda: CE-EU (Collector's Edition)
 ]
@@ -85,6 +85,7 @@ parser.add_argument(
     "--debug",
     action="store_true",
     help="build with debug info (non-matching)",
+    default=True,
 )
 if not is_windows():
     parser.add_argument(
@@ -347,7 +348,7 @@ config.libs = [
             Object(NonMatching, "dolphin/os/OSThread.c"),
             Object(NonMatching, "dolphin/os/OSTime.c"),
             Object(NonMatching, "dolphin/os/__start.c"),
-            Object(NonMatching, "dolphin/os/__ppc_eabi_init.cpp"),
+            Object(NonMatching, "dolphin/os/__ppc_eabi_init.c"),
         ],
     ),
     DolphinLib(
@@ -478,12 +479,7 @@ config.libs = [
         [
             Object(NonMatching, "dolphin/thp/THPDec.c"),
             Object(NonMatching, "dolphin/thp/THPAudio.c"),
-        ],
-    ),
-    DolphinLib(
-        "dolphin",
-        [
-            Object(NonMatching, "dolphin/texPalette.c"),
+            Object(NonMatching, "dolphin/thp/texPalette.c"),
         ],
     ),
     GenericLib(
