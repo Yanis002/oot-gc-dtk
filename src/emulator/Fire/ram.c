@@ -14,7 +14,7 @@ _XL_OBJECTTYPE gClassRAM = {
 static s32 ramPutControl8(Ram* pRAM, u32 nAddress, s8* pData) { return 0; }
 
 static s32 ramPutControl16(Ram* pRAM, u32 nAddress, s32* pData);
-#pragma GLOBAL_ASM("build/D43J01/asm/non_matchings/ram/ramPutControl16.s")
+#pragma GLOBAL_ASM("non_matchings/D43J01/ram/ramPutControl16.s")
 // static s32 ramPutControl16(Ram* pRAM, u32 nAddress, s32* pData) { return 0; }
 
 static s32 ramPutControl32(Ram* pRAM, u32 nAddress, s16* pData) {
