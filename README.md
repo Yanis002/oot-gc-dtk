@@ -1,13 +1,9 @@
-# [zeldaret/oot-gc](https://github.com/zeldaret/oot-gc) dtk example
-
-[![Build Status]][actions] ![Progress] ![DOL Progress] ![RELs Progress] [![Discord Badge]][discord]
+<!-- [![Build Status]][actions] ![Progress] ![DOL Progress] ![RELs Progress] [![Discord Badge]][discord] -->
+![Progress] ![DOL Progress] [![Discord Badge]][discord]
 =============
 
-<!--
-Replace with your repository's URL.
--->
-[Build Status]: https://github.com/yanis42/oot-gc-dtk/actions/workflows/build.yml/badge.svg
-[actions]: https://github.com/yanis42/oot-gc-dtk/actions/workflows/build.yml
+<!-- [Build Status]: https://github.com/yanis42/oot-gc-dtk/actions/workflows/build.yml/badge.svg
+[actions]: https://github.com/yanis42/oot-gc-dtk/actions/workflows/build.yml -->
 <!---
 Code progress URL:
 https://progress.decomp.club/data/[project]/[version]/all/?mode=shield&measure=code
@@ -24,7 +20,7 @@ URL encoded then appended to: https://img.shields.io/endpoint?label=DOL&url=
 Replace with your Discord server's ID and invite URL.
 -->
 [Discord Badge]: https://img.shields.io/discord/727908905392275526?color=%237289DA&logo=discord&logoColor=%23FFFFFF
-[discord]: https://discord.gg/hKx3FJJgrV
+[discord]: https://discord.zelda64.dev/
 
 A work-in-progress decompilation of the N64 emulator intended for use with the GameCube releases of The Legend of Zelda: Ocarina of Time.
 
@@ -32,7 +28,10 @@ This repository does **not** contain any game assets or assembly whatsoever. An 
 
 Supported versions:
 
-- `D43J01`: Rev ? (JP)
+- `D43J01`: Master Quest - JP
+- `PZLJ01`: Collector's Edition - JP
+
+The progress of this project will be synced with the main repo: [zeldaret/oot-gc](https://github.com/zeldaret/oot-gc).
 
 Dependencies
 ============
@@ -79,7 +78,9 @@ Linux
 Building
 ========
 
-- Extract ``zlj_f.tgc`` from the 'Zelda: Ocarina of Time Master Quest (JP)' disc. (Not provided with this project.)
+- Extract the TGC file containing the N64 emulator from the disc of the version you want:
+  * Master Quest: ``zlj_REGION.tgc``, ``REGION`` being ``j`` for Japan, ``e`` for North America or ``p`` for Europe.
+  * Collector's Edition: ``120903_zelda.tgc``
 
 - Clone the repository:
 
@@ -87,7 +88,7 @@ Building
   git clone https://github.com/yanis42/oot-gc-dtk.git
   ```
 
-- Using [Dolphin Emulator](https://dolphin-emu.org/), extract ``zlj_f.tgc`` to `orig/D43J01`.
+- Using [Dolphin Emulator](https://dolphin-emu.org), extract the content of the TGC file you extracted earlier to ``orig/[GAMEID]``.
 
 ![](assets/dolphin-extract.png)
 
@@ -99,7 +100,7 @@ Building
   python configure.py
   ```
 
-  To use a version other than `D43J01` (JP), specify it with `--version`.
+  To use a version other than `D43J01` (MQ-J), specify it with `--version` (example: ``python configure.py --version PZLJ01``).
 - Build:
 
   ```sh
