@@ -218,6 +218,8 @@ def generate_build_ninja(
     if not config.linker_version:
         sys.exit("ProjectConfig.linker_version missing")
     n.variable("mw_version", Path(config.linker_version))
+    n.variable("asm_proc_dir", Path("tools/asm_processor"))
+    n.variable("asm_proc", Path("$asm_proc_dir/compile.sh"))
     n.newline()
 
     ###
@@ -371,6 +373,10 @@ def generate_build_ninja(
     mwcc_sjis_cmd = f"{wrapper_cmd}{sjiswrap} {mwcc} $cflags -MMD -c $in -o $basedir"
     mwcc_sjis_implicit: List[Optional[Path]] = [*mwcc_implicit, sjiswrap]
 
+    # MWCC with asm processor
+    mwcc_asmproc_cmd = f'$asm_proc "{wrapper_cmd}{mwcc} $cflags" "{binutils / f"powerpc-eabi-as{EXE}"} -mgekko -I include" $out $in'
+    mwcc_asmproc_implicit: List[Optional[Path]] = [*mwcc_implicit, binutils_implicit]
+
     # MWLD
     mwld = compiler_path / "mwldeppc.exe"
     mwld_cmd = f"{wrapper_cmd}{mwld} $ldflags -o $out @$out.rsp"
@@ -388,8 +394,10 @@ def generate_build_ninja(
         transform_dep = config.tools_dir / "transform_dep.py"
         mwcc_cmd += f" && $python {transform_dep} $basefile.d $basefile.d"
         mwcc_sjis_cmd += f" && $python {transform_dep} $basefile.d $basefile.d"
+        # mwcc_asmproc_cmd += f" && $python {transform_dep} $basefile.d $basefile.d"
         mwcc_implicit.append(transform_dep)
         mwcc_sjis_implicit.append(transform_dep)
+        # mwcc_asmproc_implicit.append(transform_dep)
 
     n.comment("Link ELF file")
     n.rule(
@@ -423,6 +431,16 @@ def generate_build_ninja(
     n.rule(
         name="mwcc_sjis",
         command=mwcc_sjis_cmd,
+        description="MWCC $out",
+        depfile="$basefile.d",
+        deps="gcc",
+    )
+    n.newline()
+
+    n.comment("MWCC build (with asm processor)")
+    n.rule(
+        name="mwcc_asmproc",
+        command=mwcc_asmproc_cmd,
         description="MWCC $out",
         depfile="$basefile.d",
         deps="gcc",
@@ -585,7 +603,8 @@ def generate_build_ninja(
             n.comment(f"{obj.name}: {lib_name} (linked {obj.completed})")
             n.build(
                 outputs=src_obj_path,
-                rule="mwcc_sjis" if shift_jis else "mwcc",
+                # rule="mwcc_sjis" if shift_jis else "mwcc",
+                rule="mwcc_asmproc",
                 inputs=src_path,
                 variables={
                     "mw_version": Path(options["mw_version"]),
@@ -593,7 +612,8 @@ def generate_build_ninja(
                     "basedir": os.path.dirname(src_base_path),
                     "basefile": src_base_path,
                 },
-                implicit=mwcc_sjis_implicit if shift_jis else mwcc_implicit,
+                # implicit=mwcc_sjis_implicit if shift_jis else mwcc_implicit,
+                implicit=mwcc_asmproc_implicit,
             )
 
             # Add ctx build rule
