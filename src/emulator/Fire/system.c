@@ -138,13 +138,13 @@ u32 gnFlagZelda;
 #define Z_BNR_PATH "TPL/z_bnr.tpl"
 
 #if VERSION == 0 // D43J01
-// "ゼルダの伝説　時のオカリナＧＣ"
-#define ZELDA_GC_JP "\x83\x5B\x83\x8B\x83\x5F\x82\xCC\x93\x60\x90\xE0\x81\x40\x8E\x9E\x82\xCC\x83\x49\x83\x4A\x83\x8A\x83\x69\x82\x66\x82\x62"
+// "The Legend of Zelda: Ocarina of Time GC"
+#define ZELDA_GC_JP "ゼルダの伝説　時のオカリナＧＣ"
 #define MCARD_FILE_NAME "ZELDA"
 #define MCARD_FILE_SIZE 0x18000
 #else
-// "ゼルダコレクション"
-#define ZELDA_GC_JP "\x83\x5b\x83\x8b\x83\x5f\x83\x52\x83\x8c\x83\x4e\x83\x56\x83\x87\x83\x93"
+// "Zelda Collection"
+#define ZELDA_GC_JP "ゼルダコレクション"
 #define MCARD_FILE_NAME "ZELDA1"
 #define MCARD_FILE_SIZE 0xC000
 #endif
