@@ -336,7 +336,7 @@ config.libs = [
             Object(Matching, "dolphin/os/OSAudioSystem.c"),
             Object(Matching, "dolphin/os/OSCache.c"),
             Object(Matching, "dolphin/os/OSContext.c"),
-            Object(Matching, "dolphin/os/OSError.c"), # weird issue with __OSErrorTable's size shifting Header address
+            Object(Matching, "dolphin/os/OSError.c"),
             Object(Matching, "dolphin/os/OSFont.c"),
             Object(Matching, "dolphin/os/OSInterrupt.c"),
             Object(Matching, "dolphin/os/OSLink.c"),
@@ -344,7 +344,7 @@ config.libs = [
             Object(Matching, "dolphin/os/OSMemory.c"),
             Object(Matching, "dolphin/os/OSMutex.c"),
             Object(NonMatching, "dolphin/os/OSReboot.c"), # missing __OSReboot
-            Object(NonMatching, "dolphin/os/OSReset.c"), # matches but doesn't build properly on CE??
+            Object(Matching, "dolphin/os/OSReset.c"),
             Object(Matching, "dolphin/os/OSResetSW.c"),
             Object(Matching, "dolphin/os/OSRtc.c"),
             Object(Matching, "dolphin/os/OSSync.c"),
