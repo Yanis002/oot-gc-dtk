@@ -10,14 +10,14 @@ extern "C" {
 #endif
 
 struct OSMutex {
-  OSThreadQueue queue;
-  OSThread* thread; // the current owner
-  s32 count;        // lock count
-  OSMutexLink link; // for OSThread.queueMutex
+    OSThreadQueue queue;
+    OSThread* thread; // the current owner
+    s32 count; // lock count
+    OSMutexLink link; // for OSThread.queueMutex
 };
 
 struct OSCond {
-  OSThreadQueue queue;
+    OSThreadQueue queue;
 };
 
 void OSInitMutex(OSMutex* mutex);

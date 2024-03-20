@@ -10,12 +10,12 @@ typedef struct OSMessageQueue OSMessageQueue;
 typedef void* OSMessage;
 
 struct OSMessageQueue {
-  OSThreadQueue queueSend;
-  OSThreadQueue queueReceive;
-  OSMessage* msgArray;
-  s32 msgCount;
-  s32 firstIndex;
-  s32 usedCount;
+    OSThreadQueue queueSend;
+    OSThreadQueue queueReceive;
+    OSMessage* msgArray;
+    s32 msgCount;
+    s32 firstIndex;
+    s32 usedCount;
 };
 
 // Flags to turn blocking on/off when sending/receiving message

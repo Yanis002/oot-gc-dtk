@@ -431,52 +431,52 @@ static s32 romCacheGame_ZELDA(f32 rProgress) {
 }
 
 #if VERSION == 0 // D43J01
-    #define IS_OOT (romTestCode(pROM, "CZLE") || romTestCode(pROM, "CZLJ"))
+#define IS_OOT (romTestCode(pROM, "CZLE") || romTestCode(pROM, "CZLJ"))
 #else
-    #define IS_OOT (bIsCZLE || bIsCZLJ)
+#define IS_OOT (bIsCZLE || bIsCZLJ)
 #endif
 
 static s32 romCacheGame(Rom* pROM) {
     s32 blockCount;
     s32 nSize;
     char* szName;
-    #if VERSION > 0 // D43J01
-        s32 bIsCZLE;
-        s32 bIsCZLJ;
-    #endif
+#if VERSION > 0 // D43J01
+    s32 bIsCZLE;
+    s32 bIsCZLJ;
+#endif
     tXL_FILE* pFile;
 
     blockCount = 0;
     gDVDResetToggle = 1;
 
-    #if VERSION > 0 // D43J01
-        bIsCZLE = romTestCode(pROM, "CZLE");
-        bIsCZLJ = romTestCode(pROM, "CZLJ");
-    #endif
+#if VERSION > 0 // D43J01
+    bIsCZLE = romTestCode(pROM, "CZLE");
+    bIsCZLJ = romTestCode(pROM, "CZLJ");
+#endif
 
     if (IS_OOT) {
         if (gnFlagZelda & 2) {
-            #if VERSION == 0 // D43J01
+#if VERSION == 0 // D43J01
+            pROM->anOffsetBlock = ganOffsetBlock_ZLJ;
+            pROM->nCountOffsetBlocks = 0xC6;
+#else
+            if (!bIsCZLE) {
                 pROM->anOffsetBlock = ganOffsetBlock_ZLJ;
                 pROM->nCountOffsetBlocks = 0xC6;
-            #else
-                if (!bIsCZLE) {
-                    pROM->anOffsetBlock = ganOffsetBlock_ZLJ;
-                    pROM->nCountOffsetBlocks = 0xC6;
-                }
-            #endif
-        } else 
-        #if VERSION > 0 // D43J01
+            }
+#endif
+        } else
+#if VERSION > 0 // D43J01
             if (!bIsCZLE)
-        #endif
-        {
-            pROM->anOffsetBlock = ganOffsetBlock_URAZLJ;
-            pROM->nCountOffsetBlocks = 0xC6;
-        }
+#endif
+            {
+                pROM->anOffsetBlock = ganOffsetBlock_URAZLJ;
+                pROM->nCountOffsetBlocks = 0xC6;
+            }
 
-    #if VERSION == 0 // D43J01
+#if VERSION == 0 // D43J01
         szName = gnFlagZelda & 2 ? "zlj.tpl" : "urazlj.tpl";
-    #else
+#else
         if (bIsCZLE) {
             szName = gnFlagZelda & 2 ? "zle.tpl" : "urazle.tpl";
         } else if (bIsCZLJ) {
@@ -484,7 +484,7 @@ static s32 romCacheGame(Rom* pROM) {
         } else {
             szName = "";
         }
-    #endif
+#endif
 
         if (xlFileOpen(&pFile, 1, szName) != 0) {
             nSize = pFile->nSize;
@@ -560,15 +560,15 @@ s32 romLoadUpdate(Rom* pROM) {
             return 1;
         }
 
-        #if VERSION == 0 // D43J01
-            if (!simulatorTestReset(0, 0, 1)) {
-                return 0;
-            }
-        #else
-            if (!simulatorTestReset(0, 0, 1, 0)) {
-                return 0;
-            }
-        #endif
+#if VERSION == 0 // D43J01
+        if (!simulatorTestReset(0, 0, 1)) {
+            return 0;
+        }
+#else
+        if (!simulatorTestReset(0, 0, 1, 0)) {
+            return 0;
+        }
+#endif
 
         pBlock = &pROM->aBlock[iBlock0];
         pBlock->nTickUsed = ++pROM->nTick;
@@ -635,15 +635,15 @@ static s32 romCopyUpdate(Rom* pROM) {
             return 1;
         }
 
-        #if VERSION == 0 // D43J01
-            if (!simulatorTestReset(0, 0, 1)) {
-                return 0;
-            }
-        #else
-            if (!simulatorTestReset(0, 0, 1, 0)) {
-                return 0;
-            }
-        #endif
+#if VERSION == 0 // D43J01
+        if (!simulatorTestReset(0, 0, 1)) {
+            return 0;
+        }
+#else
+        if (!simulatorTestReset(0, 0, 1, 0)) {
+            return 0;
+        }
+#endif
 
         iBlock = pROM->copy.nOffset / 0x2000;
         pBlock = &pROM->aBlock[iBlock];
@@ -766,15 +766,15 @@ static s32 romLoadFullOrPart(Rom* pROM) {
             simulatorShowLoad(1, pROM->acNameFile, 1.0f);
         } else {
             for (i = 0; i < (s32)pROM->nSize;) {
-                #if VERSION == 0 // D43J01
-                    if (!simulatorTestReset(0, 0, 1)) {
-                        return 0;
-                    }
-                #else
-                    if (!simulatorTestReset(0, 0, 1, 0)) {
-                        return 0;
-                    }
-                #endif
+#if VERSION == 0 // D43J01
+                if (!simulatorTestReset(0, 0, 1)) {
+                    return 0;
+                }
+#else
+                if (!simulatorTestReset(0, 0, 1, 0)) {
+                    return 0;
+                }
+#endif
 
                 xlFileGet(pFile, (void*)((u32)pROM->pBuffer + i), (s32)temp_r28);
                 i += temp_r28;
@@ -1324,9 +1324,9 @@ s32 romEvent(Rom* pROM, s32 nEvent, void* pArgument) {
             break;
         case 0:
         case 1:
-    #if VERSION > 0 // D43J01
+#if VERSION > 0 // D43J01
         case 0x1003:
-    #endif
+#endif
             break;
         default:
             return 0;

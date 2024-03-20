@@ -4,10 +4,10 @@
 static void __init_registers(void);
 
 void __check_pad3(void) {
-  if ((Pad3Button & 0x0eef) == 0x0eef) {
-    OSResetSystem(OS_RESET_RESTART, 0, FALSE);
-  }
-  return;
+    if ((Pad3Button & 0x0eef) == 0x0eef) {
+        OSResetSystem(OS_RESET_RESTART, 0, FALSE);
+    }
+    return;
 }
 
 #if VERSION > 0
@@ -17,7 +17,7 @@ __declspec(section ".init") static u8 __get_debug_bba(void) { return Debug_BBA; 
 #endif
 
 __declspec(weak) asm void __start(void) {
-  // clang-format off
+    // clang-format off
 	nofralloc
 	bl __init_registers
 	bl __init_hardware
@@ -144,11 +144,11 @@ _goto_skip_init_bba:
 	mr r4, r15
 	bl main
 	b exit
-  // clang-format on
+    // clang-format on
 }
 
 asm static void __init_registers(void) {
-  // clang-format off
+    // clang-format off
 	nofralloc
 	#if VERSION > 0
 		li r0, 0
@@ -188,40 +188,40 @@ asm static void __init_registers(void) {
 	lis r13, _SDA_BASE_@h
 	ori r13, r13, _SDA_BASE_@l
 	blr
-  // clang-format on
+    // clang-format on
 }
 
 inline static void __copy_rom_section(void* dst, const void* src, unsigned long size) {
-  if (size && (dst != src)) {
-    memcpy(dst, src, size);
-    __flush_cache(dst, size);
-  }
+    if (size && (dst != src)) {
+        memcpy(dst, src, size);
+        __flush_cache(dst, size);
+    }
 }
 
 inline static void __init_bss_section(void* dst, unsigned long size) {
-  if (size) {
-    memset(dst, 0, size);
-  }
+    if (size) {
+        memset(dst, 0, size);
+    }
 }
 
 #pragma scheduling off
 void __init_data(void) {
-  __rom_copy_info* dci;
-  __bss_init_info* bii;
+    __rom_copy_info* dci;
+    __bss_init_info* bii;
 
-  dci = _rom_copy_info;
-  while (TRUE) {
-    if (dci->size == 0)
-      break;
-    __copy_rom_section(dci->addr, dci->rom, dci->size);
-    dci++;
-  }
+    dci = _rom_copy_info;
+    while (TRUE) {
+        if (dci->size == 0)
+            break;
+        __copy_rom_section(dci->addr, dci->rom, dci->size);
+        dci++;
+    }
 
-  bii = _bss_init_info;
-  while (TRUE) {
-    if (bii->size == 0)
-      break;
-    __init_bss_section(bii->addr, bii->size);
-    bii++;
-  }
+    bii = _bss_init_info;
+    while (TRUE) {
+        if (bii->size == 0)
+            break;
+        __init_bss_section(bii->addr, bii->size);
+        bii++;
+    }
 }

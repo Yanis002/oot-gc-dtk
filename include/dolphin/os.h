@@ -23,9 +23,9 @@ extern "C" {
 #endif
 typedef s64 OSTime;
 typedef u32 OSTick;
-u32 __OSBusClock AT_ADDRESS(OS_BASE_CACHED | 0x00F8);  // sync with OSLoMem.h
+u32 __OSBusClock AT_ADDRESS(OS_BASE_CACHED | 0x00F8); // sync with OSLoMem.h
 u32 __OSCoreClock AT_ADDRESS(OS_BASE_CACHED | 0x00FC); // sync with OSLoMem.h
-#define OS_BUS_CLOCK (u32)__OSBusClock
+#define OS_BUS_CLOCK (u32) __OSBusClock
 #define OS_CORE_CLOCK __OSCoreClock
 #define OS_TIMER_CLOCK (OS_BUS_CLOCK / 4)
 
@@ -50,7 +50,7 @@ u32 OSUncachedToCached(void* ucaddr);
 #define OSTicksToMilliseconds(ticks) ((ticks) / (OS_TIMER_CLOCK / 1000))
 #define OSTicksToMicroseconds(ticks) (((ticks)*8) / (OS_TIMER_CLOCK / 125000))
 #define OSTicksToNanoseconds(ticks) (((ticks)*8000) / (OS_TIMER_CLOCK / 125000))
-#define OSSecondsToTicks(sec) ((sec)*OS_TIMER_CLOCK) 
+#define OSSecondsToTicks(sec) ((sec)*OS_TIMER_CLOCK)
 #define OSMillisecondsToTicks(msec) ((msec) * (OS_TIMER_CLOCK / 1000))
 #define OSMicrosecondsToTicks(usec) (((usec) * (OS_TIMER_CLOCK / 125000)) / 8)
 #define OSNanosecondsToTicks(nsec) (((nsec) * (OS_TIMER_CLOCK / 125000)) / 8000)
@@ -73,17 +73,17 @@ OSTime OSGetTime();
 OSTick OSGetTick();
 
 typedef struct OSCalendarTime {
-  int sec;  // seconds after the minute [0, 61]
-  int min;  // minutes after the hour [0, 59]
-  int hour; // hours since midnight [0, 23]
-  int mday; // day of the month [1, 31]
-  int mon;  // month since January [0, 11]
-  int year; // years in AD [1, ...]
-  int wday; // days since Sunday [0, 6]
-  int yday; // days since January 1 [0, 365]
+    int sec; // seconds after the minute [0, 61]
+    int min; // minutes after the hour [0, 59]
+    int hour; // hours since midnight [0, 23]
+    int mday; // day of the month [1, 31]
+    int mon; // month since January [0, 11]
+    int year; // years in AD [1, ...]
+    int wday; // days since Sunday [0, 6]
+    int yday; // days since January 1 [0, 365]
 
-  int msec; // milliseconds after the second [0,999]
-  int usec; // microseconds after the millisecond [0,999]
+    int msec; // milliseconds after the second [0,999]
+    int usec; // microseconds after the millisecond [0,999]
 } OSCalendarTime;
 
 OSTime OSCalendarTimeToTicks(OSCalendarTime* td);
@@ -156,8 +156,7 @@ BOOL OSRestoreInterrupts(BOOL level);
 #endif
 
 #ifndef ASSERTMSG
-#if defined(__STDC_VERSION__) && (199901L <= __STDC_VERSION__) || defined(__MWERKS__) ||           \
-    defined(__SN__)
+#if defined(__STDC_VERSION__) && (199901L <= __STDC_VERSION__) || defined(__MWERKS__) || defined(__SN__)
 #define ASSERTMSG(exp, ...) (void)((exp) || (OSPanic(__FILE__, __LINE__, __VA_ARGS__), 0))
 #else
 #define ASSERTMSG(exp, msg) (void)((exp) || (OSPanic(__FILE__, __LINE__, (msg)), 0))
@@ -165,23 +164,22 @@ BOOL OSRestoreInterrupts(BOOL level);
 #endif
 
 #ifndef ASSERTMSG1
-#define ASSERTMSG1(exp, msg, param1)                                                               \
-  (void)((exp) || (OSPanic(__FILE__, __LINE__, (msg), (param1)), 0))
+#define ASSERTMSG1(exp, msg, param1) (void)((exp) || (OSPanic(__FILE__, __LINE__, (msg), (param1)), 0))
 #endif
 
 #ifndef ASSERTMSG2
-#define ASSERTMSG2(exp, msg, param1, param2)                                                       \
-  (void)((exp) || (OSPanic(__FILE__, __LINE__, (msg), (param1), (param2)), 0))
+#define ASSERTMSG2(exp, msg, param1, param2) \
+    (void)((exp) || (OSPanic(__FILE__, __LINE__, (msg), (param1), (param2)), 0))
 #endif
 
 #ifndef ASSERTMSG3
-#define ASSERTMSG3(exp, msg, param1, param2, param3)                                               \
-  (void)((exp) || (OSPanic(__FILE__, __LINE__, (msg), (param1), (param2), (param3)), 0))
+#define ASSERTMSG3(exp, msg, param1, param2, param3) \
+    (void)((exp) || (OSPanic(__FILE__, __LINE__, (msg), (param1), (param2), (param3)), 0))
 #endif
 
 #ifndef ASSERTMSG4
-#define ASSERTMSG4(exp, msg, param1, param2, param3, param4)                                       \
-  (void)((exp) || (OSPanic(__FILE__, __LINE__, (msg), (param1), (param2), (param3), (param4)), 0))
+#define ASSERTMSG4(exp, msg, param1, param2, param3, param4) \
+    (void)((exp) || (OSPanic(__FILE__, __LINE__, (msg), (param1), (param2), (param3), (param4)), 0))
 #endif
 
 #else // _DEBUG
@@ -191,8 +189,7 @@ BOOL OSRestoreInterrupts(BOOL level);
 #endif
 
 #ifndef ASSERTMSG
-#if defined(__STDC_VERSION__) && (199901L <= __STDC_VERSION__) || defined(__MWERKS__) ||           \
-    defined(__SN__)
+#if defined(__STDC_VERSION__) && (199901L <= __STDC_VERSION__) || defined(__MWERKS__) || defined(__SN__)
 #define ASSERTMSG(exp, ...) ((void)0)
 #else
 #define ASSERTMSG(exp, msg) ((void)0)

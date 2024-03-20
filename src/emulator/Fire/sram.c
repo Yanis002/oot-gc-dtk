@@ -96,10 +96,10 @@ s32 sramEvent(Sram* pObject, s32 nEvent, void* pArgument) {
                 return 0;
             }
             break;
-    #if VERSION > 0 // D43J01
+#if VERSION > 0 // D43J01
         case 0x1003:
             break;
-    #endif
+#endif
 
         default:
             return 0;

@@ -194,9 +194,9 @@ s32 videoEvent(Video* pVideo, s32 nEvent, void* pArgument) {
         case 1:
         case 3:
         case 5:
-    #if VERSION > 0 // D43J01
+#if VERSION > 0 // D43J01
         case 0x1003:
-    #endif
+#endif
             break;
         case 0x1002:
             if (!cpuSetDevicePut(SYSTEM_CPU(pVideo->pHost), pArgument, (Put8Func)videoPut8, (Put16Func)videoPut16,

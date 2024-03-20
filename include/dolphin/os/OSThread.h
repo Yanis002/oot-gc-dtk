@@ -23,60 +23,59 @@ typedef void (*OSIdleFunction)(void* param);
 typedef void (*OSSwitchThreadCallback)(OSThread* from, OSThread* to);
 
 struct OSThreadQueue {
-  OSThread* head;
-  OSThread* tail;
+    OSThread* head;
+    OSThread* tail;
 };
 
 struct OSThreadLink {
-  OSThread* next;
-  OSThread* prev;
+    OSThread* next;
+    OSThread* prev;
 };
 
 struct OSMutexQueue {
-  OSMutex* head;
-  OSMutex* tail;
+    OSMutex* head;
+    OSMutex* tail;
 };
 
 struct OSMutexLink {
-  OSMutex* next;
-  OSMutex* prev;
+    OSMutex* next;
+    OSMutex* prev;
 };
 
 struct OSThread {
-  OSContext context;
-  u16 state;
-  u16 attr;
-  s32 suspend;
-  OSPriority priority;
-  OSPriority base;
-  void* val;
-  OSThreadQueue* queue;
-  OSThreadLink link;
-  OSThreadQueue queueJoin;
-  OSMutex* mutex;
-  OSMutexQueue queueMutex;
-  OSThreadLink linkActive;
-  u8* stackBase;
-  u32* stackEnd;
-  s32 error;
-  void* specific[OS_THREAD_SPECIFIC_MAX];
+    OSContext context;
+    u16 state;
+    u16 attr;
+    s32 suspend;
+    OSPriority priority;
+    OSPriority base;
+    void* val;
+    OSThreadQueue* queue;
+    OSThreadLink link;
+    OSThreadQueue queueJoin;
+    OSMutex* mutex;
+    OSMutexQueue queueMutex;
+    OSThreadLink linkActive;
+    u8* stackBase;
+    u32* stackEnd;
+    s32 error;
+    void* specific[OS_THREAD_SPECIFIC_MAX];
 };
 
 enum OS_THREAD_STATE {
-  OS_THREAD_STATE_READY = 1,
-  OS_THREAD_STATE_RUNNING = 2,
-  OS_THREAD_STATE_WAITING = 4,
-  OS_THREAD_STATE_MORIBUND = 8
+    OS_THREAD_STATE_READY = 1,
+    OS_THREAD_STATE_RUNNING = 2,
+    OS_THREAD_STATE_WAITING = 4,
+    OS_THREAD_STATE_MORIBUND = 8
 };
 
 #define OS_THREAD_ATTR_DETACH 0x0001u
 
 #define OS_THREAD_STACK_MAGIC 0xDEADBABE
 
-#define OS_PRIORITY_MIN 0  // highest
+#define OS_PRIORITY_MIN 0 // highest
 #define OS_PRIORITY_MAX 31 // lowest
 #define OS_PRIORITY_IDLE OS_PRIORITY_MAX
-
 
 void OSInitThreadQueue(OSThreadQueue* queue);
 OSThread* OSGetCurrentThread(void);

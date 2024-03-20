@@ -1,5 +1,5 @@
-#include "dolphin/types.h"
 #include "asm_types.h"
+#include "dolphin/types.h"
 // clang-format off
 
 union FpscrUnion

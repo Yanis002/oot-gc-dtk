@@ -5,6 +5,7 @@
 void __OSSystemCallVectorStart();
 void __OSSystemCallVectorEnd();
 static asm void SystemCallVector() {
+    // clang-format off
   nofralloc
 entry __OSSystemCallVectorStart
   mfspr r9, HID0
@@ -18,12 +19,13 @@ entry __OSSystemCallVectorStart
 
 entry __OSSystemCallVectorEnd
   nop
+    // clang-format on
 }
 
 void __OSInitSystemCall() {
-  void* addr = OSPhysicalToCached(0x00C00);
-  memcpy(addr, __OSSystemCallVectorStart, (size_t)__OSSystemCallVectorEnd - (size_t)__OSSystemCallVectorStart);
-  DCFlushRangeNoSync(addr, 0x100);
-  __sync();
-  ICInvalidateRange(addr, 0x100);
+    void* addr = OSPhysicalToCached(0x00C00);
+    memcpy(addr, __OSSystemCallVectorStart, (size_t)__OSSystemCallVectorEnd - (size_t)__OSSystemCallVectorStart);
+    DCFlushRangeNoSync(addr, 0x100);
+    __sync();
+    ICInvalidateRange(addr, 0x100);
 }
