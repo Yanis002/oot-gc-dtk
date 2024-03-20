@@ -77,6 +77,10 @@ enum OS_THREAD_STATE {
 #define OS_PRIORITY_MAX 31 // lowest
 #define OS_PRIORITY_IDLE OS_PRIORITY_MAX
 
+OSThread* __OSCurrentThread : (OS_BASE_CACHED | 0x00E4);
+OSThreadQueue __OSActiveThreadQueue : (OS_BASE_CACHED | 0x00DC);
+volatile OSContext* __OSFPUContext : (OS_BASE_CACHED | 0x00D8);
+
 void OSInitThreadQueue(OSThreadQueue* queue);
 OSThread* OSGetCurrentThread(void);
 BOOL OSIsThreadSuspended(OSThread* thread);

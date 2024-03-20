@@ -336,7 +336,7 @@ config.libs = [
             Object(Matching, "dolphin/os/OSAudioSystem.c"),
             Object(Matching, "dolphin/os/OSCache.c"),
             Object(Matching, "dolphin/os/OSContext.c"),
-            Object(NonMatching, "dolphin/os/OSError.c"), # weird issue with __OSErrorTable's size shifting Header address
+            Object(Matching, "dolphin/os/OSError.c"), # weird issue with __OSErrorTable's size shifting Header address
             Object(Matching, "dolphin/os/OSFont.c"),
             Object(Matching, "dolphin/os/OSInterrupt.c"),
             Object(Matching, "dolphin/os/OSLink.c"),
