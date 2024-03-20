@@ -258,11 +258,11 @@ dolphin/os/OSCache.c:
 	.data       start:0x800F0C48 end:0x800F0E78
 
 dolphin/os/OSContext.c:
-	.text       start:0x8009DD88 end:0x8009E678
+	.text       start:0x8009DD88 end:0x8009E5F8
 	.data       start:0x800F0E78 end:0x800F1050
 
 dolphin/os/OSError.c:
-	.text       start:0x8009E678 end:0x8009ECA4
+	.text       start:0x8009E5F8 end:0x8009ECA4
 	.data       start:0x800F1050 end:0x800F1370
 	.bss        start:0x80130F70 end:0x80130FC0
 	.sdata      start:0x80135430 end:0x80135438
