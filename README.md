@@ -34,6 +34,7 @@ Supported versions:
 The progress of this project will be synced with the main repo: [zeldaret/oot-gc](https://github.com/zeldaret/oot-gc).
 
 Dolphin SDK code was matched thanks to these projects:
+- Dolphin SDK decompilation: https://github.com/doldecomp/dolsdk2001
 - Metroid Prime: https://github.com/PrimeDecomp/prime
 - Mario Kart Double Dash: https://github.com/SwareJonge/mkdd
 - Pikmin 2: https://github.com/projectPiki/pikmin2

@@ -1,15 +1,15 @@
+#include "dolphin/gx.h"
+#include "dolphin/hw_regs.h"
 #include "dolphin/os.h"
 #include "dolphin/vi.h"
-#include "dolphin/hw_regs.h"
-#include "dolphin/gx.h"
 
 // outside functions
 BOOL __OSReadROM(void* buffer, s32 length, s32 offset);
 
 static OSFontHeader* FontData; // type unsure
-static u8* SheetImage;         // type unsure
-static u8* WidthTable;         // type unsure
-static int CharsInSheet;       // type unsure
+static u8* SheetImage; // type unsure
+static u8* WidthTable; // type unsure
+static int CharsInSheet; // type unsure
 
 // clang-format off
 static u16 HankakuToCode[]
@@ -199,343 +199,331 @@ static u16 ZenkakuToCode[]
 	};
 // clang-format on
 
-static BOOL IsSjisLeadByte(u8 letter)
-{
-	return (0x81 <= letter && letter <= 0x9F) || (0xE0 <= letter && letter <= 0xFC);
-	// UNUSED FUNCTION
+static BOOL IsSjisLeadByte(u8 letter) {
+    return (0x81 <= letter && letter <= 0x9F) || (0xE0 <= letter && letter <= 0xFC);
+    // UNUSED FUNCTION
 }
 
 static BOOL IsSjisTrailByte(u8 letter) { return (letter >= 0x40 && letter <= 0xFC && letter != 0x7F); }
 
-static int GetFontCode(u16 code)
-{
-	int preCode;
-	int lastByte;
+static int GetFontCode(u16 code) {
+    int preCode;
+    int lastByte;
 
-	if (OSGetFontEncode() == OS_FONT_ENCODE_SJIS) {
-		if (code >= 0x20 && code <= 0xDF) {
-			return HankakuToCode[code - 0x20];
-		}
+    if (OSGetFontEncode() == OS_FONT_ENCODE_SJIS) {
+        if (code >= 0x20 && code <= 0xDF) {
+            return HankakuToCode[code - 0x20];
+        }
 
-		if (code > 0x889E && code <= 0x9872) {
-			preCode  = ((code >> 8) - 0x88) * 188;
-			lastByte = code & 0xFF;
+        if (code > 0x889E && code <= 0x9872) {
+            preCode = ((code >> 8) - 0x88) * 188;
+            lastByte = code & 0xFF;
 
-			if (!IsSjisTrailByte(lastByte)) {
-				return 0;
-			}
+            if (!IsSjisTrailByte(lastByte)) {
+                return 0;
+            }
 
-			lastByte -= 0x40;
+            lastByte -= 0x40;
 
-			if (lastByte >= 0x40) {
-				lastByte--;
-			}
+            if (lastByte >= 0x40) {
+                lastByte--;
+            }
 
-			return (preCode + lastByte + 0x2BE);
-		}
+            return (preCode + lastByte + 0x2BE);
+        }
 
-		if (code >= 0x8140 && code < 0x879E) {
-			preCode  = ((code >> 8) - 0x81) * 188;
-			lastByte = code & 0xFF;
+        if (code >= 0x8140 && code < 0x879E) {
+            preCode = ((code >> 8) - 0x81) * 188;
+            lastByte = code & 0xFF;
 
-			if (!IsSjisTrailByte(lastByte)) {
-				return 0;
-			}
+            if (!IsSjisTrailByte(lastByte)) {
+                return 0;
+            }
 
-			lastByte -= 0x40;
+            lastByte -= 0x40;
 
-			if (lastByte >= 0x40) {
-				lastByte--;
-			}
+            if (lastByte >= 0x40) {
+                lastByte--;
+            }
 
-			return ZenkakuToCode[preCode + lastByte];
-		}
+            return ZenkakuToCode[preCode + lastByte];
+        }
 
-	} else if (code > 0x20 && code <= 0xFF) {
-		return code - 0x20;
-	}
+    } else if (code > 0x20 && code <= 0xFF) {
+        return code - 0x20;
+    }
 
-	return 0;
+    return 0;
 }
 
-static void Decode(u8* src, u8* dst)
-{
-	int j;
-	int linkOfs;
-	int chunkPos;
-	int i;
-	int maskTblPos;
-	int linkTblOfs;
-	int chunksOfs;
-	int count;
-	int expandSize;
-	u32 maskBits;
-	u32 mask;
+static void Decode(u8* src, u8* dst) {
+    int j;
+    int linkOfs;
+    int chunkPos;
+    int i;
+    int maskTblPos;
+    int linkTblOfs;
+    int chunksOfs;
+    int count;
+    int expandSize;
+    u32 maskBits;
+    u32 mask;
 
-	expandSize = *(int*)(src + 0x4);
-	linkTblOfs = *(int*)(src + 0x8);
-	chunksOfs  = *(int*)(src + 0xC);
+    expandSize = *(int*)(src + 0x4);
+    linkTblOfs = *(int*)(src + 0x8);
+    chunksOfs = *(int*)(src + 0xC);
 
-	i          = 0;
-	maskBits   = 0;
-	maskTblPos = 16;
+    i = 0;
+    maskBits = 0;
+    maskTblPos = 16;
 
-	do {
-		// Get next mask
-		if (maskBits == 0) {
-			mask = *(u32*)(src + maskTblPos);
-			maskTblPos += sizeof(u32);
-			maskBits = sizeof(u32) * 8;
-		}
+    do {
+        // Get next mask
+        if (maskBits == 0) {
+            mask = *(u32*)(src + maskTblPos);
+            maskTblPos += sizeof(u32);
+            maskBits = sizeof(u32) * 8;
+        }
 
-		// Non-linked chunk
-		if (mask & 0x80000000) {
-			dst[i++] = src[chunksOfs++];
-		}
-		// Linked chunk
-		else {
-			// Read offset from link table
-			linkOfs = src[linkTblOfs] << 8 | src[linkTblOfs + 1];
-			linkTblOfs += sizeof(u16);
+        // Non-linked chunk
+        if (mask & 0x80000000) {
+            dst[i++] = src[chunksOfs++];
+        }
+        // Linked chunk
+        else {
+            // Read offset from link table
+            linkOfs = src[linkTblOfs] << 8 | src[linkTblOfs + 1];
+            linkTblOfs += sizeof(u16);
 
-			// Apply offset
-			chunkPos = i - (linkOfs & 0x0FFF);
-			count    = linkOfs >> 12;
-			if (count == 0) {
-				count = src[chunksOfs++] + 0x12;
-			} else {
-				count += 2;
-			}
+            // Apply offset
+            chunkPos = i - (linkOfs & 0x0FFF);
+            count = linkOfs >> 12;
+            if (count == 0) {
+                count = src[chunksOfs++] + 0x12;
+            } else {
+                count += 2;
+            }
 
-			// Copy chunk
-			for (j = 0; j < count; j++, i++, chunkPos++) {
-				dst[i] = dst[chunkPos - 1];
-			}
-		}
+            // Copy chunk
+            for (j = 0; j < count; j++, i++, chunkPos++) {
+                dst[i] = dst[chunkPos - 1];
+            }
+        }
 
-		// Prepare next mask bit
-		mask <<= 1;
-		maskBits--;
-	} while (i < expandSize);
+        // Prepare next mask bit
+        mask <<= 1;
+        maskBits--;
+    } while (i < expandSize);
 }
 
-static u32 GetFontSize(u8* in)
-{
-	if (in[0] == 'Y' && in[1] == 'a' && in[2] == 'y') {
-		return *(u32*)(in + 0x4);
-	}
+static u32 GetFontSize(u8* in) {
+    if (in[0] == 'Y' && in[1] == 'a' && in[2] == 'y') {
+        return *(u32*)(in + 0x4);
+    }
 
-	return 0;
+    return 0;
 }
 
-u16 OSGetFontEncode(void)
-{
-	static u16 fontEncode = 0xFFFF;
-	if (fontEncode <= 1) {
-		return fontEncode;
-	}
-	switch (__OSTVMode) {
-	case VI_NTSC:
-		fontEncode = (__VIRegs[VI_DTV_STAT] & 2) ? OS_FONT_ENCODE_SJIS : OS_FONT_ENCODE_ANSI;
-		break;
+u16 OSGetFontEncode(void) {
+    static u16 fontEncode = 0xFFFF;
+    if (fontEncode <= 1) {
+        return fontEncode;
+    }
+    switch (__OSTVMode) {
+        case VI_NTSC:
+            fontEncode = (__VIRegs[VI_DTV_STAT] & 2) ? OS_FONT_ENCODE_SJIS : OS_FONT_ENCODE_ANSI;
+            break;
 
-	case VI_PAL:
-	case VI_MPAL:
-	case VI_DEBUG:
-	case VI_DEBUG_PAL:
-	case VI_EURGB60:
-	default:
-		fontEncode = OS_FONT_ENCODE_ANSI;
-	}
+        case VI_PAL:
+        case VI_MPAL:
+        case VI_DEBUG:
+        case VI_DEBUG_PAL:
+        case VI_EURGB60:
+        default:
+            fontEncode = OS_FONT_ENCODE_ANSI;
+    }
 
-	return fontEncode;
+    return fontEncode;
 }
 
-static void ReadROM(void* string, int len, int offset)
-{
-	int inc;
-	while (len > 0) {
-		if (len <= 0x100) {
-			inc = len;
-		} else {
-			inc = 0x100;
-		}
+static void ReadROM(void* string, int len, int offset) {
+    int inc;
+    while (len > 0) {
+        if (len <= 0x100) {
+            inc = len;
+        } else {
+            inc = 0x100;
+        }
 
-		len -= inc;
+        len -= inc;
 
-		while (!__OSReadROM(string, inc, offset)) {
-			;
-		}
+        while (!__OSReadROM(string, inc, offset)) {
+            ;
+        }
 
-		offset += inc;
+        offset += inc;
         string = (void*)((u8*)string + inc);
-	}
+    }
 }
 
-static u32 ReadFont(void* img, u16 encode, void* fontInfo)
-{
-	SheetImage = fontInfo;
-	if (OSGetFontEncode() == encode) {
-		ReadROM(img, OS_FONT_ROM_SIZE_SJIS, 0x1AFF00);
-	} else {
-		ReadROM(img, OS_FONT_ROM_SIZE_ANSI, 0x1FCF00);
-	}
+static u32 ReadFont(void* img, u16 encode, void* fontInfo) {
+    SheetImage = fontInfo;
+    if (OSGetFontEncode() == encode) {
+        ReadROM(img, OS_FONT_ROM_SIZE_SJIS, 0x1AFF00);
+    } else {
+        ReadROM(img, OS_FONT_ROM_SIZE_ANSI, 0x1FCF00);
+    }
 
-	return GetFontSize(img);
+    return GetFontSize(img);
 }
 
-u32 OSLoadFont(OSFontHeader* fontInfo, void* temp)
-{
-	u8* image;
-	u8* ptr;
-	int fontCodeT, sheet, numChars, row, column, x, y;
+u32 OSLoadFont(OSFontHeader* fontInfo, void* temp) {
+    u8* image;
+    u8* ptr;
+    int fontCodeT, sheet, numChars, row, column, x, y;
 
-	u32 fontSize = ReadFont(temp, OS_FONT_ENCODE_SJIS, NULL);
-	if (fontSize) {
-		Decode(temp, (void*)fontInfo);
-		FontData     = fontInfo;
-		WidthTable   = (u8*)FontData + fontInfo->widthTable;
-		CharsInSheet = fontInfo->sheetColumn * fontInfo->sheetRow;
-		if (OSGetFontEncode() == OS_FONT_ENCODE_SJIS) {
-			// what is this even doing
+    u32 fontSize = ReadFont(temp, OS_FONT_ENCODE_SJIS, NULL);
+    if (fontSize) {
+        Decode(temp, (void*)fontInfo);
+        FontData = fontInfo;
+        WidthTable = (u8*)FontData + fontInfo->widthTable;
+        CharsInSheet = fontInfo->sheetColumn * fontInfo->sheetRow;
+        if (OSGetFontEncode() == OS_FONT_ENCODE_SJIS) {
+            // what is this even doing
 
-			const u16 codes[4] = { 0x2ABE, 0x003D, 0x003D, 0x003D };
+            const u16 codes[4] = {0x2ABE, 0x003D, 0x003D, 0x003D};
 
-			fontCodeT = GetFontCode('T'); // ????
-			sheet     = fontCodeT / CharsInSheet;
-			numChars  = fontCodeT - sheet * CharsInSheet;
-			row       = numChars / FontData->sheetColumn;
-			column    = numChars - row * FontData->sheetColumn;
-			row *= FontData->cellHeight;
-			column *= FontData->cellWidth;
+            fontCodeT = GetFontCode('T'); // ????
+            sheet = fontCodeT / CharsInSheet;
+            numChars = fontCodeT - sheet * CharsInSheet;
+            row = numChars / FontData->sheetColumn;
+            column = numChars - row * FontData->sheetColumn;
+            row *= FontData->cellHeight;
+            column *= FontData->cellWidth;
 
-			image = (u8*)FontData + FontData->sheetImage;
-			image += sheet * FontData->sheetSize / 2;
+            image = (u8*)FontData + FontData->sheetImage;
+            image += sheet * FontData->sheetSize / 2;
 
-			for (y = 4; y < 8; y++) {
-				x   = 0;
-				ptr = image + (((FontData->sheetWidth / 8) * 32) / 2) * ((row + y) / 8);
-				ptr += 16 * ((column + x) / 8);
-				ptr += 2 * ((row + y) % 8);
-				ptr += ((column + x) % 8) / 4;
+            for (y = 4; y < 8; y++) {
+                x = 0;
+                ptr = image + (((FontData->sheetWidth / 8) * 32) / 2) * ((row + y) / 8);
+                ptr += 16 * ((column + x) / 8);
+                ptr += 2 * ((row + y) % 8);
+                ptr += ((column + x) % 8) / 4;
 
-				*(u16*)ptr = codes[y - 4];
-			}
-		}
-	}
+                *(u16*)ptr = codes[y - 4];
+            }
+        }
+    }
 
-	return fontSize;
+    return fontSize;
 }
 
-static void ExpandFontSheet(u8* source, u8* dest)
-{
-	int i;
-	const u8* tmp = &FontData->c0;
+static void ExpandFontSheet(u8* source, u8* dest) {
+    int i;
+    const u8* tmp = &FontData->c0;
 
-	if (FontData->sheetFormat == GX_TF_I4) {
-		for (i = (s32)FontData->sheetFullSize / 2 - 1; i >= 0; i--) {
-			dest[i * 2 + 0] = tmp[source[i] >> 6 & 3] & 0xF0 | tmp[source[i] >> 4 & 3] & 0x0F;
-			dest[i * 2 + 1] = tmp[source[i] >> 2 & 3] & 0xF0 | tmp[source[i] >> 0 & 3] & 0x0F;
-		}
-	} else if (FontData->sheetFormat == GX_TF_IA4) {
-		for (i = (s32)FontData->sheetFullSize / 4 - 1; i >= 0; i--) {
-			dest[i * 4 + 0] = tmp[source[i] >> 6 & 3];
-			dest[i * 4 + 1] = tmp[source[i] >> 4 & 3];
-			dest[i * 4 + 2] = tmp[source[i] >> 2 & 3];
-			dest[i * 4 + 3] = tmp[source[i] >> 0 & 3];
-		}
-	}
+    if (FontData->sheetFormat == GX_TF_I4) {
+        for (i = (s32)FontData->sheetFullSize / 2 - 1; i >= 0; i--) {
+            dest[i * 2 + 0] = tmp[source[i] >> 6 & 3] & 0xF0 | tmp[source[i] >> 4 & 3] & 0x0F;
+            dest[i * 2 + 1] = tmp[source[i] >> 2 & 3] & 0xF0 | tmp[source[i] >> 0 & 3] & 0x0F;
+        }
+    } else if (FontData->sheetFormat == GX_TF_IA4) {
+        for (i = (s32)FontData->sheetFullSize / 4 - 1; i >= 0; i--) {
+            dest[i * 4 + 0] = tmp[source[i] >> 6 & 3];
+            dest[i * 4 + 1] = tmp[source[i] >> 4 & 3];
+            dest[i * 4 + 2] = tmp[source[i] >> 2 & 3];
+            dest[i * 4 + 3] = tmp[source[i] >> 0 & 3];
+        }
+    }
 
-	DCStoreRange(dest, FontData->sheetFullSize);
+    DCStoreRange(dest, FontData->sheetFullSize);
 }
 
-BOOL OSInitFont(OSFontHeader* font)
-{
-	u8* sheets;
-	void* a;
-	u32 size;
-	if (OSGetFontEncode() == OS_FONT_ENCODE_SJIS) {
-		a = (u8*)font + 0xD3F00;
-	} else {
-		a = (u8*)font + 0x1D120;
-	}
-	size = OSLoadFont(font, (void*)((u32)a & ~0x1F));
-	if (size == 0) {
-		return FALSE;
-	}
+BOOL OSInitFont(OSFontHeader* font) {
+    u8* sheets;
+    void* a;
+    u32 size;
+    if (OSGetFontEncode() == OS_FONT_ENCODE_SJIS) {
+        a = (u8*)font + 0xD3F00;
+    } else {
+        a = (u8*)font + 0x1D120;
+    }
+    size = OSLoadFont(font, (void*)((u32)a & ~0x1F));
+    if (size == 0) {
+        return FALSE;
+    }
 
-	SheetImage = (u8*)FontData + FontData->sheetImage;
-	SheetImage = (u8*)(((u32)SheetImage + 31) & ~0x1F); // ???
-	ExpandFontSheet((u8*)FontData + FontData->sheetImage, (u8*)SheetImage);
+    SheetImage = (u8*)FontData + FontData->sheetImage;
+    SheetImage = (u8*)(((u32)SheetImage + 31) & ~0x1F); // ???
+    ExpandFontSheet((u8*)FontData + FontData->sheetImage, (u8*)SheetImage);
 
-	return TRUE;
+    return TRUE;
 }
 
-char* OSGetFontTexture(char* string, void** image, s32* x, s32* y, s32* width)
-{
-	int numRestTex;
-	int code;
-	u32 sheet;
-	u32 row;
-	u32 col;
+char* OSGetFontTexture(char* string, void** image, s32* x, s32* y, s32* width) {
+    int numRestTex;
+    int code;
+    u32 sheet;
+    u32 row;
+    u32 col;
 
-	u16 firstChar = (u8)string[0];
+    u16 firstChar = (u8)string[0];
 
-	if (firstChar == 0) {
-		((u32*)image)[0] = 0;
-		return string;
-	}
-	string++;
-	if (OSGetFontEncode() == OS_FONT_ENCODE_SJIS) {
-		if (IsSjisLeadByte(firstChar) && string[0]) {
-			firstChar = ((firstChar << 8) | (u8)*string++);
-		}
-	}
+    if (firstChar == 0) {
+        ((u32*)image)[0] = 0;
+        return string;
+    }
+    string++;
+    if (OSGetFontEncode() == OS_FONT_ENCODE_SJIS) {
+        if (IsSjisLeadByte(firstChar) && string[0]) {
+            firstChar = ((firstChar << 8) | (u8)*string++);
+        }
+    }
 
-	code = GetFontCode(firstChar);
+    code = GetFontCode(firstChar);
 
-	// Font sheet on which the texture resides
-	sheet = code / CharsInSheet;
-	// Font code texture
-	*image = (FontData->sheetSize * sheet) + SheetImage;
+    // Font sheet on which the texture resides
+    sheet = code / CharsInSheet;
+    // Font code texture
+    *image = (FontData->sheetSize * sheet) + SheetImage;
 
-	// Number of succeeding textures on the sheet
-	numRestTex = code - (sheet * CharsInSheet);
+    // Number of succeeding textures on the sheet
+    numRestTex = code - (sheet * CharsInSheet);
 
-	// Sheet row on which the texure resides
-	row = numRestTex / FontData->sheetColumn;
+    // Sheet row on which the texure resides
+    row = numRestTex / FontData->sheetColumn;
 
-	// Sheet column on which the texture resides
-	col = numRestTex - row * FontData->sheetColumn;
+    // Sheet column on which the texture resides
+    col = numRestTex - row * FontData->sheetColumn;
 
-	// Texture position
-	*x = col * FontData->cellWidth;
-	*y = row * FontData->cellHeight;
+    // Texture position
+    *x = col * FontData->cellWidth;
+    *y = row * FontData->cellHeight;
 
-	if (width) {
-		*width = WidthTable[code];
-	}
+    if (width) {
+        *width = WidthTable[code];
+    }
 
-	return string;
+    return string;
 }
 
-char* OSGetFontWidth(char* string, s32* width)
-{
-	u16 firstChar = (u8)string[0];
+char* OSGetFontWidth(char* string, s32* width) {
+    u16 firstChar = (u8)string[0];
 
-	if (firstChar == 0) {
-		return string;
-	}
-	string++;
-	if (OSGetFontEncode() == OS_FONT_ENCODE_SJIS) {
-		if (IsSjisLeadByte(firstChar) && string[0]) {
-			firstChar = ((firstChar << 8) | (u8)*string++);
-		}
-	}
+    if (firstChar == 0) {
+        return string;
+    }
+    string++;
+    if (OSGetFontEncode() == OS_FONT_ENCODE_SJIS) {
+        if (IsSjisLeadByte(firstChar) && string[0]) {
+            firstChar = ((firstChar << 8) | (u8)*string++);
+        }
+    }
 
-	if (width) {
-		*width = WidthTable[GetFontCode(firstChar)];
-	}
+    if (width) {
+        *width = WidthTable[GetFontCode(firstChar)];
+    }
 
-	return string;
+    return string;
 }
