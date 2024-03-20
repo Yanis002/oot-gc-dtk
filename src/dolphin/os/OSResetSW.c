@@ -38,6 +38,12 @@ void __OSResetSWInterruptHandler(__OSInterrupt interrupt, OSContext* context) {
     __PIRegs[0] = 2;
 }
 
+#if DOLPHIN_REV == 58
+#define GAME_CHOICE_MASK 0x3F
+#else
+#define GAME_CHOICE_MASK 0x1F
+#endif
+
 BOOL OSGetResetButtonState(void) {
     BOOL enabled;
     BOOL state;
@@ -74,8 +80,8 @@ BOOL OSGetResetButtonState(void) {
 
     LastState = state;
 
-    if (GameChoice & 0x3f) {
-        OSTime fire = (GameChoice & 0x3f) * 60;
+    if (GameChoice & GAME_CHOICE_MASK) {
+        OSTime fire = (GameChoice & GAME_CHOICE_MASK) * 60;
         fire = __OSStartTime + OSSecondsToTicks(fire);
         if (fire < now) {
             now -= fire;
