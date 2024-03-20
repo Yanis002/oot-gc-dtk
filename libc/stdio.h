@@ -2,8 +2,8 @@
 #define _STDIO
 
 #include "dolphin/types.h"
-#include <stdarg.h>
-#include <stddef.h>
+#include "stdarg.h"
+#include "stddef.h"
 
 #ifdef __cplusplus
 extern "C" {

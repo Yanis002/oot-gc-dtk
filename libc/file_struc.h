@@ -1,7 +1,7 @@
 #ifndef _FILE_STRUC
 #define _FILE_STRUC
 
-#include <stddef.h>
+#include "stddef.h"
 
 #ifdef __cplusplus
 extern "C" {

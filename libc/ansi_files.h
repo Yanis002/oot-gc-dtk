@@ -1,6 +1,6 @@
 #ifndef _DOLPHIN_ANSI_FILES_H
 #define _DOLPHIN_ANSI_FILES_H
-#include <stdio.h>
+#include "stdio.h"
 
 #ifdef __cplusplus
 extern "C" {

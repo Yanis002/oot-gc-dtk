@@ -1,7 +1,7 @@
 #ifndef _MATH_H_
 #define _MATH_H_
 
-#include <stdint.h>
+#include "stdint.h"
 
 #ifdef __cplusplus
 extern "C" {
