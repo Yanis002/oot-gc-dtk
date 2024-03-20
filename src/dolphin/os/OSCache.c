@@ -9,226 +9,226 @@
 
 /* clang-format off */
 asm void DCEnable() {
-  nofralloc
-  sync
-  mfspr r3, HID0
-  ori   r3, r3, 0x4000
-  mtspr HID0, r3
-  blr
+    nofralloc
+    sync
+    mfspr r3, HID0
+    ori   r3, r3, 0x4000
+    mtspr HID0, r3
+    blr
 }
 
 asm void DCInvalidateRange(register void* addr, register u32 nBytes) {
-  nofralloc
-  cmplwi nBytes, 0
-  blelr
-  clrlwi r5, addr, 27
-  add    nBytes, nBytes, r5
-  addi   nBytes, nBytes, 31
-  srwi   nBytes, nBytes, 5
-  mtctr  nBytes
+    nofralloc
+    cmplwi nBytes, 0
+    blelr
+    clrlwi r5, addr, 27
+    add    nBytes, nBytes, r5
+    addi   nBytes, nBytes, 31
+    srwi   nBytes, nBytes, 5
+    mtctr  nBytes
 
 @1
-  dcbi r0, addr
-  addi addr, addr, 32
-  bdnz @1
-  blr
+    dcbi r0, addr
+    addi addr, addr, 32
+    bdnz @1
+    blr
 }
 
 
 asm void DCFlushRange(register void* addr, register u32 nBytes) {
-  nofralloc
-  cmplwi nBytes, 0
-  blelr
-  clrlwi r5, addr, 27
-  add nBytes, nBytes, r5
-  addi nBytes, nBytes, 31
-  srwi nBytes, nBytes, 5
-  mtctr nBytes
+    nofralloc
+    cmplwi nBytes, 0
+    blelr
+    clrlwi r5, addr, 27
+    add nBytes, nBytes, r5
+    addi nBytes, nBytes, 31
+    srwi nBytes, nBytes, 5
+    mtctr nBytes
 
 @1
-  dcbf r0, addr
-  addi addr, addr, 32
-  bdnz @1
-  sc
-  blr
+    dcbf r0, addr
+    addi addr, addr, 32
+    bdnz @1
+    sc
+    blr
 }
 
 asm void DCStoreRange(register void* addr, register u32 nBytes) {
-  nofralloc
-  cmplwi nBytes, 0
-  blelr
-  clrlwi r5, addr, 27
-  add nBytes, nBytes, r5
-  addi nBytes, nBytes, 31
-  srwi nBytes, nBytes, 5
-  mtctr nBytes
+    nofralloc
+    cmplwi nBytes, 0
+    blelr
+    clrlwi r5, addr, 27
+    add nBytes, nBytes, r5
+    addi nBytes, nBytes, 31
+    srwi nBytes, nBytes, 5
+    mtctr nBytes
 
 @1
-  dcbst r0, addr
-  addi addr, addr, 32
-  bdnz @1
-  sc
+    dcbst r0, addr
+    addi addr, addr, 32
+    bdnz @1
+    sc
 
-  blr
+    blr
 }
 
 asm void DCFlushRangeNoSync(register void* addr, register u32 nBytes) {
-  nofralloc
-  cmplwi nBytes, 0
-  blelr
-  clrlwi r5, addr, 27
-  add nBytes, nBytes, r5
-  addi nBytes, nBytes, 31
-  srwi nBytes, nBytes, 5
-  mtctr nBytes
+    nofralloc
+    cmplwi nBytes, 0
+    blelr
+    clrlwi r5, addr, 27
+    add nBytes, nBytes, r5
+    addi nBytes, nBytes, 31
+    srwi nBytes, nBytes, 5
+    mtctr nBytes
 
 @1
-  dcbf r0, addr
-  addi addr, addr, 32
-  bdnz @1
-  blr
+    dcbf r0, addr
+    addi addr, addr, 32
+    bdnz @1
+    blr
 }
 
 
 asm void DCStoreRangeNoSync(register void* addr, register u32 nBytes) {
-  nofralloc
-  cmplwi nBytes, 0
-  blelr
-  clrlwi r5, addr, 27
-  add nBytes, nBytes, r5
-  addi nBytes, nBytes, 31
-  srwi nBytes, nBytes, 5
-  mtctr nBytes
+    nofralloc
+    cmplwi nBytes, 0
+    blelr
+    clrlwi r5, addr, 27
+    add nBytes, nBytes, r5
+    addi nBytes, nBytes, 31
+    srwi nBytes, nBytes, 5
+    mtctr nBytes
 
 @1
-  dcbst r0, addr
-  addi addr, addr, 32
-  bdnz @1
+    dcbst r0, addr
+    addi addr, addr, 32
+    bdnz @1
 
-  blr
+    blr
 }
 
 asm void DCZeroRange(register void* addr, register u32 nBytes) {
-  nofralloc
-  cmplwi nBytes, 0
-  blelr
-  clrlwi r5, addr, 27
-  add nBytes, nBytes, r5
-  addi nBytes, nBytes, 31
-  srwi nBytes, nBytes, 5
-  mtctr nBytes
+    nofralloc
+    cmplwi nBytes, 0
+    blelr
+    clrlwi r5, addr, 27
+    add nBytes, nBytes, r5
+    addi nBytes, nBytes, 31
+    srwi nBytes, nBytes, 5
+    mtctr nBytes
 
 @1
-  dcbz r0, addr
-  addi addr, addr, 32
-  bdnz @1
+    dcbz r0, addr
+    addi addr, addr, 32
+    bdnz @1
 
-  blr
+    blr
 }
 
 
 asm void ICInvalidateRange(register void* addr, register u32 nBytes) {
-  nofralloc
-  nofralloc
-  cmplwi nBytes, 0
-  blelr
-  clrlwi r5, addr, 27
-  add nBytes, nBytes, r5
-  addi nBytes, nBytes, 31
-  srwi nBytes, nBytes, 5
-  mtctr nBytes
+    nofralloc
+    nofralloc
+    cmplwi nBytes, 0
+    blelr
+    clrlwi r5, addr, 27
+    add nBytes, nBytes, r5
+    addi nBytes, nBytes, 31
+    srwi nBytes, nBytes, 5
+    mtctr nBytes
 
 @1
-  icbi r0, addr
-  addi addr, addr, 32
-  bdnz @1
-  sync
-  isync
+    icbi r0, addr
+    addi addr, addr, 32
+    bdnz @1
+    sync
+    isync
 
-  blr
+    blr
 }
 
 
 asm void ICFlashInvalidate() {
-  nofralloc
-  mfspr r3, HID0
-  ori r3, r3, 0x800
-  mtspr HID0, r3
-  blr
+    nofralloc
+    mfspr r3, HID0
+    ori r3, r3, 0x800
+    mtspr HID0, r3
+    blr
 }
 
 asm void ICEnable() {
-  nofralloc
-  isync
-  mfspr r3, HID0
-  ori r3, r3, 0x8000
-  mtspr HID0, r3
-  blr
+    nofralloc
+    isync
+    mfspr r3, HID0
+    ori r3, r3, 0x8000
+    mtspr HID0, r3
+    blr
 }
 
 #define LC_LINES    512
 #define CACHE_LINES 1024
 
 asm void __LCEnable() {
-  nofralloc
-  mfmsr   r5
-  ori     r5, r5, 0x1000
-  mtmsr   r5
+    nofralloc
+    mfmsr   r5
+    ori     r5, r5, 0x1000
+    mtmsr   r5
 
-  lis     r3, OS_CACHED_REGION_PREFIX
-  li      r4, CACHE_LINES
-  mtctr   r4
-_touchloop:
-  dcbt    0,r3
-  dcbst   0,r3
-  addi    r3,r3,32
-  bdnz    _touchloop
-  mfspr   r4, HID2
-  oris    r4, r4, 0x100F
-  mtspr   HID2, r4
+    lis     r3, OS_CACHED_REGION_PREFIX
+    li      r4, CACHE_LINES
+    mtctr   r4
+    _touchloop:
+    dcbt    0,r3
+    dcbst   0,r3
+    addi    r3,r3,32
+    bdnz    _touchloop
+    mfspr   r4, HID2
+    oris    r4, r4, 0x100F
+    mtspr   HID2, r4
 
-  nop 
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  lis     r3, LC_BASE_PREFIX
-  ori     r3, r3, 0x0002
-  mtspr   DBAT3L, r3
-  ori     r3, r3, 0x01fe
-  mtspr   DBAT3U, r3
-  isync
-  lis     r3, LC_BASE_PREFIX
-  li      r6, LC_LINES
-  mtctr   r6
-  li      r6, 0
+    nop 
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    lis     r3, LC_BASE_PREFIX
+    ori     r3, r3, 0x0002
+    mtspr   DBAT3L, r3
+    ori     r3, r3, 0x01fe
+    mtspr   DBAT3U, r3
+    isync
+    lis     r3, LC_BASE_PREFIX
+    li      r6, LC_LINES
+    mtctr   r6
+    li      r6, 0
 
 _lockloop:
-  dcbz_l  r6, r3
-  addi    r3, r3, 32
-  bdnz+    _lockloop
+    dcbz_l  r6, r3
+    addi    r3, r3, 32
+    bdnz+    _lockloop
 
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
 
-  blr
+    blr
 }
 
 void LCEnable() {
@@ -241,45 +241,45 @@ void LCEnable() {
 
 
 asm void LCDisable() {
-  nofralloc
-  lis     r3, LC_BASE_PREFIX
-  li      r4, LC_LINES
-  mtctr r4
+    nofralloc
+    lis     r3, LC_BASE_PREFIX
+    li      r4, LC_LINES
+    mtctr r4
 @1
-  dcbi r0, r3
-  addi r3, r3, 32
-  bdnz @1
-  mfspr r4, HID2
-  rlwinm r4, r4, 0, 4, 2
-  mtspr HID2, r4
-  blr
+    dcbi r0, r3
+    addi r3, r3, 32
+    bdnz @1
+    mfspr r4, HID2
+    rlwinm r4, r4, 0, 4, 2
+    mtspr HID2, r4
+    blr
 }
 
 
 asm void LCLoadBlocks(register void* destTag, register void* srcAddr, register u32 numBlocks) {
-  nofralloc
-  rlwinm  r6, numBlocks, 30, 27, 31
-  rlwinm  srcAddr, srcAddr, 0, 4, 31
-  or      r6, r6, srcAddr
-  mtspr   DMA_U, r6
-  rlwinm  r6, numBlocks, 2, 28, 29
-  or      r6, r6, destTag
-  ori     r6, r6, 0x12
-  mtspr   DMA_L, r6
-  blr
+    nofralloc
+    rlwinm  r6, numBlocks, 30, 27, 31
+    rlwinm  srcAddr, srcAddr, 0, 4, 31
+    or      r6, r6, srcAddr
+    mtspr   DMA_U, r6
+    rlwinm  r6, numBlocks, 2, 28, 29
+    or      r6, r6, destTag
+    ori     r6, r6, 0x12
+    mtspr   DMA_L, r6
+    blr
 }
 
 asm void LCStoreBlocks(register void* destAddr, register void* srcTag, register u32 numBlocks) {
-  nofralloc
-  rlwinm  r6, numBlocks, 30, 27, 31
-  rlwinm  destAddr, destAddr, 0, 4, 31
-  or      r6, r6, destAddr
-  mtspr   DMA_U, r6
-  rlwinm  r6, numBlocks, 2, 28, 29
-  or      r6, r6, srcTag
-  ori     r6, r6, 0x2
-  mtspr   DMA_L, r6
-  blr
+    nofralloc
+    rlwinm  r6, numBlocks, 30, 27, 31
+    rlwinm  destAddr, destAddr, 0, 4, 31
+    or      r6, r6, destAddr
+    mtspr   DMA_U, r6
+    rlwinm  r6, numBlocks, 2, 28, 29
+    or      r6, r6, srcTag
+    ori     r6, r6, 0x2
+    mtspr   DMA_L, r6
+    blr
 }
 
 /* clang-format on */
@@ -323,28 +323,28 @@ u32 LCStoreData(void* destAddr, void* srcAddr, u32 nBytes) {
 
 /* clang-format off */
 asm u32 LCQueueLength() {
-  nofralloc
-  mfspr   r4, HID2
-  rlwinm  r3, r4, 8, 28, 31
-  blr
+    nofralloc
+    mfspr   r4, HID2
+    rlwinm  r3, r4, 8, 28, 31
+    blr
 }
 
 asm void LCQueueWait(register u32 len) {
-  nofralloc
+    nofralloc
 #if DOLPHIN_REV == 58
-  addi len, len, 1
+    addi len, len, 1
 #endif
 @1
-  mfspr r4, HID2
-  rlwinm r4, r4, 8, 28, 31
+    mfspr r4, HID2
+    rlwinm r4, r4, 8, 28, 31
 #if DOLPHIN_REV == 58
-  cmpw cr2, r4, r3
-  bge cr2, @1
+    cmpw cr2, r4, r3
+    bge cr2, @1
 #else
-  cmpw r4, r3
-  bgt @1
+    cmpw r4, r3
+    bgt @1
 #endif
-  blr
+    blr
 }
 
 /* clang-format on */

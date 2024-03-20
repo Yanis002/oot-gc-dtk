@@ -4,21 +4,22 @@
 
 void __OSSystemCallVectorStart();
 void __OSSystemCallVectorEnd();
+
 static asm void SystemCallVector() {
     // clang-format off
-  nofralloc
+    nofralloc
 entry __OSSystemCallVectorStart
-  mfspr r9, HID0
-  ori r10, r9, 8
-  mtspr HID0, r10
-  isync
-    sync
-  mtspr HID0, r9
+    mfspr r9, HID0
+    ori r10, r9, 8
+    mtspr HID0, r10
+    isync
+        sync
+    mtspr HID0, r9
 
-  rfi
+    rfi
 
 entry __OSSystemCallVectorEnd
-  nop
+    nop
     // clang-format on
 }
 

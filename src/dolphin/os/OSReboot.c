@@ -29,11 +29,11 @@ static BOOL Prepared = FALSE;
 
 asm void Run() {
     // clang-format off
-  nofralloc
-  sync
-  isync
-  mtlr r3
-  blr
+    nofralloc
+    sync
+    isync
+    mtlr r3
+    blr
     // clang-format on
 }
 

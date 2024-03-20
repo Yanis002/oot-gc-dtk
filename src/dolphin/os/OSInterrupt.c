@@ -392,10 +392,10 @@ void __OSDispatchInterrupt(__OSException exception, OSContext* context) {
 static asm void ExternalInterruptHandler(register __OSException exception, register OSContext* context) {
 #pragma unused(exception)
     // clang-format off
-  nofralloc 
-  OS_EXCEPTION_SAVE_GPRS(context)
+    nofralloc 
+    OS_EXCEPTION_SAVE_GPRS(context)
 
-  stwu r1, -8(r1)
-  b __OSDispatchInterrupt
+    stwu r1, -8(r1)
+    b __OSDispatchInterrupt
     // clang-format on
 }
