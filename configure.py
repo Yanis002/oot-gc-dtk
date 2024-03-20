@@ -178,6 +178,8 @@ cflags_base = [
     "-i libc",
     f"-i build/{config.version}/include",
     f"-DVERSION={version_num}",
+    # NOTE: Update this when other versions are done, 99 means unknown (used for CE-J)
+    f"-DDOLPHIN_REV={58 if version_num == 0 else 99}",
 ]
 
 # Debug flags

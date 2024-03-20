@@ -10,7 +10,7 @@ static struct OSAlarmQueue {
 static void DecrementerExceptionHandler(__OSException exception, OSContext* context);
 static BOOL OnReset(BOOL final);
 
-#if VERSION > 0
+#if DOLPHIN_REV > 58
 static OSResetFunctionInfo ResetFunctionInfo = {OnReset, 0xFFFFFFFF};
 #endif
 
@@ -18,7 +18,7 @@ void OSInitAlarm(void) {
     if (__OSGetExceptionHandler(8) != DecrementerExceptionHandler) {
         AlarmQueue.head = AlarmQueue.tail = NULL;
         __OSSetExceptionHandler(8, DecrementerExceptionHandler);
-#if VERSION > 0
+#if DOLPHIN_REV > 58
         OSRegisterResetFunction(&ResetFunctionInfo);
 #endif
     }
@@ -189,7 +189,7 @@ static asm void DecrementerExceptionHandler(register __OSException exception, re
     // clang-format on
 }
 
-#if VERSION > 0
+#if DOLPHIN_REV > 58
 static BOOL OnReset(BOOL final) {
     OSAlarm* alarm;
     OSAlarm* next;

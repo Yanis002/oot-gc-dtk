@@ -10,7 +10,7 @@ void __check_pad3(void) {
     return;
 }
 
-#if VERSION > 0
+#if DOLPHIN_REV > 58
 __declspec(section ".init") static void __set_debug_bba(void) { Debug_BBA = 1; }
 
 __declspec(section ".init") static u8 __get_debug_bba(void) { return Debug_BBA; }
@@ -50,7 +50,7 @@ _load_lomem_debug_flag:
 	addi r7, r7, DEBUGFLAG_ADDR@l
 	lwz r7, 0(r7)
 
-#if VERSION == 0
+#if DOLPHIN_REV == 58
 _check_debug_flag:
 	li r5, 0
 	cmplwi r7, 2
@@ -121,7 +121,7 @@ _end_of_parseargs:
 	beq _check_pad3
 	andi. r3, r3, 0x7fff
 	cmplwi r3, 1
-#if VERSION == 0
+#if DOLPHIN_REV == 58
 	bne _goto_skip_init_bba
 #else
 	bne _skip_crc
@@ -130,7 +130,7 @@ _end_of_parseargs:
 _check_pad3:
 	bl __check_pad3
 
-#if VERSION > 0
+#if DOLPHIN_REV > 58
 _skip_crc:
 	bl __get_debug_bba
 	cmplwi r3, 1
@@ -150,7 +150,7 @@ _goto_skip_init_bba:
 asm static void __init_registers(void) {
     // clang-format off
 	nofralloc
-	#if VERSION > 0
+	#if DOLPHIN_REV > 58
 		li r0, 0
 		li r3, 0
 		li r4, 0

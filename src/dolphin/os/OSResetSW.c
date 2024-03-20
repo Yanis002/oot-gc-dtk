@@ -8,7 +8,7 @@ vu32 __PIRegs[12] : 0xCC003000;
 
 extern OSTime __OSStartTime;
 
-#if VERSION == 0
+#if DOLPHIN_REV == 58
 //! TODO: find what's wrong with sbss on mq
 static BOOL bootThisDol;
 #endif

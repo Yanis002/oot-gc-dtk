@@ -331,13 +331,13 @@ asm u32 LCQueueLength() {
 
 asm void LCQueueWait(register u32 len) {
   nofralloc
-#if VERSION == 0
+#if DOLPHIN_REV == 58
   addi len, len, 1
 #endif
 @1
   mfspr r4, HID2
   rlwinm r4, r4, 8, 28, 31
-#if VERSION == 0
+#if DOLPHIN_REV == 58
   cmpw cr2, r4, r3
   bge cr2, @1
 #else

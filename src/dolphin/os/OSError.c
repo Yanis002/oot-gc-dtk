@@ -7,7 +7,7 @@ OSThread* __OSCurrentThread : (OS_BASE_CACHED | 0x00E4);
 OSThreadQueue __OSActiveThreadQueue : (OS_BASE_CACHED | 0x00DC);
 volatile OSContext* __OSFPUContext : (OS_BASE_CACHED | 0x00D8);
 
-#if VERSION == 0
+#if DOLPHIN_REV == 58
 OSErrorHandler __OSErrorTable[OS_ERROR_MAX + 2]; // fake?
 #else
 OSErrorHandler __OSErrorTable[OS_ERROR_MAX];

@@ -209,7 +209,7 @@ void PPCMfmmcr0(void)
  */
 asm void PPCMtmmcr0 (register u32 newMmcr0)
 {
-    #if VERSION > 0 // D43J01
+    #if DOLPHIN_REV > 58
     mtspr MMCR0, newMmcr0
     #endif
 }
@@ -232,7 +232,7 @@ void PPCMfmmcr1(void)
  */
 asm void PPCMtmmcr1 (register u32 newMmcr1)
 {
-    #if VERSION > 0 // D43J01
+    #if DOLPHIN_REV > 58
     mtspr MMCR1, newMmcr1
     #endif
 }
@@ -255,7 +255,7 @@ void PPCMfpmc1(void)
  */
 asm void PPCMtpmc1 (register u32 newPmc1)
 {
-    #if VERSION > 0 // D43J01
+    #if DOLPHIN_REV > 58
     mtspr PMC1, newPmc1
     #endif
 }
@@ -278,7 +278,7 @@ void PPCMfpmc2(void)
  */
 asm void PPCMtpmc2 (register u32 newPmc2)
 {
-    #if VERSION > 0 // D43J01
+    #if DOLPHIN_REV > 58
     mtspr PMC2, newPmc2
     #endif
 }
@@ -301,7 +301,7 @@ void PPCMfpmc3(void)
  */
 asm void PPCMtpmc3 (register u32 newPmc3)
 {
-    #if VERSION > 0 // D43J01
+    #if DOLPHIN_REV > 58
     mtspr PMC3, newPmc3
     #endif
 }
@@ -324,7 +324,7 @@ void PPCMfpmc4(void)
  */
 asm void PPCMtpmc4 (register u32 newPmc4)
 {
-    #if VERSION > 0 // D43J01
+    #if DOLPHIN_REV > 58
     mtspr PMC4, newPmc4
     #endif
 }
