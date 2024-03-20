@@ -149,6 +149,8 @@ BOOL OSRestoreInterrupts(BOOL level);
 
 #define OSHalt(msg) OSPanic(__FILE__, __LINE__, msg)
 
+volatile int __OSTVMode AT_ADDRESS(OS_BASE_CACHED | 0xCC);
+
 #ifdef _DEBUG
 
 #ifndef ASSERT
