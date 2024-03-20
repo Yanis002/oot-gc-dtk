@@ -327,7 +327,7 @@ config.libs = [
         "os",
         [
             Object(Matching, "dolphin/os/OS.c"),
-            Object(NonMatching, "dolphin/os/OSAlarm.c"),
+            Object(Matching, "dolphin/os/OSAlarm.c"),
             Object(NonMatching, "dolphin/os/OSAlloc.c"),
             Object(NonMatching, "dolphin/os/OSArena.c"),
             Object(NonMatching, "dolphin/os/OSAudioSystem.c"),
