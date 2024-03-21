@@ -25,9 +25,9 @@ extern "C" {
 
 typedef struct {
 
-  u32 numMtx;
-  MtxPtr stackBase;
-  MtxPtr stackPtr;
+    u32 numMtx;
+    MtxPtr stackBase;
+    MtxPtr stackPtr;
 
 } MtxStack, *MtxStackPtr;
 
@@ -163,14 +163,11 @@ void C_MTXOrtho(Mtx44 m, f32 t, f32 b, f32 l, f32 r, f32 n, f32 f);
 #define MTXPerspective C_MTXPerspective
 #define MTXOrtho C_MTXOrtho
 
-void C_MTXLightFrustum(Mtx m, f32 t, f32 b, f32 l, f32 r, f32 n, f32 scaleS, f32 scaleT, f32 transS,
-                       f32 transT);
+void C_MTXLightFrustum(Mtx m, f32 t, f32 b, f32 l, f32 r, f32 n, f32 scaleS, f32 scaleT, f32 transS, f32 transT);
 
-void C_MTXLightPerspective(Mtx m, f32 fovY, f32 aspect, f32 scaleS, f32 scaleT, f32 transS,
-                           f32 transT);
+void C_MTXLightPerspective(Mtx m, f32 fovY, f32 aspect, f32 scaleS, f32 scaleT, f32 transS, f32 transT);
 
-void C_MTXLightOrtho(Mtx m, f32 t, f32 b, f32 l, f32 r, f32 scaleS, f32 scaleT, f32 transS,
-                     f32 transT);
+void C_MTXLightOrtho(Mtx m, f32 t, f32 b, f32 l, f32 r, f32 scaleS, f32 scaleT, f32 transS, f32 transT);
 
 #define MTXLightFrustum C_MTXLightFrustum
 #define MTXLightPerspective C_MTXLightPerspective
@@ -203,7 +200,7 @@ f32 PSVECDistance(const Vec* a, const Vec* b);
 #endif
 
 // TODO
-#if defined( MTX_USE_PS) && 0
+#if defined(MTX_USE_PS) && 0
 #define VECAdd PSVECAdd
 #define VECSubtract PSVECSubtract
 #define VECScale PSVECScale
@@ -247,10 +244,9 @@ void C_QUATMtx(Quaternion* r, const Mtx m);
 
 void C_QUATLerp(const Quaternion* p, const Quaternion* q, Quaternion* r, f32 t);
 void C_QUATSlerp(const Quaternion* p, const Quaternion* q, Quaternion* r, f32 t);
-void C_QUATSquad(const Quaternion* p, const Quaternion* a, const Quaternion* b, const Quaternion* q,
-                 Quaternion* r, f32 t);
-void C_QUATCompA(const Quaternion* qprev, const Quaternion* q, const Quaternion* qnext,
-                 Quaternion* a);
+void C_QUATSquad(const Quaternion* p, const Quaternion* a, const Quaternion* b, const Quaternion* q, Quaternion* r,
+                 f32 t);
+void C_QUATCompA(const Quaternion* qprev, const Quaternion* q, const Quaternion* qnext, Quaternion* a);
 
 #ifdef GEKKO
 void PSQUATAdd(const Quaternion* p, const Quaternion* q, Quaternion* r);
@@ -296,8 +292,8 @@ void PSQUATInverse(const Quaternion* src, Quaternion* inv);
 #ifdef GEKKO
 void PSMTXReorder(const Mtx src, ROMtx dest);
 void PSMTXROMultVecArray(const ROMtx m, const Vec* srcBase, Vec* dstBase, u32 count);
-void PSMTXROSkin2VecArray(const ROMtx m0, const ROMtx m1, const f32* wtBase, const Vec* srcBase,
-                          Vec* dstBase, u32 count);
+void PSMTXROSkin2VecArray(const ROMtx m0, const ROMtx m1, const f32* wtBase, const Vec* srcBase, Vec* dstBase,
+                          u32 count);
 void PSMTXMultS16VecArray(const Mtx m, const S16Vec* srcBase, Vec* dstBase, u32 count);
 void PSMTXROMultS16VecArray(const ROMtx m, const S16Vec* srcBase, Vec* dstBase, u32 count);
 #endif
@@ -310,8 +306,7 @@ MtxPtr MTXPushInvXpose(MtxStack* sPtr, const Mtx m);
 MtxPtr MTXPop(MtxStack* sPtr);
 MtxPtr MTXGetStackPtr(const MtxStack* sPtr);
 
-#define MTXAllocStack(sPtr, numMtx)                                                                \
-  (((MtxStackPtr)(sPtr))->stackBase = (MtxPtr)OSAlloc(((numMtx) * sizeof(Mtx))))
+#define MTXAllocStack(sPtr, numMtx) (((MtxStackPtr)(sPtr))->stackBase = (MtxPtr)OSAlloc(((numMtx) * sizeof(Mtx))))
 
 #define MTXFreeStack(sPtr) (OSFree((void*)(((MtxStackPtr)(sPtr))->stackBase)))
 

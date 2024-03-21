@@ -5,24 +5,24 @@ static f32 Unit01[] = {0.0f, 1.0f};
 extern f32 sinf(f32);
 
 void C_MTXIdentity(Mtx mtx) {
-  mtx[0][0] = 1.0f;
-  mtx[0][1] = 0.0f;
-  mtx[0][2] = 0.0f;
-  mtx[1][0] = 0.0f;
-  mtx[1][1] = 1.0f;
-  mtx[1][2] = 0.0f;
-  mtx[2][0] = 0.0f;
-  mtx[2][1] = 0.0f;
-  mtx[2][2] = 1.0f;
+    mtx[0][0] = 1.0f;
+    mtx[0][1] = 0.0f;
+    mtx[0][2] = 0.0f;
+    mtx[1][0] = 0.0f;
+    mtx[1][1] = 1.0f;
+    mtx[1][2] = 0.0f;
+    mtx[2][0] = 0.0f;
+    mtx[2][1] = 0.0f;
+    mtx[2][2] = 1.0f;
 }
 
 #ifdef GEKKO
 void PSMTXIdentity(register Mtx m) {
-  register f32 zero_c = 0.0f;
-  register f32 one_c = 1.0f;
-  register f32 c_01;
-  register f32 c_10;
-  // clang-format off
+    register f32 zero_c = 0.0f;
+    register f32 one_c = 1.0f;
+    register f32 c_01;
+    register f32 c_10;
+    // clang-format off
   asm {
     psq_st zero_c, 8(m), 0, 0
     ps_merge01 c_01, zero_c, one_c
@@ -33,36 +33,36 @@ void PSMTXIdentity(register Mtx m) {
     psq_st c_10, 0(m), 0, 0
     psq_st c_10, 40(m), 0, 0
   }
-  // clang-format on
+    // clang-format on
 }
 #endif
 
 #ifdef UNUSED
 void C_MTXCopy(const Mtx src, Mtx dst) {
 
-  if (src == dst) {
-    return;
-  }
+    if (src == dst) {
+        return;
+    }
 
-  dst[0][0] = src[0][0];
-  dst[0][1] = src[0][1];
-  dst[0][2] = src[0][2];
-  dst[0][3] = src[0][3];
+    dst[0][0] = src[0][0];
+    dst[0][1] = src[0][1];
+    dst[0][2] = src[0][2];
+    dst[0][3] = src[0][3];
 
-  dst[1][0] = src[1][0];
-  dst[1][1] = src[1][1];
-  dst[1][2] = src[1][2];
-  dst[1][3] = src[1][3];
+    dst[1][0] = src[1][0];
+    dst[1][1] = src[1][1];
+    dst[1][2] = src[1][2];
+    dst[1][3] = src[1][3];
 
-  dst[2][0] = src[2][0];
-  dst[2][1] = src[2][1];
-  dst[2][2] = src[2][2];
-  dst[2][3] = src[2][3];
+    dst[2][0] = src[2][0];
+    dst[2][1] = src[2][1];
+    dst[2][2] = src[2][2];
+    dst[2][3] = src[2][3];
 }
 
 #ifdef GEKKO
 asm void PSMTXCopy(const register Mtx src, register Mtx dst) {
-  // clang-format off
+    // clang-format off
   nofralloc
 
   psq_l fp0, 0(src), 0, 0
@@ -79,46 +79,46 @@ asm void PSMTXCopy(const register Mtx src, register Mtx dst) {
   psq_st fp5, 40(dst), 0, 0
 
   blr
-  // clang-format on
+    // clang-format on
 }
 #endif
 
 void C_MTXConcat(const Mtx a, const Mtx b, Mtx ab) {
-  Mtx mTmp;
-  MtxPtr m;
+    Mtx mTmp;
+    MtxPtr m;
 
-  if ((ab == a) || (ab == b)) {
-    m = mTmp;
-  }
+    if ((ab == a) || (ab == b)) {
+        m = mTmp;
+    }
 
-  else {
-    m = ab;
-  }
+    else {
+        m = ab;
+    }
 
-  m[0][0] = a[0][0] * b[0][0] + a[0][1] * b[1][0] + a[0][2] * b[2][0];
-  m[0][1] = a[0][0] * b[0][1] + a[0][1] * b[1][1] + a[0][2] * b[2][1];
-  m[0][2] = a[0][0] * b[0][2] + a[0][1] * b[1][2] + a[0][2] * b[2][2];
-  m[0][3] = a[0][0] * b[0][3] + a[0][1] * b[1][3] + a[0][2] * b[2][3] + a[0][3];
+    m[0][0] = a[0][0] * b[0][0] + a[0][1] * b[1][0] + a[0][2] * b[2][0];
+    m[0][1] = a[0][0] * b[0][1] + a[0][1] * b[1][1] + a[0][2] * b[2][1];
+    m[0][2] = a[0][0] * b[0][2] + a[0][1] * b[1][2] + a[0][2] * b[2][2];
+    m[0][3] = a[0][0] * b[0][3] + a[0][1] * b[1][3] + a[0][2] * b[2][3] + a[0][3];
 
-  m[1][0] = a[1][0] * b[0][0] + a[1][1] * b[1][0] + a[1][2] * b[2][0];
-  m[1][1] = a[1][0] * b[0][1] + a[1][1] * b[1][1] + a[1][2] * b[2][1];
-  m[1][2] = a[1][0] * b[0][2] + a[1][1] * b[1][2] + a[1][2] * b[2][2];
-  m[1][3] = a[1][0] * b[0][3] + a[1][1] * b[1][3] + a[1][2] * b[2][3] + a[1][3];
+    m[1][0] = a[1][0] * b[0][0] + a[1][1] * b[1][0] + a[1][2] * b[2][0];
+    m[1][1] = a[1][0] * b[0][1] + a[1][1] * b[1][1] + a[1][2] * b[2][1];
+    m[1][2] = a[1][0] * b[0][2] + a[1][1] * b[1][2] + a[1][2] * b[2][2];
+    m[1][3] = a[1][0] * b[0][3] + a[1][1] * b[1][3] + a[1][2] * b[2][3] + a[1][3];
 
-  m[2][0] = a[2][0] * b[0][0] + a[2][1] * b[1][0] + a[2][2] * b[2][0];
-  m[2][1] = a[2][0] * b[0][1] + a[2][1] * b[1][1] + a[2][2] * b[2][1];
-  m[2][2] = a[2][0] * b[0][2] + a[2][1] * b[1][2] + a[2][2] * b[2][2];
-  m[2][3] = a[2][0] * b[0][3] + a[2][1] * b[1][3] + a[2][2] * b[2][3] + a[2][3];
+    m[2][0] = a[2][0] * b[0][0] + a[2][1] * b[1][0] + a[2][2] * b[2][0];
+    m[2][1] = a[2][0] * b[0][1] + a[2][1] * b[1][1] + a[2][2] * b[2][1];
+    m[2][2] = a[2][0] * b[0][2] + a[2][1] * b[1][2] + a[2][2] * b[2][2];
+    m[2][3] = a[2][0] * b[0][3] + a[2][1] * b[1][3] + a[2][2] * b[2][3] + a[2][3];
 
-  if (m == mTmp) {
-    C_MTXCopy(mTmp, ab);
-  }
+    if (m == mTmp) {
+        C_MTXCopy(mTmp, ab);
+    }
 }
 #endif
 
 #ifdef GEKKO
 asm void PSMTXConcat(const register Mtx mA, const register Mtx mB, register Mtx mAB) {
-  // clang-format off
+    // clang-format off
   nofralloc
 
 #define FP0 fp0
@@ -194,7 +194,7 @@ asm void PSMTXConcat(const register Mtx mA, const register Mtx mB, register Mtx 
     addi   r1, r1, 64
 
     blr
-  // clang-format on
+    // clang-format on
 
 #undef FP0
 #undef FP1
@@ -218,13 +218,13 @@ asm void PSMTXConcat(const register Mtx mA, const register Mtx mB, register Mtx 
 
 #ifdef UNUSED
 void C_MTXConcatArray(const Mtx a, const Mtx* srcBase, Mtx* dstBase, u32 count) {
-  u32 i;
-  for (i = 0; i < count; i++) {
-    C_MTXConcat(a, *srcBase, *dstBase);
+    u32 i;
+    for (i = 0; i < count; i++) {
+        C_MTXConcat(a, *srcBase, *dstBase);
 
-    srcBase++;
-    dstBase++;
-  }
+        srcBase++;
+        dstBase++;
+    }
 }
 
 #ifdef GEKKO
@@ -233,15 +233,14 @@ void C_MTXConcatArray(const Mtx a, const Mtx* srcBase, Mtx* dstBase, u32 count) 
 #pragma optimization_level 1
 #endif
 
-void PSMTXConcatArray(const register Mtx a, const register Mtx* srcBase, register Mtx* dstBase,
-                      register u32 count) {
-  register f32 va0, va1, va2, va3, va4, va5;
-  register f32 vb0, vb1, vb2, vb3, vb4, vb5;
-  register f32 vd0, vd1, vd2, vd3, vd4, vd5;
-  register f32 u01;
-  register f32* u01Ptr = Unit01;
+void PSMTXConcatArray(const register Mtx a, const register Mtx* srcBase, register Mtx* dstBase, register u32 count) {
+    register f32 va0, va1, va2, va3, va4, va5;
+    register f32 vb0, vb1, vb2, vb3, vb4, vb5;
+    register f32 vd0, vd1, vd2, vd3, vd4, vd5;
+    register f32 u01;
+    register f32* u01Ptr = Unit01;
 
-  // clang-format off
+    // clang-format off
   asm
   {
     psq_l       va0, 0(a), 0, 0
@@ -335,7 +334,7 @@ _loop:
     psq_st      vd3, 24(dstBase), 0, 0
     psq_st      vd5, 40(dstBase), 0, 0
   }
-  // clang-format on
+    // clang-format on
 }
 
 #if (defined(__MWERKS__) && defined(_DEBUG))
@@ -346,39 +345,39 @@ _loop:
 #endif
 
 void C_MTXTranspose(const Mtx src, Mtx xPose) {
-  Mtx mTmp;
-  MtxPtr m;
+    Mtx mTmp;
+    MtxPtr m;
 
-  if (src == xPose) {
-    m = mTmp;
-  } else {
-    m = xPose;
-  }
+    if (src == xPose) {
+        m = mTmp;
+    } else {
+        m = xPose;
+    }
 
-  m[0][0] = src[0][0];
-  m[0][1] = src[1][0];
-  m[0][2] = src[2][0];
-  m[0][3] = 0.0f;
-  m[1][0] = src[0][1];
-  m[1][1] = src[1][1];
-  m[1][2] = src[2][1];
-  m[1][3] = 0.0f;
-  m[2][0] = src[0][2];
-  m[2][1] = src[1][2];
-  m[2][2] = src[2][2];
-  m[2][3] = 0.0f;
+    m[0][0] = src[0][0];
+    m[0][1] = src[1][0];
+    m[0][2] = src[2][0];
+    m[0][3] = 0.0f;
+    m[1][0] = src[0][1];
+    m[1][1] = src[1][1];
+    m[1][2] = src[2][1];
+    m[1][3] = 0.0f;
+    m[2][0] = src[0][2];
+    m[2][1] = src[1][2];
+    m[2][2] = src[2][2];
+    m[2][3] = 0.0f;
 
-  if (m == mTmp) {
-    C_MTXCopy(mTmp, xPose);
-  }
+    if (m == mTmp) {
+        C_MTXCopy(mTmp, xPose);
+    }
 }
 
 #ifdef GEKKO
 void PSMTXTranspose(const register Mtx src, register Mtx xPose) {
-  register f32 c_zero = 0.0F;
-  register f32 row0a, row1a, row0b, row1b;
-  register f32 trns0, trns1, trns2;
-  // clang-format off
+    register f32 c_zero = 0.0F;
+    register f32 row0a, row1a, row0b, row1b;
+    register f32 trns0, trns1, trns2;
+    // clang-format off
   asm
   {
     psq_l       row0a, 0(src),  0, 0
@@ -400,57 +399,56 @@ void PSMTXTranspose(const register Mtx src, register Mtx xPose) {
     psq_st      trns1, 24(xPose), 0, 0
     stfs        row0b, 40(xPose) 
   }
-  // clang-format on
+    // clang-format on
 }
 #endif
 
 u32 C_MTXInverse(const Mtx src, Mtx inv) {
-  Mtx mTmp;
-  MtxPtr m;
-  f32 det;
+    Mtx mTmp;
+    MtxPtr m;
+    f32 det;
 
-  if (src == inv) {
-    m = mTmp;
-  } else {
-    m = inv;
-  }
+    if (src == inv) {
+        m = mTmp;
+    } else {
+        m = inv;
+    }
 
-  det = src[0][0] * src[1][1] * src[2][2] + src[0][1] * src[1][2] * src[2][0] +
-        src[0][2] * src[1][0] * src[2][1] - src[2][0] * src[1][1] * src[0][2] -
-        src[1][0] * src[0][1] * src[2][2] - src[0][0] * src[2][1] * src[1][2];
+    det = src[0][0] * src[1][1] * src[2][2] + src[0][1] * src[1][2] * src[2][0] + src[0][2] * src[1][0] * src[2][1] -
+          src[2][0] * src[1][1] * src[0][2] - src[1][0] * src[0][1] * src[2][2] - src[0][0] * src[2][1] * src[1][2];
 
-  if (det == 0.0f) {
-    return 0;
-  }
+    if (det == 0.0f) {
+        return 0;
+    }
 
-  det = 1.0f / det;
+    det = 1.0f / det;
 
-  m[0][0] = (src[1][1] * src[2][2] - src[2][1] * src[1][2]) * det;
-  m[0][1] = -(src[0][1] * src[2][2] - src[2][1] * src[0][2]) * det;
-  m[0][2] = (src[0][1] * src[1][2] - src[1][1] * src[0][2]) * det;
+    m[0][0] = (src[1][1] * src[2][2] - src[2][1] * src[1][2]) * det;
+    m[0][1] = -(src[0][1] * src[2][2] - src[2][1] * src[0][2]) * det;
+    m[0][2] = (src[0][1] * src[1][2] - src[1][1] * src[0][2]) * det;
 
-  m[1][0] = -(src[1][0] * src[2][2] - src[2][0] * src[1][2]) * det;
-  m[1][1] = (src[0][0] * src[2][2] - src[2][0] * src[0][2]) * det;
-  m[1][2] = -(src[0][0] * src[1][2] - src[1][0] * src[0][2]) * det;
+    m[1][0] = -(src[1][0] * src[2][2] - src[2][0] * src[1][2]) * det;
+    m[1][1] = (src[0][0] * src[2][2] - src[2][0] * src[0][2]) * det;
+    m[1][2] = -(src[0][0] * src[1][2] - src[1][0] * src[0][2]) * det;
 
-  m[2][0] = (src[1][0] * src[2][1] - src[2][0] * src[1][1]) * det;
-  m[2][1] = -(src[0][0] * src[2][1] - src[2][0] * src[0][1]) * det;
-  m[2][2] = (src[0][0] * src[1][1] - src[1][0] * src[0][1]) * det;
+    m[2][0] = (src[1][0] * src[2][1] - src[2][0] * src[1][1]) * det;
+    m[2][1] = -(src[0][0] * src[2][1] - src[2][0] * src[0][1]) * det;
+    m[2][2] = (src[0][0] * src[1][1] - src[1][0] * src[0][1]) * det;
 
-  m[0][3] = -m[0][0] * src[0][3] - m[0][1] * src[1][3] - m[0][2] * src[2][3];
-  m[1][3] = -m[1][0] * src[0][3] - m[1][1] * src[1][3] - m[1][2] * src[2][3];
-  m[2][3] = -m[2][0] * src[0][3] - m[2][1] * src[1][3] - m[2][2] * src[2][3];
+    m[0][3] = -m[0][0] * src[0][3] - m[0][1] * src[1][3] - m[0][2] * src[2][3];
+    m[1][3] = -m[1][0] * src[0][3] - m[1][1] * src[1][3] - m[1][2] * src[2][3];
+    m[2][3] = -m[2][0] * src[0][3] - m[2][1] * src[1][3] - m[2][2] * src[2][3];
 
-  if (m == mTmp) {
-    C_MTXCopy(mTmp, inv);
-  }
+    if (m == mTmp) {
+        C_MTXCopy(mTmp, inv);
+    }
 
-  return 1;
+    return 1;
 }
 
 #ifdef GEKKO
 asm u32 PSMTXInverse(const register Mtx src, register Mtx inv){
-  // clang-format off
+    // clang-format off
   nofralloc
 
   psq_l       fp0, 0(src), 1, 0
@@ -517,57 +515,56 @@ _regular:
   addi        r3, 0, 1
   psq_st      fp7,  44(inv), 1, 0
   blr
-  // clang-format on
+    // clang-format on
 }
 #endif
 
 u32 C_MTXInvXpose(const Mtx src, Mtx invX) {
-  Mtx mTmp;
-  MtxPtr m;
-  f32 det;
+    Mtx mTmp;
+    MtxPtr m;
+    f32 det;
 
-  if (src == invX) {
-    m = mTmp;
-  } else {
-    m = invX;
-  }
+    if (src == invX) {
+        m = mTmp;
+    } else {
+        m = invX;
+    }
 
-  det = src[0][0] * src[1][1] * src[2][2] + src[0][1] * src[1][2] * src[2][0] +
-        src[0][2] * src[1][0] * src[2][1] - src[2][0] * src[1][1] * src[0][2] -
-        src[1][0] * src[0][1] * src[2][2] - src[0][0] * src[2][1] * src[1][2];
+    det = src[0][0] * src[1][1] * src[2][2] + src[0][1] * src[1][2] * src[2][0] + src[0][2] * src[1][0] * src[2][1] -
+          src[2][0] * src[1][1] * src[0][2] - src[1][0] * src[0][1] * src[2][2] - src[0][0] * src[2][1] * src[1][2];
 
-  if (det == 0.0f) {
-    return 0;
-  }
+    if (det == 0.0f) {
+        return 0;
+    }
 
-  det = 1.0f / det;
+    det = 1.0f / det;
 
-  m[0][0] = (src[1][1] * src[2][2] - src[2][1] * src[1][2]) * det;
-  m[0][1] = -(src[1][0] * src[2][2] - src[2][0] * src[1][2]) * det;
-  m[0][2] = (src[1][0] * src[2][1] - src[2][0] * src[1][1]) * det;
+    m[0][0] = (src[1][1] * src[2][2] - src[2][1] * src[1][2]) * det;
+    m[0][1] = -(src[1][0] * src[2][2] - src[2][0] * src[1][2]) * det;
+    m[0][2] = (src[1][0] * src[2][1] - src[2][0] * src[1][1]) * det;
 
-  m[1][0] = -(src[0][1] * src[2][2] - src[2][1] * src[0][2]) * det;
-  m[1][1] = (src[0][0] * src[2][2] - src[2][0] * src[0][2]) * det;
-  m[1][2] = -(src[0][0] * src[2][1] - src[2][0] * src[0][1]) * det;
+    m[1][0] = -(src[0][1] * src[2][2] - src[2][1] * src[0][2]) * det;
+    m[1][1] = (src[0][0] * src[2][2] - src[2][0] * src[0][2]) * det;
+    m[1][2] = -(src[0][0] * src[2][1] - src[2][0] * src[0][1]) * det;
 
-  m[2][0] = (src[0][1] * src[1][2] - src[1][1] * src[0][2]) * det;
-  m[2][1] = -(src[0][0] * src[1][2] - src[1][0] * src[0][2]) * det;
-  m[2][2] = (src[0][0] * src[1][1] - src[1][0] * src[0][1]) * det;
+    m[2][0] = (src[0][1] * src[1][2] - src[1][1] * src[0][2]) * det;
+    m[2][1] = -(src[0][0] * src[1][2] - src[1][0] * src[0][2]) * det;
+    m[2][2] = (src[0][0] * src[1][1] - src[1][0] * src[0][1]) * det;
 
-  m[0][3] = 0.0F;
-  m[1][3] = 0.0F;
-  m[2][3] = 0.0F;
+    m[0][3] = 0.0F;
+    m[1][3] = 0.0F;
+    m[2][3] = 0.0F;
 
-  if (m == mTmp) {
-    C_MTXCopy(mTmp, invX);
-  }
+    if (m == mTmp) {
+        C_MTXCopy(mTmp, invX);
+    }
 
-  return 1;
+    return 1;
 }
 
 #ifdef GEKKO
 asm u32 PSMTXInvXpose(const register Mtx src, register Mtx invX) {
-  // clang-format off
+    // clang-format off
   nofralloc
 
   psq_l       fp0, 0(src), 1, 0
@@ -622,90 +619,90 @@ _regular:
   psq_st      fp9,   24(invX), 1, 0
   psq_st      fp8,   40(invX), 1, 0
   blr
-  // clang-format on
+    // clang-format on
 }
 #endif
 
 void C_MTXRotRad(Mtx m, char axis, f32 rad) {
 
-  f32 sinA, cosA;
-  sinA = sinf(rad);
-  cosA = cosf(rad);
-  C_MTXRotTrig(m, axis, sinA, cosA);
+    f32 sinA, cosA;
+    sinA = sinf(rad);
+    cosA = cosf(rad);
+    C_MTXRotTrig(m, axis, sinA, cosA);
 }
 
 #ifdef GEKKO
 void PSMTXRotRad(Mtx m, char axis, f32 rad) {
-  f32 sinA, cosA;
+    f32 sinA, cosA;
 
-  sinA = sinf(rad);
-  cosA = cosf(rad);
+    sinA = sinf(rad);
+    cosA = cosf(rad);
 
-  PSMTXRotTrig(m, axis, sinA, cosA);
+    PSMTXRotTrig(m, axis, sinA, cosA);
 }
 #endif
 
 void C_MTXRotTrig(Mtx m, char axis, f32 sinA, f32 cosA) {
-  switch (axis) {
+    switch (axis) {
 
-  case 'x':
-  case 'X':
-    m[0][0] = 1.0f;
-    m[0][1] = 0.0f;
-    m[0][2] = 0.0f;
-    m[0][3] = 0.0f;
-    m[1][0] = 0.0f;
-    m[1][1] = cosA;
-    m[1][2] = -sinA;
-    m[1][3] = 0.0f;
-    m[2][0] = 0.0f;
-    m[2][1] = sinA;
-    m[2][2] = cosA;
-    m[2][3] = 0.0f;
-    break;
+        case 'x':
+        case 'X':
+            m[0][0] = 1.0f;
+            m[0][1] = 0.0f;
+            m[0][2] = 0.0f;
+            m[0][3] = 0.0f;
+            m[1][0] = 0.0f;
+            m[1][1] = cosA;
+            m[1][2] = -sinA;
+            m[1][3] = 0.0f;
+            m[2][0] = 0.0f;
+            m[2][1] = sinA;
+            m[2][2] = cosA;
+            m[2][3] = 0.0f;
+            break;
 
-  case 'y':
-  case 'Y':
-    m[0][0] = cosA;
-    m[0][1] = 0.0f;
-    m[0][2] = sinA;
-    m[0][3] = 0.0f;
-    m[1][0] = 0.0f;
-    m[1][1] = 1.0f;
-    m[1][2] = 0.0f;
-    m[1][3] = 0.0f;
-    m[2][0] = -sinA;
-    m[2][1] = 0.0f;
-    m[2][2] = cosA;
-    m[2][3] = 0.0f;
-    break;
+        case 'y':
+        case 'Y':
+            m[0][0] = cosA;
+            m[0][1] = 0.0f;
+            m[0][2] = sinA;
+            m[0][3] = 0.0f;
+            m[1][0] = 0.0f;
+            m[1][1] = 1.0f;
+            m[1][2] = 0.0f;
+            m[1][3] = 0.0f;
+            m[2][0] = -sinA;
+            m[2][1] = 0.0f;
+            m[2][2] = cosA;
+            m[2][3] = 0.0f;
+            break;
 
-  case 'z':
-  case 'Z':
-    m[0][0] = cosA;
-    m[0][1] = -sinA;
-    m[0][2] = 0.0f;
-    m[0][3] = 0.0f;
-    m[1][0] = sinA;
-    m[1][1] = cosA;
-    m[1][2] = 0.0f;
-    m[1][3] = 0.0f;
-    m[2][0] = 0.0f;
-    m[2][1] = 0.0f;
-    m[2][2] = 1.0f;
-    m[2][3] = 0.0f;
-    break;
+        case 'z':
+        case 'Z':
+            m[0][0] = cosA;
+            m[0][1] = -sinA;
+            m[0][2] = 0.0f;
+            m[0][3] = 0.0f;
+            m[1][0] = sinA;
+            m[1][1] = cosA;
+            m[1][2] = 0.0f;
+            m[1][3] = 0.0f;
+            m[2][0] = 0.0f;
+            m[2][1] = 0.0f;
+            m[2][2] = 1.0f;
+            m[2][3] = 0.0f;
+            break;
 
-  default:
-    break;
-  }
+        default:
+            break;
+    }
 }
 
 #ifdef GEKKO
 void PSMTXRotTrig(register Mtx m, register char axis, register f32 sinA, register f32 cosA) {
-  register f32 fc0, fc1, nsinA;
-  register f32 fw0, fw1, fw2, fw3;
-  // clang-format off
+    register f32 fc0, fc1, nsinA;
+    register f32 fw0, fw1, fw2, fw3;
+    // clang-format off
     asm
     {
         frsp        sinA, sinA
@@ -764,58 +761,57 @@ _case_z:
 
 _end:
   }
-  // clang-format on
+    // clang-format on
 }
 
 #endif
 
 void C_MTXRotAxisRad(Mtx m, const Vec* axis, f32 rad) {
-  Vec vN;
-  f32 s, c;
-  f32 t;
-  f32 x, y, z;
-  f32 xSq, ySq, zSq;
+    Vec vN;
+    f32 s, c;
+    f32 t;
+    f32 x, y, z;
+    f32 xSq, ySq, zSq;
 
-  s = sinf(rad);
-  c = cosf(rad);
-  t = 1.0f - c;
+    s = sinf(rad);
+    c = cosf(rad);
+    t = 1.0f - c;
 
-  C_VECNormalize(axis, &vN);
+    C_VECNormalize(axis, &vN);
 
-  x = vN.x;
-  y = vN.y;
-  z = vN.z;
+    x = vN.x;
+    y = vN.y;
+    z = vN.z;
 
-  xSq = x * x;
-  ySq = y * y;
-  zSq = z * z;
+    xSq = x * x;
+    ySq = y * y;
+    zSq = z * z;
 
-  m[0][0] = (t * xSq) + (c);
-  m[0][1] = (t * x * y) - (s * z);
-  m[0][2] = (t * x * z) + (s * y);
-  m[0][3] = 0.0f;
+    m[0][0] = (t * xSq) + (c);
+    m[0][1] = (t * x * y) - (s * z);
+    m[0][2] = (t * x * z) + (s * y);
+    m[0][3] = 0.0f;
 
-  m[1][0] = (t * x * y) + (s * z);
-  m[1][1] = (t * ySq) + (c);
-  m[1][2] = (t * y * z) - (s * x);
-  m[1][3] = 0.0f;
+    m[1][0] = (t * x * y) + (s * z);
+    m[1][1] = (t * ySq) + (c);
+    m[1][2] = (t * y * z) - (s * x);
+    m[1][3] = 0.0f;
 
-  m[2][0] = (t * x * z) - (s * y);
-  m[2][1] = (t * y * z) + (s * x);
-  m[2][2] = (t * zSq) + (c);
-  m[2][3] = 0.0f;
+    m[2][0] = (t * x * z) - (s * y);
+    m[2][1] = (t * y * z) + (s * x);
+    m[2][2] = (t * zSq) + (c);
+    m[2][3] = 0.0f;
 }
 
 #ifdef GEKKO
-static void __PSMTXRotAxisRadInternal(register Mtx m, const register Vec* axis, register f32 sT,
-                                      register f32 cT) {
-  register f32 tT, fc0;
-  register f32 tmp0, tmp1, tmp2, tmp3, tmp4;
-  register f32 tmp5, tmp6, tmp7, tmp8, tmp9;
+static void __PSMTXRotAxisRadInternal(register Mtx m, const register Vec* axis, register f32 sT, register f32 cT) {
+    register f32 tT, fc0;
+    register f32 tmp0, tmp1, tmp2, tmp3, tmp4;
+    register f32 tmp5, tmp6, tmp7, tmp8, tmp9;
 
-  tmp9 = 0.5F;
-  tmp8 = 3.0F;
-  // clang-format off
+    tmp9 = 0.5F;
+    tmp8 = 3.0F;
+    // clang-format off
   asm
   {
     frsp        cT, cT
@@ -860,41 +856,41 @@ static void __PSMTXRotAxisRadInternal(register Mtx m, const register Vec* axis, 
     psq_st      tmp4, 32(m), 0, 0
     psq_st      tmp5, 40(m), 0, 0
   }
-  // clang-format on
+    // clang-format on
 }
 
 void PSMTXRotAxisRad(Mtx m, const Vec* axis, f32 rad) {
-  f32 sinT, cosT;
+    f32 sinT, cosT;
 
-  sinT = sinf(rad);
-  cosT = cosf(rad);
+    sinT = sinf(rad);
+    cosT = cosf(rad);
 
-  __PSMTXRotAxisRadInternal(m, axis, sinT, cosT);
+    __PSMTXRotAxisRadInternal(m, axis, sinT, cosT);
 }
 
 #endif
 
 void C_MTXTrans(Mtx m, f32 xT, f32 yT, f32 zT) {
-  m[0][0] = 1.0f;
-  m[0][1] = 0.0f;
-  m[0][2] = 0.0f;
-  m[0][3] = xT;
-  m[1][0] = 0.0f;
-  m[1][1] = 1.0f;
-  m[1][2] = 0.0f;
-  m[1][3] = yT;
-  m[2][0] = 0.0f;
-  m[2][1] = 0.0f;
-  m[2][2] = 1.0f;
-  m[2][3] = zT;
+    m[0][0] = 1.0f;
+    m[0][1] = 0.0f;
+    m[0][2] = 0.0f;
+    m[0][3] = xT;
+    m[1][0] = 0.0f;
+    m[1][1] = 1.0f;
+    m[1][2] = 0.0f;
+    m[1][3] = yT;
+    m[2][0] = 0.0f;
+    m[2][1] = 0.0f;
+    m[2][2] = 1.0f;
+    m[2][3] = zT;
 }
 #endif
 
 #ifdef GEKKO
 void PSMTXTrans(register Mtx m, register f32 xT, register f32 yT, register f32 zT) {
-  register f32 c0 = 0.0F;
-  register f32 c1 = 1.0F;
-  // clang-format off
+    register f32 c0 = 0.0F;
+    register f32 c1 = 1.0F;
+    // clang-format off
   asm
   {
     stfs        xT,     12(m)
@@ -908,34 +904,33 @@ void PSMTXTrans(register Mtx m, register f32 xT, register f32 yT, register f32 z
     stfs        zT,     44(m)
     stfs        c1,      0(m)
   }
-  // clang-format on
+    // clang-format on
 }
 #endif
 
 #ifdef UNUSED
 void C_MTXTransApply(const Mtx src, Mtx dst, f32 xT, f32 yT, f32 zT) {
-  if (src != dst) {
-    dst[0][0] = src[0][0];
-    dst[0][1] = src[0][1];
-    dst[0][2] = src[0][2];
-    dst[1][0] = src[1][0];
-    dst[1][1] = src[1][1];
-    dst[1][2] = src[1][2];
-    dst[2][0] = src[2][0];
-    dst[2][1] = src[2][1];
-    dst[2][2] = src[2][2];
-  }
+    if (src != dst) {
+        dst[0][0] = src[0][0];
+        dst[0][1] = src[0][1];
+        dst[0][2] = src[0][2];
+        dst[1][0] = src[1][0];
+        dst[1][1] = src[1][1];
+        dst[1][2] = src[1][2];
+        dst[2][0] = src[2][0];
+        dst[2][1] = src[2][1];
+        dst[2][2] = src[2][2];
+    }
 
-  dst[0][3] = src[0][3] + xT;
-  dst[1][3] = src[1][3] + yT;
-  dst[2][3] = src[2][3] + zT;
+    dst[0][3] = src[0][3] + xT;
+    dst[1][3] = src[1][3] + yT;
+    dst[2][3] = src[2][3] + zT;
 }
 #endif
 
 #ifdef GEKKO
-asm void PSMTXTransApply(const register Mtx src, register Mtx dst, register f32 xT, register f32 yT,
-                         register f32 zT) {
-  // clang-format off
+asm void PSMTXTransApply(const register Mtx src, register Mtx dst, register f32 xT, register f32 yT, register f32 zT) {
+    // clang-format off
   nofralloc;
   psq_l       fp4, 0(src),        0, 0
   frsp        xT, xT
@@ -956,31 +951,31 @@ asm void PSMTXTransApply(const register Mtx src, register Mtx dst, register f32 
   psq_st      fp9, 32(dst),       0, 0
   psq_st      fp8, 40(dst),       0, 0
   blr
-  // clang-format on
+    // clang-format on
 }
 #endif
 
 #ifdef UNUSED
 void C_MTXScale(Mtx m, f32 xS, f32 yS, f32 zS) {
-  m[0][0] = xS;
-  m[0][1] = 0.0f;
-  m[0][2] = 0.0f;
-  m[0][3] = 0.0f;
-  m[1][0] = 0.0f;
-  m[1][1] = yS;
-  m[1][2] = 0.0f;
-  m[1][3] = 0.0f;
-  m[2][0] = 0.0f;
-  m[2][1] = 0.0f;
-  m[2][2] = zS;
-  m[2][3] = 0.0f;
+    m[0][0] = xS;
+    m[0][1] = 0.0f;
+    m[0][2] = 0.0f;
+    m[0][3] = 0.0f;
+    m[1][0] = 0.0f;
+    m[1][1] = yS;
+    m[1][2] = 0.0f;
+    m[1][3] = 0.0f;
+    m[2][0] = 0.0f;
+    m[2][1] = 0.0f;
+    m[2][2] = zS;
+    m[2][3] = 0.0f;
 }
 #endif
 
 #ifdef GEKKO
 void PSMTXScale(register Mtx m, register f32 xS, register f32 yS, register f32 zS) {
-  register f32 c0 = 0.0F;
-  // clang-format off
+    register f32 c0 = 0.0F;
+    // clang-format off
   asm
   {
     stfs        xS,      0(m)
@@ -992,33 +987,32 @@ void PSMTXScale(register Mtx m, register f32 xS, register f32 yS, register f32 z
     stfs        zS,     40(m)
     stfs        c0,     44(m)
   }
-  // clang-format on
+    // clang-format on
 }
 #endif
 
 #ifdef UNUSED
 void C_MTXScaleApply(const Mtx src, Mtx dst, f32 xS, f32 yS, f32 zS) {
-  dst[0][0] = src[0][0] * xS;
-  dst[0][1] = src[0][1] * xS;
-  dst[0][2] = src[0][2] * xS;
-  dst[0][3] = src[0][3] * xS;
+    dst[0][0] = src[0][0] * xS;
+    dst[0][1] = src[0][1] * xS;
+    dst[0][2] = src[0][2] * xS;
+    dst[0][3] = src[0][3] * xS;
 
-  dst[1][0] = src[1][0] * yS;
-  dst[1][1] = src[1][1] * yS;
-  dst[1][2] = src[1][2] * yS;
-  dst[1][3] = src[1][3] * yS;
+    dst[1][0] = src[1][0] * yS;
+    dst[1][1] = src[1][1] * yS;
+    dst[1][2] = src[1][2] * yS;
+    dst[1][3] = src[1][3] * yS;
 
-  dst[2][0] = src[2][0] * zS;
-  dst[2][1] = src[2][1] * zS;
-  dst[2][2] = src[2][2] * zS;
-  dst[2][3] = src[2][3] * zS;
+    dst[2][0] = src[2][0] * zS;
+    dst[2][1] = src[2][1] * zS;
+    dst[2][2] = src[2][2] * zS;
+    dst[2][3] = src[2][3] * zS;
 }
 #endif
 
 #ifdef GEKKO
-asm void PSMTXScaleApply(const register Mtx src, register Mtx dst, register f32 xS, register f32 yS,
-                         register f32 zS) {
-  // clang-format off
+asm void PSMTXScaleApply(const register Mtx src, register Mtx dst, register f32 xS, register f32 yS, register f32 zS) {
+    // clang-format off
   nofralloc;
   frsp        xS, xS
   psq_l       fp4, 0(src),        0, 0
@@ -1042,53 +1036,53 @@ asm void PSMTXScaleApply(const register Mtx src, register Mtx dst, register f32 
   psq_st      fp8, 32(dst),       0, 0
   psq_st      fp2, 40(dst),       0, 0
   blr
-  // clang-format on
+    // clang-format on
 }
 #endif
 
 #ifdef UNUSED
 void C_MTXQuat(Mtx m, const Quaternion* q) {
 
-  f32 s, xs, ys, zs, wx, wy, wz, xx, xy, xz, yy, yz, zz;
-  s = 2.0f / ((q->x * q->x) + (q->y * q->y) + (q->z * q->z) + (q->w * q->w));
+    f32 s, xs, ys, zs, wx, wy, wz, xx, xy, xz, yy, yz, zz;
+    s = 2.0f / ((q->x * q->x) + (q->y * q->y) + (q->z * q->z) + (q->w * q->w));
 
-  xs = q->x * s;
-  ys = q->y * s;
-  zs = q->z * s;
-  wx = q->w * xs;
-  wy = q->w * ys;
-  wz = q->w * zs;
-  xx = q->x * xs;
-  xy = q->x * ys;
-  xz = q->x * zs;
-  yy = q->y * ys;
-  yz = q->y * zs;
-  zz = q->z * zs;
+    xs = q->x * s;
+    ys = q->y * s;
+    zs = q->z * s;
+    wx = q->w * xs;
+    wy = q->w * ys;
+    wz = q->w * zs;
+    xx = q->x * xs;
+    xy = q->x * ys;
+    xz = q->x * zs;
+    yy = q->y * ys;
+    yz = q->y * zs;
+    zz = q->z * zs;
 
-  m[0][0] = 1.0f - (yy + zz);
-  m[0][1] = xy - wz;
-  m[0][2] = xz + wy;
-  m[0][3] = 0.0f;
+    m[0][0] = 1.0f - (yy + zz);
+    m[0][1] = xy - wz;
+    m[0][2] = xz + wy;
+    m[0][3] = 0.0f;
 
-  m[1][0] = xy + wz;
-  m[1][1] = 1.0f - (xx + zz);
-  m[1][2] = yz - wx;
-  m[1][3] = 0.0f;
+    m[1][0] = xy + wz;
+    m[1][1] = 1.0f - (xx + zz);
+    m[1][2] = yz - wx;
+    m[1][3] = 0.0f;
 
-  m[2][0] = xz - wy;
-  m[2][1] = yz + wx;
-  m[2][2] = 1.0f - (xx + yy);
-  m[2][3] = 0.0f;
+    m[2][0] = xz - wy;
+    m[2][1] = yz + wx;
+    m[2][2] = 1.0f - (xx + yy);
+    m[2][3] = 0.0f;
 }
 
 #ifdef GEKKO
 void PSMTXQuat(register Mtx m, const register Quaternion* q) {
-  register f32 c_zero, c_one, c_two, scale;
-  register f32 tmp0, tmp1, tmp2, tmp3, tmp4;
-  register f32 tmp5, tmp6, tmp7, tmp8, tmp9;
+    register f32 c_zero, c_one, c_two, scale;
+    register f32 tmp0, tmp1, tmp2, tmp3, tmp4;
+    register f32 tmp5, tmp6, tmp7, tmp8, tmp9;
 
-  c_one = 1.0F;
-  // clang-format off
+    c_one = 1.0F;
+    // clang-format off
   asm
   {
     psq_l       tmp0, 0(q), 0, 0
@@ -1131,41 +1125,41 @@ void PSMTXQuat(register Mtx m, const register Quaternion* q) {
     psq_st      tmp3, 24(m), 0, 0
     psq_st      tmp9, 32(m), 0, 0
   }
-  // clang-format on
+    // clang-format on
 }
 #endif
 
 void C_MTXReflect(Mtx m, const Vec* p, const Vec* n) {
-  f32 vxy, vxz, vyz, pdotn;
+    f32 vxy, vxz, vyz, pdotn;
 
-  vxy = -2.0f * n->x * n->y;
-  vxz = -2.0f * n->x * n->z;
-  vyz = -2.0f * n->y * n->z;
-  pdotn = 2.0f * C_VECDotProduct(p, n);
+    vxy = -2.0f * n->x * n->y;
+    vxz = -2.0f * n->x * n->z;
+    vyz = -2.0f * n->y * n->z;
+    pdotn = 2.0f * C_VECDotProduct(p, n);
 
-  m[0][0] = 1.0f - 2.0f * n->x * n->x;
-  m[0][1] = vxy;
-  m[0][2] = vxz;
-  m[0][3] = pdotn * n->x;
+    m[0][0] = 1.0f - 2.0f * n->x * n->x;
+    m[0][1] = vxy;
+    m[0][2] = vxz;
+    m[0][3] = pdotn * n->x;
 
-  m[1][0] = vxy;
-  m[1][1] = 1.0f - 2.0f * n->y * n->y;
-  m[1][2] = vyz;
-  m[1][3] = pdotn * n->y;
+    m[1][0] = vxy;
+    m[1][1] = 1.0f - 2.0f * n->y * n->y;
+    m[1][2] = vyz;
+    m[1][3] = pdotn * n->y;
 
-  m[2][0] = vxz;
-  m[2][1] = vyz;
-  m[2][2] = 1.0f - 2.0f * n->z * n->z;
-  m[2][3] = pdotn * n->z;
+    m[2][0] = vxz;
+    m[2][1] = vyz;
+    m[2][2] = 1.0f - 2.0f * n->z * n->z;
+    m[2][3] = pdotn * n->z;
 }
 
 #ifdef GEKKO
 void PSMTXReflect(register Mtx m, const register Vec* p, const register Vec* n) {
-  register f32 c_one = 1.0F;
-  register f32 vn_xy, vn_z1, n2vn_xy, n2vn_z1, pdotn;
-  register f32 tmp0, tmp1, tmp2, tmp3;
-  register f32 tmp4, tmp5, tmp6, tmp7;
-  // clang-format off
+    register f32 c_one = 1.0F;
+    register f32 vn_xy, vn_z1, n2vn_xy, n2vn_z1, pdotn;
+    register f32 tmp0, tmp1, tmp2, tmp3;
+    register f32 tmp4, tmp5, tmp6, tmp7;
+    // clang-format off
   asm
   {
     psq_l       vn_z1, 8(n), 1, 0
@@ -1195,104 +1189,102 @@ void PSMTXReflect(register Mtx m, const register Vec* p, const register Vec* n) 
     psq_st      tmp5, 24(m), 0, 0
     psq_st      tmp6, 40(m), 0, 0
   }
-  // clang-format on
+    // clang-format on
 }
 #endif
 
 void C_MTXLookAt(Mtx m, const Point3d* camPos, const Vec* camUp, const Point3d* target) {
 
-  Vec vLook, vRight, vUp;
+    Vec vLook, vRight, vUp;
 
-  vLook.x = camPos->x - target->x;
-  vLook.y = camPos->y - target->y;
-  vLook.z = camPos->z - target->z;
-  VECNormalize(&vLook, &vLook);
-  VECCrossProduct(camUp, &vLook, &vRight);
-  VECNormalize(&vRight, &vRight);
-  VECCrossProduct(&vLook, &vRight, &vUp);
+    vLook.x = camPos->x - target->x;
+    vLook.y = camPos->y - target->y;
+    vLook.z = camPos->z - target->z;
+    VECNormalize(&vLook, &vLook);
+    VECCrossProduct(camUp, &vLook, &vRight);
+    VECNormalize(&vRight, &vRight);
+    VECCrossProduct(&vLook, &vRight, &vUp);
 
-  m[0][0] = vRight.x;
-  m[0][1] = vRight.y;
-  m[0][2] = vRight.z;
-  m[0][3] = -(camPos->x * vRight.x + camPos->y * vRight.y + camPos->z * vRight.z);
+    m[0][0] = vRight.x;
+    m[0][1] = vRight.y;
+    m[0][2] = vRight.z;
+    m[0][3] = -(camPos->x * vRight.x + camPos->y * vRight.y + camPos->z * vRight.z);
 
-  m[1][0] = vUp.x;
-  m[1][1] = vUp.y;
-  m[1][2] = vUp.z;
-  m[1][3] = -(camPos->x * vUp.x + camPos->y * vUp.y + camPos->z * vUp.z);
+    m[1][0] = vUp.x;
+    m[1][1] = vUp.y;
+    m[1][2] = vUp.z;
+    m[1][3] = -(camPos->x * vUp.x + camPos->y * vUp.y + camPos->z * vUp.z);
 
-  m[2][0] = vLook.x;
-  m[2][1] = vLook.y;
-  m[2][2] = vLook.z;
-  m[2][3] = -(camPos->x * vLook.x + camPos->y * vLook.y + camPos->z * vLook.z);
+    m[2][0] = vLook.x;
+    m[2][1] = vLook.y;
+    m[2][2] = vLook.z;
+    m[2][3] = -(camPos->x * vLook.x + camPos->y * vLook.y + camPos->z * vLook.z);
 }
 
-void C_MTXLightFrustum(Mtx m, float t, float b, float l, float r, float n, float scaleS,
-                       float scaleT, float transS, float transT) {
-  f32 tmp;
+void C_MTXLightFrustum(Mtx m, float t, float b, float l, float r, float n, float scaleS, float scaleT, float transS,
+                       float transT) {
+    f32 tmp;
 
-  tmp = 1.0f / (r - l);
-  m[0][0] = ((2 * n) * tmp) * scaleS;
-  m[0][1] = 0.0f;
-  m[0][2] = (((r + l) * tmp) * scaleS) - transS;
-  m[0][3] = 0.0f;
+    tmp = 1.0f / (r - l);
+    m[0][0] = ((2 * n) * tmp) * scaleS;
+    m[0][1] = 0.0f;
+    m[0][2] = (((r + l) * tmp) * scaleS) - transS;
+    m[0][3] = 0.0f;
 
-  tmp = 1.0f / (t - b);
-  m[1][0] = 0.0f;
-  m[1][1] = ((2 * n) * tmp) * scaleT;
-  m[1][2] = (((t + b) * tmp) * scaleT) - transT;
-  m[1][3] = 0.0f;
+    tmp = 1.0f / (t - b);
+    m[1][0] = 0.0f;
+    m[1][1] = ((2 * n) * tmp) * scaleT;
+    m[1][2] = (((t + b) * tmp) * scaleT) - transT;
+    m[1][3] = 0.0f;
 
-  m[2][0] = 0.0f;
-  m[2][1] = 0.0f;
-  m[2][2] = -1.0f;
-  m[2][3] = 0.0f;
+    m[2][0] = 0.0f;
+    m[2][1] = 0.0f;
+    m[2][2] = -1.0f;
+    m[2][3] = 0.0f;
 }
 
-void C_MTXLightPerspective(Mtx m, f32 fovY, f32 aspect, float scaleS, float scaleT, float transS,
-                           float transT) {
-  f32 angle;
-  f32 cot;
+void C_MTXLightPerspective(Mtx m, f32 fovY, f32 aspect, float scaleS, float scaleT, float transS, float transT) {
+    f32 angle;
+    f32 cot;
 
-  angle = fovY * 0.5f;
-  angle = MTXDegToRad(angle);
+    angle = fovY * 0.5f;
+    angle = MTXDegToRad(angle);
 
-  cot = 1.0f / tanf(angle);
+    cot = 1.0f / tanf(angle);
 
-  m[0][0] = (cot / aspect) * scaleS;
-  m[0][1] = 0.0f;
-  m[0][2] = -transS;
-  m[0][3] = 0.0f;
+    m[0][0] = (cot / aspect) * scaleS;
+    m[0][1] = 0.0f;
+    m[0][2] = -transS;
+    m[0][3] = 0.0f;
 
-  m[1][0] = 0.0f;
-  m[1][1] = cot * scaleT;
-  m[1][2] = -transT;
-  m[1][3] = 0.0f;
+    m[1][0] = 0.0f;
+    m[1][1] = cot * scaleT;
+    m[1][2] = -transT;
+    m[1][3] = 0.0f;
 
-  m[2][0] = 0.0f;
-  m[2][1] = 0.0f;
-  m[2][2] = -1.0f;
-  m[2][3] = 0.0f;
+    m[2][0] = 0.0f;
+    m[2][1] = 0.0f;
+    m[2][2] = -1.0f;
+    m[2][3] = 0.0f;
 }
 
-void C_MTXLightOrtho(Mtx m, f32 t, f32 b, f32 l, f32 r, float scaleS, float scaleT, float transS,
-                     float transT) {
-  f32 tmp;
-  tmp = 1.0f / (r - l);
-  m[0][0] = (2.0f * tmp * scaleS);
-  m[0][1] = 0.0f;
-  m[0][2] = 0.0f;
-  m[0][3] = ((-(r + l) * tmp) * scaleS) + transS;
+void C_MTXLightOrtho(Mtx m, f32 t, f32 b, f32 l, f32 r, float scaleS, float scaleT, float transS, float transT) {
+    f32 tmp;
+    tmp = 1.0f / (r - l);
+    m[0][0] = (2.0f * tmp * scaleS);
+    m[0][1] = 0.0f;
+    m[0][2] = 0.0f;
+    m[0][3] = ((-(r + l) * tmp) * scaleS) + transS;
 
-  tmp = 1.0f / (t - b);
-  m[1][0] = 0.0f;
-  m[1][1] = (2.0f * tmp) * scaleT;
-  m[1][2] = 0.0f;
-  m[1][3] = ((-(t + b) * tmp) * scaleT) + transT;
+    tmp = 1.0f / (t - b);
+    m[1][0] = 0.0f;
+    m[1][1] = (2.0f * tmp) * scaleT;
+    m[1][2] = 0.0f;
+    m[1][3] = ((-(t + b) * tmp) * scaleT) + transT;
 
-  m[2][0] = 0.0f;
-  m[2][1] = 0.0f;
-  m[2][2] = 0.0f;
-  m[2][3] = 1.0f;
+    m[2][0] = 0.0f;
+    m[2][1] = 0.0f;
+    m[2][2] = 0.0f;
+    m[2][3] = 1.0f;
 }
 #endif

@@ -9,18 +9,18 @@ extern void __DBExceptionEnd();
 extern void __DBExceptionSetNumber();
 
 void DBInit(void) {
-  __DBInterface = (DBInterface*)OSPhysicalToCached(OS_DBINTERFACE_ADDR);
-  __DBInterface->ExceptionDestination = (void (*)())OSCachedToPhysical(__DBExceptionDestination);
-  DBVerbose = TRUE;
+    __DBInterface = (DBInterface*)OSPhysicalToCached(OS_DBINTERFACE_ADDR);
+    __DBInterface->ExceptionDestination = (void (*)())OSCachedToPhysical(__DBExceptionDestination);
+    DBVerbose = TRUE;
 }
 
 void __DBExceptionDestinationAux(void) {
-  u32* contextAddr = (void*)0x00C0;
-  OSContext* context = (OSContext*)OSPhysicalToCached(*contextAddr);
+    u32* contextAddr = (void*)0x00C0;
+    OSContext* context = (OSContext*)OSPhysicalToCached(*contextAddr);
 
-  OSReport("DBExceptionDestination\n");
-  OSDumpContext(context);
-  PPCHalt();
+    OSReport("DBExceptionDestination\n");
+    OSDumpContext(context);
+    PPCHalt();
 }
 
 /* clang-format off */
@@ -31,13 +31,12 @@ asm void __DBExceptionDestination(void) {
     mtmsr       r3
 
     b __DBExceptionDestinationAux
-}
-/* clang-format on */
+} /* clang-format on */
 
 BOOL __DBIsExceptionMarked(__OSException exception) {
-  u32 mask = 1 << exception;
+    u32 mask = 1 << exception;
 
-  return (BOOL)(__DBInterface->exceptionMask & mask);
+    return (BOOL)(__DBInterface->exceptionMask & mask);
 }
 
 void DBPrintf(char* format, ...) {}
