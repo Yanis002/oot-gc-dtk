@@ -16,4 +16,14 @@ void VISetBlack(BOOL black);
 u32 VIGetNextField(void);
 u32 VIGetCurrentLine(void);
 
+VIRetraceCallback VISetPreRetraceCallback(VIRetraceCallback callback);
+void __VIGetCurrentPosition(s16* x, s16* y);
+u32 VIGetDTVStatus(void);
+
+#ifdef TARGET_PC
+void VISetWindowTitle(const char* title);
+void VISetWindowFullscreen(bool fullscreen);
+bool VIGetWindowFullscreen();
+#endif
+
 #endif
