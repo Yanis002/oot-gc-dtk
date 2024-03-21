@@ -241,4 +241,7 @@ void OSFatal(GXColor fg, GXColor bg, const char* msg);
 #include "dolphin/os/OSResetSW.h"
 #include "dolphin/os/OSSerial.h"
 #include "dolphin/os/OSThread.h"
+
+extern BOOL __OSInIPL;
+
 #endif
