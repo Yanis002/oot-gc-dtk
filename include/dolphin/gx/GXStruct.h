@@ -3,6 +3,9 @@
 
 #include "dolphin/types.h"
 #include "dolphin/vi/vitypes.h"
+#include "dolphin/gx/GXEnum.h"
+
+#define GXCOLOR_AS_U32(color) (*((u32*)&(color)))
 
 typedef struct _GXRenderModeObj {
     /* 0x00 */ VITVMode viTVmode;
@@ -38,24 +41,67 @@ typedef struct _GXTexObj {
     u32 dummy[8];
 } GXTexObj;
 
+typedef struct _GXTexObjPriv {
+	u32 mode0;       // _00
+	u32 mode1;       // _04
+	u32 image0;      // _08
+	u32 image3;      // _0C
+	void* userData;  // _10
+	GXTexFmt format; // _14
+	u32 tlutName;    // _18
+	u16 loadCount;   // _1C
+	u8 loadFormat;   // _1E
+	u8 flags;        // _1F
+} GXTexObjPriv;
+
 typedef struct _GXLightObj {
     u32 dummy[16];
 } GXLightObj;
+
+typedef struct __GXLightObjPriv {
+	u32 reserved[3]; // _00
+	GXColor color;   // _0C, light color
+	f32 a[3];        // _10, angle-attenuation coefficients
+	f32 k[3];        // _1C, distance-attenuation coefficients
+	f32 lpos[3];     // _28, diffuse: position;  specular: direction
+	f32 ldir[3];     // _34, diffuse: direction; specular: half-angle
+} GXLightObjPriv;
 
 typedef struct _GXTexRegion {
     u32 dummy[4];
 } GXTexRegion;
 
+typedef struct _GXTexRegionPriv {
+	u32 unk0;      // _00
+	u32 unk4;      // _04
+	u32 unk8;      // _08
+	u8 unkC;       // _0C
+	u8 unkD;       // _0D
+	u8 padding[2]; // _0E
+} GXTexRegionPriv;
+
 typedef struct _GXTlutObj {
     u32 dummy[3];
 } GXTlutObj;
+
+typedef struct _GXTlutObjPriv {
+	u32 unk0;        // _00
+	u32 unk4;        // _04
+	u16 numEntries;  // _08
+	u8 padding[0x2]; // _0A
+} GXTlutObjPriv;
 
 typedef struct _GXTlutRegion {
     u32 dummy[4];
 } GXTlutRegion;
 
+typedef struct _GXTlutRegionPriv {
+	u32 unk0;              // _00
+	GXTlutObjPriv tlutObj; // _04
+} GXTlutRegionPriv;
+
 typedef struct _GXFogAdjTable {
-    u16 r[10];
+    u16 fogVals[10];
 } GXFogAdjTable;
 
 #endif
