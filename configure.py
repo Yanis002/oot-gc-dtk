@@ -33,7 +33,7 @@ VERSIONS = [
     # "D43P01",  # 2, OoT MQ-EU (Master Quest)
     "PZLJ01",  # 3, Zelda: CE-JP (Collector's Edition)
     "PZLE01",  # 4, Zelda: CE-US (Collector's Edition)
-    # "PZLP01",  # 5, Zelda: CE-EU (Collector's Edition)
+    "PZLP01",  # 5, Zelda: CE-EU (Collector's Edition)
 ]
 
 parser = argparse.ArgumentParser()
@@ -223,6 +223,11 @@ config.linker_version = "GC/1.1"
 
 # Helper function for SIM objects
 def SIM(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
+    if version_num < 3:
+        # CE-EU contains extra files
+        objects.pop(3) # "emulator/Core/xlText.c"
+        objects.pop(6) # "emulator/Core/xlFile.c"
+
     return {
         "lib": lib_name,
         "mw_version": config.linker_version,
@@ -277,8 +282,10 @@ config.libs = [
             Object(Matching, "emulator/Core/xlCoreGCN.c"),
             Object(Matching, "emulator/Core/xlPostGCN.c"),
             Object(Matching, "emulator/Core/xlFileGCN.c"),
+            Object(Matching, "emulator/Core/xlText.c"),
             Object(Matching, "emulator/Core/xlList.c"),
             Object(Matching, "emulator/Core/xlHeap.c"),
+            Object(Matching, "emulator/Core/xlFile.c"),
             Object(Matching, "emulator/Core/xlObject.c"),
         ]
     ),
@@ -286,7 +293,7 @@ config.libs = [
         "Fire",
         [
             Object(NonMatching, "emulator/Fire/simGCN.c"),
-            Object(Matching, "emulator/Fire/movie.c"),
+            Object(NonMatching, "emulator/Fire/movie.c"),
 
             # NOTE: these files should be in the THP lib
             Object(NonMatching, "emulator/Fire/THPPlayer.c"),
@@ -296,26 +303,26 @@ config.libs = [
             Object(NonMatching, "emulator/Fire/THPVideoDecode.c"),
 
             Object(NonMatching, "emulator/Fire/mcardGCN.c"),
-            Object(Matching, "emulator/Fire/codeGCN.c"),
+            Object(NonMatching, "emulator/Fire/codeGCN.c"),
             Object(NonMatching, "emulator/Fire/soundGCN.c"),
             Object(NonMatching, "emulator/Fire/frame.c"),
-            Object(Matching, "emulator/Fire/system.c"),
+            Object(NonMatching, "emulator/Fire/system.c"),
             Object(NonMatching, "emulator/Fire/cpu.c"),
             Object(NonMatching, "emulator/Fire/pif.c"),
-            Object(Matching, "emulator/Fire/ram.c"),
-            Object(Matching, "emulator/Fire/rom.c"),
+            Object(NonMatching, "emulator/Fire/ram.c"),
+            Object(NonMatching, "emulator/Fire/rom.c"),
             Object(NonMatching, "emulator/Fire/rdp.c"),
-            Object(Matching, "emulator/Fire/rdb.c"),
+            Object(NonMatching, "emulator/Fire/rdb.c"),
             Object(NonMatching, "emulator/Fire/rsp.c"),
-            Object(Matching, "emulator/Fire/mips.c"),
-            Object(Matching, "emulator/Fire/disk.c"),
-            Object(Matching, "emulator/Fire/flash.c"),
-            Object(Matching, "emulator/Fire/sram.c"),
-            Object(Matching, "emulator/Fire/audio.c"),
-            Object(Matching, "emulator/Fire/video.c"),
-            Object(Matching, "emulator/Fire/serial.c"),
+            Object(NonMatching, "emulator/Fire/mips.c"),
+            Object(NonMatching, "emulator/Fire/disk.c"),
+            Object(NonMatching, "emulator/Fire/flash.c"),
+            Object(NonMatching, "emulator/Fire/sram.c"),
+            Object(NonMatching, "emulator/Fire/audio.c"),
+            Object(NonMatching, "emulator/Fire/video.c"),
+            Object(NonMatching, "emulator/Fire/serial.c"),
             Object(NonMatching, "emulator/Fire/library.c"),
-            Object(Matching, "emulator/Fire/peripheral.c"),
+            Object(NonMatching, "emulator/Fire/peripheral.c"),
             Object(NonMatching, "emulator/Fire/_frameGCNcc.c"),
             Object(NonMatching, "emulator/Fire/_buildtev.c"),
         ],
@@ -323,67 +330,67 @@ config.libs = [
     DolphinLib(
         "base",
         [
-            Object(Matching, "dolphin/base/PPCArch.c"),
+            Object(NonMatching, "dolphin/base/PPCArch.c"),
         ],
     ),
     DolphinLib(
         "os",
         [
-            Object(Matching, "dolphin/os/OS.c"),
-            Object(Matching, "dolphin/os/OSAlarm.c"),
-            Object(Matching, "dolphin/os/OSAlloc.c"),
-            Object(Matching, "dolphin/os/OSArena.c"),
-            Object(Matching, "dolphin/os/OSAudioSystem.c"),
-            Object(Matching, "dolphin/os/OSCache.c"),
-            Object(Matching, "dolphin/os/OSContext.c"),
-            Object(Matching, "dolphin/os/OSError.c"),
-            Object(Matching, "dolphin/os/OSFont.c"),
-            Object(Matching, "dolphin/os/OSInterrupt.c"),
-            Object(Matching, "dolphin/os/OSLink.c"),
-            Object(Matching, "dolphin/os/OSMessage.c"),
-            Object(Matching, "dolphin/os/OSMemory.c"),
-            Object(Matching, "dolphin/os/OSMutex.c"),
+            Object(NonMatching, "dolphin/os/OS.c"),
+            Object(NonMatching, "dolphin/os/OSAlarm.c"),
+            Object(NonMatching, "dolphin/os/OSAlloc.c"),
+            Object(NonMatching, "dolphin/os/OSArena.c"),
+            Object(NonMatching, "dolphin/os/OSAudioSystem.c"),
+            Object(NonMatching, "dolphin/os/OSCache.c"),
+            Object(NonMatching, "dolphin/os/OSContext.c"),
+            Object(NonMatching, "dolphin/os/OSError.c"),
+            Object(NonMatching, "dolphin/os/OSFont.c"),
+            Object(NonMatching, "dolphin/os/OSInterrupt.c"),
+            Object(NonMatching, "dolphin/os/OSLink.c"),
+            Object(NonMatching, "dolphin/os/OSMessage.c"),
+            Object(NonMatching, "dolphin/os/OSMemory.c"),
+            Object(NonMatching, "dolphin/os/OSMutex.c"),
             Object(NonMatching, "dolphin/os/OSReboot.c"), # missing __OSReboot
-            Object(Matching, "dolphin/os/OSReset.c"),
-            Object(Matching, "dolphin/os/OSResetSW.c"),
-            Object(Matching, "dolphin/os/OSRtc.c"),
-            Object(Matching, "dolphin/os/OSSync.c"),
-            Object(Matching, "dolphin/os/OSThread.c"),
-            Object(Matching, "dolphin/os/OSTime.c"),
-            Object(Matching, "dolphin/os/__start.c"),
-            Object(Matching, "dolphin/os/__ppc_eabi_init.c"),
+            Object(NonMatching, "dolphin/os/OSReset.c"),
+            Object(NonMatching, "dolphin/os/OSResetSW.c"),
+            Object(NonMatching, "dolphin/os/OSRtc.c"),
+            Object(NonMatching, "dolphin/os/OSSync.c"),
+            Object(NonMatching, "dolphin/os/OSThread.c"),
+            Object(NonMatching, "dolphin/os/OSTime.c"),
+            Object(NonMatching, "dolphin/os/__start.c"),
+            Object(NonMatching, "dolphin/os/__ppc_eabi_init.c"),
         ],
     ),
     DolphinLib(
         "exi",
         [
-            Object(Matching, "dolphin/exi/EXIBios.c"),
-            Object(Matching, "dolphin/exi/EXIUart.c"),
+            Object(NonMatching, "dolphin/exi/EXIBios.c"),
+            Object(NonMatching, "dolphin/exi/EXIUart.c"),
         ],
     ),
     DolphinLib(
         "si",
         [
-            Object(Matching, "dolphin/si/SIBios.c"),
-            Object(Matching, "dolphin/si/SISamplingRate.c"),
+            Object(NonMatching, "dolphin/si/SIBios.c"),
+            Object(NonMatching, "dolphin/si/SISamplingRate.c"),
         ],
     ),
     DolphinLib(
         "vi",
         [
-            Object(Matching, "dolphin/vi/vi.c"),
+            Object(NonMatching, "dolphin/vi/vi.c"),
         ],
     ),
     DolphinLib(
         "db",
         [
-            Object(Matching, "dolphin/db/db.c"),
+            Object(NonMatching, "dolphin/db/db.c"),
         ],
     ),
     DolphinLib(
         "mtx",
         [
-            Object(Matching, "dolphin/mtx/mtx.c", cflags=[*cflags_base, "-fp_contract off"]),
+            Object(NonMatching, "dolphin/mtx/mtx.c", cflags=[*cflags_base, "-fp_contract off"]),
             Object(NonMatching, "dolphin/mtx/mtxvec.c"),
             Object(NonMatching, "dolphin/mtx/mtx44.c"),
         ],
@@ -391,16 +398,16 @@ config.libs = [
     DolphinLib(
         "gx",
         [
-            Object(Matching, "dolphin/gx/GXInit.c"),
-            Object(Matching, "dolphin/gx/GXFifo.c"),
-            Object(Matching, "dolphin/gx/GXAttr.c"),
-            Object(Matching, "dolphin/gx/GXMisc.c"),
-            Object(Matching, "dolphin/gx/GXGeometry.c"),
-            Object(Matching, "dolphin/gx/GXFrameBuf.c"),
-            Object(Matching, "dolphin/gx/GXLight.c"),
-            Object(Matching, "dolphin/gx/GXTexture.c"),
-            Object(Matching, "dolphin/gx/GXBump.c"),
-            Object(Matching, "dolphin/gx/GXTev.c"),
+            Object(NonMatching, "dolphin/gx/GXInit.c"),
+            Object(NonMatching, "dolphin/gx/GXFifo.c"),
+            Object(NonMatching, "dolphin/gx/GXAttr.c"),
+            Object(NonMatching, "dolphin/gx/GXMisc.c"),
+            Object(NonMatching, "dolphin/gx/GXGeometry.c"),
+            Object(NonMatching, "dolphin/gx/GXFrameBuf.c"),
+            Object(NonMatching, "dolphin/gx/GXLight.c"),
+            Object(NonMatching, "dolphin/gx/GXTexture.c"),
+            Object(NonMatching, "dolphin/gx/GXBump.c"),
+            Object(NonMatching, "dolphin/gx/GXTev.c"),
             Object(NonMatching, "dolphin/gx/GXPixel.c"),
             Object(NonMatching, "dolphin/gx/GXTransform.c"),
             Object(NonMatching, "dolphin/gx/GXPerf.c"),

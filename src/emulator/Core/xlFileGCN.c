@@ -3,12 +3,17 @@
 #include "xlHeap.h"
 #include "xlObject.h"
 
+#if VERSION == 3 // PZLP01
+extern _XL_OBJECTTYPE gTypeFile;
+#else
+// this variable is inside xlFile.c on CE-EU
 _XL_OBJECTTYPE gTypeFile = {
     "FILE",
     sizeof(tXL_FILE),
     NULL,
     (EventFunc)xlFileEvent,
 };
+#endif
 
 static DVDOpenCallback gpfOpen;
 static DVDReadCallback gpfRead;
@@ -23,6 +28,8 @@ s32 xlFileSetRead(DVDReadCallback pfRead) {
     return 1;
 }
 
+#if VERSION < 3 // PZLP01
+// this function is inside xlFile.c on CE-EU
 s32 xlFileGetSize(s32* pnSize, char* szFileName) {
     tXL_FILE* pFile;
 
@@ -40,6 +47,7 @@ s32 xlFileGetSize(s32* pnSize, char* szFileName) {
 
     return 0;
 }
+#endif
 
 inline s32 xlFileGetFile(tXL_FILE** ppFile, char* szFileName) {
     if (gpfOpen != NULL) {
@@ -122,17 +130,34 @@ s32 xlFileSetPosition(tXL_FILE* pFile, s32 nOffset) {
     return 0;
 }
 
+#if VERSION == 3 // PZLP01
+s32 xlFileGetPosition(tXL_FILE* pFile, s32* pnOffset) {
+    if (pnOffset != NULL) {
+        *pnOffset = pFile->nOffset;
+    }
+    return 1;
+}
+#endif
+
 s32 xlFileEvent(tXL_FILE* pFile, s32 nEvent, void* pArgument) {
     switch (nEvent) {
         case 2:
             pFile->nSize = 0;
             pFile->nOffset = 0;
             pFile->pData = NULL;
+#if VERSION == 3 // PZLP01
+            pFile->acLine = NULL;
+#endif
             if (!xlHeapTake(&pFile->pBuffer, 0x1024 | 0x30000000)) {
                 return 0;
             }
             break;
         case 3:
+#if VERSION == 3 // PZLP01
+            if ((pFile->acLine != NULL) && !xlHeapFree(&pFile->acLine)) {
+                return 0;
+            }
+#endif
             DVDClose(&pFile->info);
             if (!xlHeapFree(&pFile->pBuffer)) {
                 return 0;

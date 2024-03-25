@@ -37,6 +37,11 @@ static void xlCoreInitRenderMode(GXRenderModeObj* mode) {
         return;
     }
 
+#if VERSION == 3 // PZLP01
+    rmode = &GXEurgb60Hz480IntDf;
+    rmode->viXOrigin -= 0x20;
+    rmode->viWidth += 0x40;
+#else
     switch (VIGetTvFormat()) {
         case 0:
             rmode = &GXNtsc480IntDf;
@@ -66,9 +71,11 @@ static void xlCoreInitRenderMode(GXRenderModeObj* mode) {
             OSPanic("xlCoreGCN.c", 182, "DEMOInit: invalid TV format\n");
             break;
     }
+#endif
 
     GXAdjustForOverscan(rmode, &rmodeobj, 0, 0);
     rmode = &rmodeobj;
+    NO_INLINE();
 }
 
 static void xlCoreInitMem(void) {
@@ -253,7 +260,11 @@ s32 main(s32 nCount, char** aszArgument) {
         return 0;
     }
 
+#if VERSION == 3 // PZLP01
+    OSPanic("xlCoreGCN.c", 593, "CORE DONE!");
+#else
     OSPanic("xlCoreGCN.c", 577, "CORE DONE!");
+#endif
     return 0;
 }
 
