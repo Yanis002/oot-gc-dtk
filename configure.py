@@ -223,7 +223,7 @@ config.linker_version = "GC/1.1"
 
 # Helper function for SIM objects
 def SIM(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
-    if version_num < 3:
+    if lib_name == "Core" and version_num < 3:
         # CE-EU contains extra files
         objects.pop(3) # "emulator/Core/xlText.c"
         objects.pop(6) # "emulator/Core/xlFile.c"
@@ -293,7 +293,7 @@ config.libs = [
         "Fire",
         [
             Object(NonMatching, "emulator/Fire/simGCN.c"),
-            Object(NonMatching, "emulator/Fire/movie.c"),
+            Object(Matching, "emulator/Fire/movie.c"),
 
             # NOTE: these files should be in the THP lib
             Object(NonMatching, "emulator/Fire/THPPlayer.c"),

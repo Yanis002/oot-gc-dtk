@@ -12,7 +12,11 @@ void MovieInit(void) {
     THPPlayerInit(0);
 
     if (!simulatorGetArgument(SAT_MOVIE, &szText)) {
+#if VERSION == 3 // PZLP01
+        THPPlayerOpen("pal_zelda_w_snd.thp", 0);
+#else
         THPPlayerOpen("final_zelda_credits_sound.thp", 0);
+#endif
     } else {
         THPPlayerOpen(szText, 0);
     }

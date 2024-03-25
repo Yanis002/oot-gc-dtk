@@ -13,14 +13,9 @@ s32 xlTextCopy(char* acTextTarget, char* szTextSource) {
 }
 
 s32 xlTextMatch(char* acText1, char* acText2) {
-    // Parameters
-    // char* acText1; // r1+0x0
-    // char* acText2; // r1+0x4
-
-    // Local variables
-    s32 iCharacter; // r1+0x0
-    s32 nCharacter1; // r5
-    s32 nCharacter2; // r6
+    s32 iCharacter;
+    s32 nCharacter1;
+    s32 nCharacter2;
 
     nCharacter1 = 0;
     while (acText1[nCharacter1] != '\0') {

@@ -44,3 +44,15 @@ emulator/Core/xlFile.c:
 emulator/Core/xlObject.c:
 	.text       start:0x8000819C end:0x8000855C
 	.sbss       start:0x80181908 end:0x80181910
+
+emulator/Fire/simGCN.c:
+	.text       start:0x8000855C end:0x8000EFC0
+	.data       start:0x800DCAC0 end:0x80136460
+	.bss        start:0x80140840 end:0x801409C0
+	.sdata      start:0x80180FF8 end:0x801810C0
+	.sbss       start:0x80181910 end:0x80181950
+
+emulator/Fire/movie.c:
+	.text       start:0x8000EFC0 end:0x8000F084
+	.data       start:0x80136460 end:0x80136478
+	.sbss       start:0x80181950 end:0x80181958
