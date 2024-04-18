@@ -1,5 +1,5 @@
 #include "dolphin/gx.h"
-#include "math.h"
+#include "libc/math.h"
 
 /**
  * @note Address: 0x800E6870

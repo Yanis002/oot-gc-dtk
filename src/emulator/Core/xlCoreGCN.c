@@ -1,6 +1,6 @@
-#include "xlCoreGCN.h"
+#include "emulator/xlCoreGCN.h"
 #include "macros.h"
-#include "simGCN.h"
+#include "emulator/simGCN.h"
 
 #include "gTgPcTPL.inc"
 

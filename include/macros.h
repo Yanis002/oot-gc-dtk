@@ -8,6 +8,12 @@
 
 #define OFFSETOF(p, field) ((u8*)&(p)->field - (u8*)(p))
 
+#if VERSION == 0 // D43J01
+#define INLINE
+#else
+#define INLINE inline
+#endif
+
 // Adds no-ops to increase a function's size, preventing automatic inlining
 #define NO_INLINE() \
     (void)0;        \

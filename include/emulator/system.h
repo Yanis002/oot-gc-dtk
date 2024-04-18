@@ -1,10 +1,10 @@
 #ifndef _SYSTEM_H
 #define _SYSTEM_H
 
-#include "cpu.h"
 #include "dolphin.h"
-#include "mips.h"
-#include "xlObject.h"
+#include "emulator/cpu.h"
+#include "emulator/mips.h"
+#include "emulator/xlObject.h"
 
 #define N64_BTN_A (1 << 31)
 #define N64_BTN_B (1 << 30)
@@ -174,7 +174,7 @@ typedef struct SystemRomConfig {
 #define SYSTEM_SRAM(pSystem) ((Sram*)(((System*)(pSystem))->apObject[SOT_SRAM]))
 #define SYSTEM_AUDIO(pSystem) ((Audio*)(((System*)(pSystem))->apObject[SOT_AUDIO]))
 #define SYSTEM_VIDEO(pSystem) ((Video*)(((System*)(pSystem))->apObject[SOT_VIDEO]))
-#define SYSTEM_SERIAL(pSystem) ((Disk*)(((System*)(pSystem))->apObject[SOT_SERIAL]))
+#define SYSTEM_SERIAL(pSystem) ((Serial*)(((System*)(pSystem))->apObject[SOT_SERIAL]))
 #define SYSTEM_LIBRARY(pSystem) ((Library*)(((System*)(pSystem))->apObject[SOT_LIBRARY]))
 #define SYSTEM_PERIPHERAL(pSystem) ((Peripheral*)(((System*)(pSystem))->apObject[SOT_PERIPHERAL]))
 #define SYSTEM_RDB(pSystem) ((Rdb*)(((System*)(pSystem))->apObject[SOT_RDB]))

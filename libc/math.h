@@ -65,6 +65,7 @@ extern _INT32 __extended_huge[];
 #define NAN (*(float*)__float_nan)
 #define HUGE_VALF (*(float*)__float_huge)
 #define HUGE_VALL (*(long double*)__extended_huge)
+#define M_PI 3.14159265358979323846
 
 double fabs(double x);
 double fmod(double x, double m);
@@ -76,10 +77,10 @@ double tan(double x);
 double ceil(double x);
 
 _MATH_INLINE float fabsf(float x) { return (float)fabs((double)x); }
-_MATH_INLINE float sinf(float x) { return (float)sin((double)x); }
-_MATH_INLINE float cosf(float x) { return (float)cos((double)x); }
 _MATH_INLINE float atan2f(float y, float x) { return (float)atan2((double)y, (double)x); }
 _MATH_INLINE float fmodf(float x, float m) { return (float)fmod((double)x, (double)m); }
+float sinf(float x);
+float cosf(float x);
 float tanf(float x);
 double asin(double x);
 double acos(double x);
@@ -168,8 +169,8 @@ static inline int __fpclassifyd(double x) {
 #define isfinite(x) ((fpclassify(x) > FP_INFINITE))
 
 extern inline float sqrtf(float x) {
-  static const double _half = .5;
-  static const double _three = 3.0;
+  const double _half = .5;
+  const double _three = 3.0;
   volatile float y;
 
   if (x > 0.0f) {

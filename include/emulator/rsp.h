@@ -2,7 +2,7 @@
 #define _RSP_H
 
 #include "dolphin.h"
-#include "xlObject.h"
+#include "emulator/xlObject.h"
 
 typedef enum __anon_0x581E7 {
     RUT_NOCODE = -1,
@@ -209,7 +209,9 @@ typedef struct Rsp {
     /* 0x39C8 */ s32* dctBuf;
 } Rsp; // size = 0x39CC
 
+s32 rspInvalidateCache(Rsp* pRSP, s32 nOffset0, s32 nOffset1);
 s32 rspEnableABI(Rsp* pRSP, s32 bFlag);
+s32 rspFrameComplete(Rsp* pRSP);
 s32 rspUpdate(Rsp* pRSP, RspUpdateMode eMode);
 s32 rspEvent(Rsp* pRSP, s32 nEvent, void* pArgument);
 
