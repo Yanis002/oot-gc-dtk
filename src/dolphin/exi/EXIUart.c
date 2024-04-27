@@ -117,7 +117,7 @@ static int QueueLength(void) {
 
 u32 WriteUARTN(const void* buf, unsigned long len) {
     u32 cmd;
-#if DOLPHIN_REV > 58
+#if DOLPHIN_REV > 2002
     BOOL interrupt;
 #endif
     int qLen;
@@ -129,13 +129,13 @@ u32 WriteUARTN(const void* buf, unsigned long len) {
     if (Enabled != EXI_MAGIC)
         return 2;
 
-#if DOLPHIN_REV > 58
+#if DOLPHIN_REV > 2002
     interrupt = OSDisableInterrupts();
 #endif
 
     locked = EXILock(Chan, Dev, 0);
     if (!locked) {
-#if DOLPHIN_REV > 58
+#if DOLPHIN_REV > 2002
         OSRestoreInterrupts(interrupt);
 #endif
         return 0;
@@ -181,7 +181,7 @@ u32 WriteUARTN(const void* buf, unsigned long len) {
 
     EXIUnlock(Chan);
 
-#if DOLPHIN_REV > 58
+#if DOLPHIN_REV > 2002
     OSRestoreInterrupts(interrupt);
 #endif
     return error;

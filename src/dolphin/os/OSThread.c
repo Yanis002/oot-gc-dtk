@@ -261,12 +261,12 @@ static OSThread* SelectThread(BOOL yield) {
         }
     }
 
-#if DOLPHIN_REV == 58
+#if DOLPHIN_REV == 2002
     OSSetCurrentThread(NULL);
 #endif
 
     if (RunQueueBits == 0) {
-#if DOLPHIN_REV > 58
+#if DOLPHIN_REV > 2002
         OSSetCurrentThread(NULL);
 #endif
 

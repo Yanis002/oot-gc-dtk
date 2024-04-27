@@ -16,7 +16,7 @@ asm void __init_hardware(void) {
 
     mflr r31
     bl __OSPSInit
-    #if DOLPHIN_REV > 58
+    #if DOLPHIN_REV > 2002
     bl __OSFPRInit
     #endif
     bl __OSCacheInit

@@ -3,7 +3,7 @@
 
 #pragma scheduling off
 
-#if DOLPHIN_REV == 58
+#if DOLPHIN_REV == 2002
 static const char* __EXIVersion = "<< Dolphin SDK - EXI\trelease build: Sep  5 2002 05:33:04 (0x2301) >>";
 #else
 static const char* __EXIVersion = "<< Dolphin SDK - EXI\trelease build: Apr 17 2003 12:33:17 (0x2301) >>";
@@ -200,7 +200,7 @@ BOOL EXISync(s32 chan) {
             if (exi->state & STATE_SELECTED) {
                 CompleteTransfer(chan);
                 if (__OSGetDIConfig() != 0xff
-#if DOLPHIN_REV > 58
+#if DOLPHIN_REV > 2002
                     || ((OSGetConsoleType() & 0xF0000000) == OS_CONSOLE_TDEV)
 #endif
                     || exi->immLen != 4 || (REG(chan, 0) & 0x00000070) != (EXI_FREQ_1M << 4) ||
@@ -518,7 +518,7 @@ static void EXTIntrruptHandler(__OSInterrupt interrupt, OSContext* context) {
 }
 
 void EXIInit(void) {
-#if DOLPHIN_REV == 58
+#if DOLPHIN_REV == 2002
     OSRegisterVersion(__EXIVersion);
 #else
     u32 id;
@@ -547,7 +547,7 @@ void EXIInit(void) {
     __OSSetInterruptHandler(__OS_INTERRUPT_EXI_2_EXI, EXIIntrruptHandler);
     __OSSetInterruptHandler(__OS_INTERRUPT_EXI_2_TC, TCIntrruptHandler);
 
-#if DOLPHIN_REV == 58
+#if DOLPHIN_REV == 2002
     if ((OSGetConsoleType() & 0x10000000) != 0)
 #else
     EXIGetID(0, 2, &IDSerialPort1);
@@ -561,7 +561,7 @@ void EXIInit(void) {
         __EXIProbe(1);
     }
 
-#if DOLPHIN_REV > 58
+#if DOLPHIN_REV > 2002
     else if (EXIGetID(0, 0, &id) && id == 0x07010000) {
         __OSEnableBarnacle(1, 0);
     } else if (EXIGetID(1, 0, &id) && id == 0x07010000) {
@@ -645,7 +645,7 @@ s32 EXIGetID(s32 chan, u32 dev, u32* id) {
     u32 cmd;
     s32 startTime;
     BOOL enabled;
-#if DOLPHIN_REV > 58
+#if DOLPHIN_REV > 2002
     BOOL interrupt;
 
     if (chan == 0 && dev == 2 && IDSerialPort1) {
@@ -671,7 +671,7 @@ s32 EXIGetID(s32 chan, u32 dev, u32* id) {
         startTime = __EXIProbeStartTime[chan];
     }
 
-#if DOLPHIN_REV > 58
+#if DOLPHIN_REV > 2002
     interrupt = OSDisableInterrupts();
 #endif
 
@@ -689,7 +689,7 @@ s32 EXIGetID(s32 chan, u32 dev, u32* id) {
         EXIUnlock(chan);
     }
 
-#if DOLPHIN_REV > 58
+#if DOLPHIN_REV > 2002
     OSRestoreInterrupts(interrupt);
 #endif
 
@@ -719,7 +719,7 @@ char* EXIGetTypeString(u32 type) {
             return "Memory Card 251";
         case EXI_MEMORY_CARD_507:
             return "Memory Card 507";
-#if DOLPHIN_REV > 58
+#if DOLPHIN_REV > 2002
         case EXI_MEMORY_CARD_1019:
             return "Memory Card 1019";
         case EXI_MEMORY_CARD_2043:
@@ -734,14 +734,14 @@ char* EXIGetTypeString(u32 type) {
             return "Net Card";
         case EXI_ETHER_VIEWER:
             return "Artist Ether";
-#if DOLPHIN_REV > 58
+#if DOLPHIN_REV > 2002
         case EXI_MODEM:
             return "Broadband Adapter";
 #endif
         case EXI_STREAM_HANGER:
             return "Stream Hanger";
         case EXI_IS_VIEWER:
-#if DOLPHIN_REV == 58
+#if DOLPHIN_REV == 2002
             return "IS Viewer";
 #else
             return "IS-DOL-VIEWER";

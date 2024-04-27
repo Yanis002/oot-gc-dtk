@@ -12,7 +12,7 @@
 #define ONES(x) ((1 << (x)) - 1)
 #define VI_BITMASK(index) (1ull << (63 - (index)))
 
-#if DOLPHIN_REV == 58
+#if DOLPHIN_REV == 2002
 const char* __VIVersion = "<< Dolphin SDK - VI\trelease build: Sep  5 2002 05:33:13 (0x2301) >>";
 #else
 const char* __VIVersion = "<< Dolphin SDK - VI\trelease build: Apr 17 2003 12:33:22 (0x2301) >>";
@@ -24,7 +24,7 @@ static u32 flushFlag;
 static OSThreadQueue retraceQueue;
 static VIRetraceCallback PreCB;
 static VIRetraceCallback PostCB;
-#if DOLPHIN_REV > 58
+#if DOLPHIN_REV > 2002
 static VIPositionCallback PositionCallback;
 #endif
 static u32 encoderType;
@@ -160,7 +160,7 @@ static void __VIRetraceHandler(__OSInterrupt interrupt, OSContext* context) {
     }
 
     if ((inter & 4) || (inter & 8)) {
-#if DOLPHIN_REV > 58
+#if DOLPHIN_REV > 2002
         OSClearContext(&exceptionContext);
         OSSetCurrentContext(&exceptionContext);
         if (PositionCallback) {
@@ -721,7 +721,7 @@ void VIConfigure(GXRenderModeObj* rm) {
         default:
         panic:
             OSPanic(__FILE__,
-#if DOLPHIN_REV == 58
+#if DOLPHIN_REV == 2002
                     1884,
 #else
                     1908,
@@ -894,12 +894,12 @@ static void GetCurrentDisplayPosition(u32* hct, u32* vct) {
 
 static u32 getCurrentHalfLine(void) {
     u32 hcount;
-#if DOLPHIN_REV == 58
+#if DOLPHIN_REV == 2002
     u32 vcount0;
 #endif
     u32 vcount;
 
-#if DOLPHIN_REV == 58
+#if DOLPHIN_REV == 2002
     vcount = __VIRegs[22] & 0x7FF;
     do {
         vcount0 = vcount;
@@ -913,7 +913,7 @@ static u32 getCurrentHalfLine(void) {
 }
 
 static u32 getCurrentFieldEvenOdd(void) {
-#if DOLPHIN_REV == 58
+#if DOLPHIN_REV == 2002
     if (getCurrentHalfLine() < CurrTiming->numHalfLines) {
         return 1;
     }

@@ -179,7 +179,7 @@ cflags_base = [
     f"-i build/{config.version}/include",
     f"-DVERSION={version_num}",
     # NOTE: Update this when other versions are done, 99 means unknown (used for CE-J)
-    f"-DDOLPHIN_REV={58 if version_num == 0 else 99}",
+    f"-DDOLPHIN_REV={2002 if version_num == 0 else 2003}",
 ]
 
 # Debug flags
@@ -361,7 +361,7 @@ config.libs = [
             Object(Matching, "dolphin/os/OSMessage.c"),
             Object(Matching, "dolphin/os/OSMemory.c"),
             Object(Matching, "dolphin/os/OSMutex.c"),
-            Object(Matching, "dolphin/os/OSReboot.c"), # missing __OSReboot
+            Object(Matching if version_num > 0 else NonMatching, "dolphin/os/OSReboot.c"), # MQ missing __OSReboot (symbols)
             Object(Matching, "dolphin/os/OSReset.c"),
             Object(Matching, "dolphin/os/OSResetSW.c"),
             Object(Matching, "dolphin/os/OSRtc.c"),

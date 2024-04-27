@@ -192,7 +192,7 @@ void __OSInitMemoryProtection() {
     simulatedSize = OSGetConsoleSimulatedMemSize();
     enabled = OSDisableInterrupts();
 
-#if DOLPHIN_REV == 58
+#if DOLPHIN_REV == 2002
     if (simulatedSize <= 0x1800000) {
         RealMode((u32)&Config24MB);
     } else if (simulatedSize <= 0x3000000) {
@@ -213,13 +213,13 @@ void __OSInitMemoryProtection() {
     OSRegisterResetFunction(&ResetFunctionInfo);
 
     if (OSGetConsoleSimulatedMemSize() < OSGetPhysicalMemSize() && OSGetConsoleSimulatedMemSize() == 0x1800000) {
-#if DOLPHIN_REV > 58
+#if DOLPHIN_REV > 2002
         DCInvalidateRange((void*)0x81800000, 0x1800000);
 #endif
         __MEMRegs[20] = 2;
     }
 
-#if DOLPHIN_REV > 58
+#if DOLPHIN_REV > 2002
     if (simulatedSize <= 0x1800000) {
         RealMode((u32)&Config24MB);
     } else if (simulatedSize <= 0x3000000) {
