@@ -1,12 +1,11 @@
 #include "emulator/system.h"
+#include "dolphin.h"
 #include "emulator/audio.h"
 #include "emulator/cpu.h"
 #include "emulator/disk.h"
-#include "dolphin.h"
 #include "emulator/flash.h"
 #include "emulator/frame.h"
 #include "emulator/library.h"
-#include "macros.h"
 #include "emulator/mcardGCN.h"
 #include "emulator/mips.h"
 #include "emulator/peripheral.h"
@@ -21,6 +20,7 @@
 #include "emulator/soundGCN.h"
 #include "emulator/sram.h"
 #include "emulator/video.h"
+#include "macros.h"
 
 //! TODO: import MSL headers
 extern int atoi(const char* str);

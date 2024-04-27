@@ -231,6 +231,16 @@ def SIM(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
         "objects": objects,
     }
 
+# Helper function for THP objects inside the emulator folders
+def THP(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
+    return {
+        "lib": lib_name,
+        "mw_version": config.linker_version,
+        "cflags": cflags_dolphin,
+        "host": False,
+        "objects": objects,
+    }
+
 
 # Helper function for libraries sharing the same informations
 def GenericLib(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
@@ -287,14 +297,22 @@ config.libs = [
         [
             Object(NonMatching, "emulator/Fire/simGCN.c"),
             Object(Matching, "emulator/Fire/movie.c"),
-
+        ]
+    ),
+    THP(
+        "THP",
+        [
             # NOTE: these files should be in the THP lib
             Object(NonMatching, "emulator/Fire/THPPlayer.c"),
             Object(NonMatching, "emulator/Fire/THPAudioDecode.c"),
             Object(NonMatching, "emulator/Fire/THPDraw.c"),
             Object(NonMatching, "emulator/Fire/THPRead.c"),
             Object(NonMatching, "emulator/Fire/THPVideoDecode.c"),
-
+        ]
+    ),
+    SIM(
+        "Fire",
+        [
             Object(NonMatching, "emulator/Fire/mcardGCN.c"),
             Object(Matching, "emulator/Fire/codeGCN.c"),
             Object(NonMatching, "emulator/Fire/soundGCN.c"),
@@ -343,7 +361,7 @@ config.libs = [
             Object(Matching, "dolphin/os/OSMessage.c"),
             Object(Matching, "dolphin/os/OSMemory.c"),
             Object(Matching, "dolphin/os/OSMutex.c"),
-            Object(NonMatching, "dolphin/os/OSReboot.c"), # missing __OSReboot
+            Object(Matching, "dolphin/os/OSReboot.c"), # missing __OSReboot
             Object(Matching, "dolphin/os/OSReset.c"),
             Object(Matching, "dolphin/os/OSResetSW.c"),
             Object(Matching, "dolphin/os/OSRtc.c"),

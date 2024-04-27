@@ -5,4 +5,6 @@
 
 extern s32 gMovieErrorToggle;
 
+void PushFreeReadBuffer(void* buffer);
+
 #endif

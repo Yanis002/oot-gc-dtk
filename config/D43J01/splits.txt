@@ -43,7 +43,7 @@ emulator/Fire/simGCN.c:
 	.text       start:0x80007EE0 end:0x8000F5A8
 	.rodata     start:0x800D1BC0 end:0x800D1D10
 	.data       start:0x800DA3E0 end:0x800EB680
-	.bss        start:0x800F58A0 end:0x800F5A40
+	.bss        start:0x800F58A0 end:0x800FAA40
 	.sdata      start:0x8018AF88 end:0x8018B050
 	.sbss       start:0x8018B870 end:0x8018B8A0
 	.sdata2     start:0x8018BF58 end:0x8018BFB0
@@ -56,7 +56,7 @@ emulator/Fire/movie.c:
 emulator/Fire/THPPlayer.c:
 	.text       start:0x8000F66C end:0x80010B78
 	.data       start:0x800EB6A0 end:0x800EB940
-	.bss        start:0x800F5A40 end:0x800FB1B0
+	.bss        start:0x800FAA40 end:0x800FB1B0
 	.sdata      start:0x8018B050 end:0x8018B058
 	.sbss       start:0x8018B8A8 end:0x8018B8C8
 	.sdata2     start:0x8018BFB0 end:0x8018BFB8
