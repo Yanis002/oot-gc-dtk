@@ -45,5 +45,6 @@ typedef struct THPPlayer {
 } THPPlayer; // size = 0x1D0
 
 extern char gpErrorMessageBuffer[20480];
+extern THPPlayer ActivePlayer;
 
 #endif

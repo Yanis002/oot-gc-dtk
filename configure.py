@@ -303,10 +303,10 @@ config.libs = [
         "THP",
         [
             # NOTE: these files should be in the THP lib
-            Object(NonMatching, "emulator/Fire/THPPlayer.c"),
-            Object(NonMatching, "emulator/Fire/THPAudioDecode.c"),
-            Object(NonMatching, "emulator/Fire/THPDraw.c"),
-            Object(NonMatching, "emulator/Fire/THPRead.c"),
+            Object(Matching, "emulator/Fire/THPPlayer.c"),
+            Object(Matching, "emulator/Fire/THPAudioDecode.c"),
+            Object(Matching, "emulator/Fire/THPDraw.c"),
+            Object(NonMatching, "emulator/Fire/THPRead.c", cflags=[*cflags_dolphin, "-inline auto,deferred"]),
             Object(NonMatching, "emulator/Fire/THPVideoDecode.c"),
         ]
     ),
