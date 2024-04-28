@@ -80,12 +80,12 @@ extern System* gpSystem;
 extern u32 gz_bnrSize;
 extern u32 gz_iconSize;
 
-extern TEXDescriptor gcoverOpen;
-extern TEXDescriptor gfatalErr;
-extern TEXDescriptor gnoDisk;
-extern TEXDescriptor greadingDisk;
-extern TEXDescriptor gretryErr;
-extern TEXDescriptor gwrongDisk;
+extern TEXPalette gcoverOpen;
+extern TEXPalette gfatalErr;
+extern TEXPalette gnoDisk;
+extern TEXPalette greadingDisk;
+extern TEXPalette gretryErr;
+extern TEXPalette gwrongDisk;
 
 extern s16 Vert_s16[12];
 extern u32 Colors_u32[3];

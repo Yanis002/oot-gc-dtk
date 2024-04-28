@@ -153,7 +153,7 @@ s32 movieGXInit(void) {
     return 1;
 }
 
-s32 movieDrawImage(TEXDescriptorPtr tpl, s16 nX0, s16 nY0) {
+s32 movieDrawImage(TEXPalettePtr tpl, s16 nX0, s16 nY0) {
     GXTexObj texObj;
     s32 pad2;
     GXColor color;

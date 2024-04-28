@@ -17,7 +17,7 @@ typedef enum MovieMessage {
 } MovieMessage;
 
 s32 movieGXInit();
-s32 movieDrawImage(struct __anon_0xDB69* tpl, s16 nX0, s16 nY0);
+s32 movieDrawImage(TEXPalettePtr tpl, s16 nX0, s16 nY0);
 s32 movieDrawErrorMessage(MovieMessage movieMessage);
 s32 movieDVDShowError(s32 nStatus, void*, s32, u32);
 s32 movieDVDRead(DVDFileInfo* pFileInfo, void* anData, s32 nSizeRead, s32 nOffset);
