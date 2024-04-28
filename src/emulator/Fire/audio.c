@@ -73,7 +73,7 @@ s32 audioGet32(Audio* pAudio, u32 nAddress, s32* pData) {
             xlPostText("Get: DRAM Address: WRITE-ONLY?", "audio.c", 0xDA);
             break;
         case 4:
-            if (!soundGetDMABuffer(SYSTEM_SOUND(pAudio->pHost), pData)) {
+            if (!soundGetDMABuffer(SYSTEM_SOUND(pAudio->pHost), (u32*)pData)) {
                 *pData = pAudio->nSize;
             }
             break;

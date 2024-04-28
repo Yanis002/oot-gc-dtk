@@ -8,8 +8,8 @@ extern "C" {
 #endif
 
 #ifdef __MWERKS__
-
 vu16 __VIRegs[59] : 0xCC002000;
+#endif
 
 // offsets for __VIRegs[i]
 #define VI_VERT_TIMING (0)
@@ -75,7 +75,9 @@ vu16 __VIRegs[59] : 0xCC002000;
 
 #define VI_WIDTH (56)
 
+#ifdef __MWERKS__
 vu32 __PIRegs[12] : 0xCC003000;
+#endif
 
 // offsets for __PIRegs[i]
 
@@ -104,7 +106,9 @@ vu32 __PIRegs[12] : 0xCC003000;
 #define PI_INTRPT_HSP (0x2000) // high speed port
 #define PI_INTRPT_RSWST (0x10000) // reset switch state (1 when pressed)
 
+#ifdef __MWERKS__
 vu16 __MEMRegs[64] : 0xCC004000;
+#endif
 
 // offsets for __MEMRegs[i]
 #define MEM_PROT_1 (0) // protected region 1
@@ -121,7 +125,9 @@ vu16 __MEMRegs[64] : 0xCC004000;
 
 #define MEM_UNK_FLAG (20) // unknown memory flag, set in __OSInitMemoryProtection
 
+#ifdef __MWERKS__
 vu16 __DSPRegs[32] : 0xCC005000;
+#endif
 
 // offsets for __DSPRegs[i]
 #define DSP_MAILBOX_IN_HI (0)
@@ -145,7 +151,9 @@ vu16 __DSPRegs[32] : 0xCC005000;
 #define DSP_DMA_CONTROL_LEN (27)
 #define DSP_DMA_BYTES_LEFT (29)
 
+#ifdef __MWERKS__
 vu32 __DIRegs[16] : 0xCC006000;
+#endif
 
 // offsets for __DIRegs[i]
 #define DI_STATUS (0)
@@ -159,7 +167,9 @@ vu32 __DIRegs[16] : 0xCC006000;
 #define DI_MM_BUF (8) // Main memory buffer
 #define DI_CONFIG (9)
 
+#ifdef __MWERKS__
 vu32 __SIRegs[64] : 0xCC006400;
+#endif
 
 // offsets for __SIRegs[i]
 // Channel 0/Joy-channel 1
@@ -186,7 +196,9 @@ vu32 __SIRegs[64] : 0xCC006400;
 
 #define SI_IO_BUFFER (32) // start of buffer (32 to 63)
 
+#ifdef __MWERKS__
 vu32 __EXIRegs[16] : 0xCC006800;
+#endif
 
 // offsets for __EXIRegs[i]
 // Channel 0
@@ -208,7 +220,9 @@ vu32 __EXIRegs[16] : 0xCC006800;
 #define EXI_CHAN_2_CONTROL (13) // control register
 #define EXI_CHAN_2_IMM (14) // immediate data
 
+#ifdef __MWERKS__
 vu32 __AIRegs[8] : 0xCC006C00;
+#endif
 
 // offsets for __AIRegs[i]
 #define AI_CONTROL (0) // control
@@ -216,7 +230,7 @@ vu32 __AIRegs[8] : 0xCC006C00;
 #define AI_SAMPLE_COUNTER (2) // number of stereo samples output
 #define AI_INTRPT_TIMING (3) // interrupt timing
 
-#else
+#ifndef __MWERKS__
 #define __VIRegs ((vu16*)0xCC002000)
 #define __PIRegs ((vu32*)0xCC003000)
 #define __MEMRegs ((vu16*)0xCC004000)

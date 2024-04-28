@@ -11,10 +11,10 @@ _XL_OBJECTTYPE gClassSram = {
     (EventFunc)sramEvent,
 };
 
-s32 sramCopySRAM(Sram* pSRAM, u32 nOffsetRAM, u32 nOffsetSRAM, u32 nSize) {
+s32 sramCopySRAM(Sram* pSRAM, s32 nOffsetRAM, s32 nOffsetSRAM, s32 nSize) {
     void* pTarget;
 
-    if (!ramGetBuffer(SYSTEM_RAM(pSRAM->pHost), &pTarget, nOffsetRAM, &nSize)) {
+    if (!ramGetBuffer(SYSTEM_RAM(pSRAM->pHost), &pTarget, nOffsetRAM, (u32*)&nSize)) {
         return 0;
     }
     if (!simulatorReadSRAM(nOffsetSRAM & 0x7FFF, (u8*)pTarget, nSize)) {
@@ -23,10 +23,10 @@ s32 sramCopySRAM(Sram* pSRAM, u32 nOffsetRAM, u32 nOffsetSRAM, u32 nSize) {
     return 1;
 }
 
-s32 sramTransferSRAM(Sram* pSRAM, u32 nOffsetRAM, u32 nOffsetSRAM, u32 nSize) {
+s32 sramTransferSRAM(Sram* pSRAM, s32 nOffsetRAM, s32 nOffsetSRAM, s32 nSize) {
     void* pTarget;
 
-    if (!ramGetBuffer(SYSTEM_RAM(pSRAM->pHost), &pTarget, nOffsetRAM, &nSize)) {
+    if (!ramGetBuffer(SYSTEM_RAM(pSRAM->pHost), &pTarget, nOffsetRAM, (u32*)&nSize)) {
         return 0;
     }
     if (!simulatorWriteSRAM(nOffsetSRAM & 0x7FFF, (u8*)pTarget, nSize)) {

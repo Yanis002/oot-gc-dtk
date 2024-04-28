@@ -105,7 +105,13 @@ s32 simulatorCopyControllerMap(u32* mapDataOutput, u32* mapDataInput);
 s32 simulatorSetControllerMap(u32* mapData, s32 channel);
 void simulatorResetAndPlayMovie(void);
 s32 simulatorDVDShowError(s32 nStatus, void*, s32, u32);
+
+#if VERSION == 0 // D43J01
+s32 simulatorTestReset(s32 IPL, s32 forceMenu, s32 allowReset);
+#else
 s32 simulatorTestReset(s32 IPL, s32 forceMenu, s32 allowReset, s32 usePreviousSettings);
+#endif
+
 s32 simulatorGetArgument(SimArgumentType eType, char** pszArgument);
 s32 simulatorPlayMovie(void);
 s32 xlMain(void);

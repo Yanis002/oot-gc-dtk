@@ -801,7 +801,7 @@ s32 __osRestoreInt(Cpu* pCPU) {
 s32 __osSpSetStatus(Cpu* pCPU) {
     u32 nData32 = pCPU->aGPR[4].u32;
 
-    if (!rspPut32(SYSTEM_RSP(pCPU->pHost), 0x04040010, &nData32)) {
+    if (!rspPut32(SYSTEM_RSP(pCPU->pHost), 0x04040010, (s32*)&nData32)) {
         return 0;
     }
 
@@ -2737,7 +2737,7 @@ s32 __osEepStatus(Cpu* pCPU) {
         return 0;
     }
 
-    if (pifGetEEPROMSize(SYSTEM_PIF(pCPU->pHost), &nSize) != 0) {
+    if (pifGetEEPROMSize(SYSTEM_PIF(pCPU->pHost), (u32*)&nSize) != 0) {
         status[0] = 0x80 | (nSize == 0x800 ? 0x40 : 0);
         status[1] = 0;
         status[2] = 0;
