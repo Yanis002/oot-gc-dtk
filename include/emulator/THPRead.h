@@ -3,8 +3,6 @@
 
 #include "dolphin.h"
 
-//! TODO: the following structs are similar to the ones inside simGCN.h
-
 typedef enum MovieMessage {
     M_M_NONE = -1,
     M_M_DISK_COVER_OPEN = 0,
