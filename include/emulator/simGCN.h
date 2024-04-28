@@ -115,6 +115,17 @@ extern System* gpSystem;
 extern u32 gz_bnrSize;
 extern u32 gz_iconSize;
 
+extern __anon_0xDB69 gcoverOpen;
+extern __anon_0xDB69 gfatalErr;
+extern __anon_0xDB69 gnoDisk;
+extern __anon_0xDB69 greadingDisk;
+extern __anon_0xDB69 gretryErr;
+extern __anon_0xDB69 gwrongDisk;
+
+extern s16 Vert_s16[12];
+extern u32 Colors_u32[3];
+extern u32 TexCoords_u8[4];
+
 void simulatorUnpackTexPalette(__anon_0xDB69* pal);
 s32 simulatorDVDOpen(char* szNameFile, DVDFileInfo* pFileInfo);
 s32 simulatorDVDRead(DVDFileInfo* pFileInfo, void* anData, s32 nSizeRead, s32 nOffset, DVDCallback callback);

@@ -1,6 +1,9 @@
 #include "dolphin/__start.h"
 #include "__ppc_eabi_linker.h"
 
+u16 Pad3Button : PAD3_BUTTON_ADDR;
+static u8 Debug_BBA = 0;
+
 static void __init_registers(void);
 
 void __check_pad3(void) {

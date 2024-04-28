@@ -75,14 +75,14 @@ emulator/Fire/THPRead.c:
 	.text       start:0x80011714 end:0x80012CFC
 	.rodata     start:0x800D1D10 end:0x800D1DA0
 	.data       start:0x800EB968 end:0x800EB9D8
-	.bss        start:0x800FC520 end:0x800FD910
+	.bss        start:0x800FC520 end:0x800FD950
 	.sbss       start:0x8018B8D0 end:0x8018B8E8
 	.sdata2     start:0x8018BFE0 end:0x8018C018
 
 emulator/Fire/THPVideoDecode.c:
 	.text       start:0x80012CFC end:0x8001321C
 	.data       start:0x800EB9D8 end:0x800EBA00
-	.bss        start:0x800FD910 end:0x800FECC0
+	.bss        start:0x800FD950 end:0x800FECC0
 	.sbss       start:0x8018B8E8 end:0x8018B8F0
 
 emulator/Fire/mcardGCN.c:

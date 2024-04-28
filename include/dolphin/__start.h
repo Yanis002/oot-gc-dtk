@@ -13,12 +13,9 @@
 #define DEBUGFLAG_ADDR 0x800030E8
 #define DVD_DEVICECODE_ADDR 0x800030E6
 
-#define MSR_FP 0x2000
-
 extern void InitMetroTRK();
 
-u16 Pad3Button : PAD3_BUTTON_ADDR;
-static u8 Debug_BBA = 0;
+extern u16 Pad3Button;
 
 extern void memset(void*, int, int);
 extern int main(int argc, char* argv[]);

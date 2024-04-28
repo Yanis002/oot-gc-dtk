@@ -306,8 +306,8 @@ config.libs = [
             Object(Matching, "emulator/Fire/THPPlayer.c"),
             Object(Matching, "emulator/Fire/THPAudioDecode.c"),
             Object(Matching, "emulator/Fire/THPDraw.c"),
-            Object(NonMatching, "emulator/Fire/THPRead.c", cflags=[*cflags_dolphin, "-inline auto,deferred"]),
-            Object(NonMatching, "emulator/Fire/THPVideoDecode.c"),
+            Object(NonMatching, "emulator/Fire/THPRead.c", cflags=[*cflags_dolphin, "-inline auto,deferred"]), # ``Reader`` left
+            Object(Matching, "emulator/Fire/THPVideoDecode.c"),
         ]
     ),
     SIM(
