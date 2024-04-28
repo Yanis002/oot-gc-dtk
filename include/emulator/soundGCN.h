@@ -43,6 +43,11 @@ typedef struct Sound {
     /* 0xD4 */ s32 nSizeRamp;
 } Sound; // size = 0xD8
 
+s32 soundSetLength(Sound* pSound, s32 nSize);
+s32 soundSetDACRate(Sound* pSound, s32 nDacRate);
+s32 soundSetAddress(Sound* pSound, void* pData);
+s32 soundGetDMABuffer(Sound* pSound, u32* pnSize);
+s32 soundSetBufferSize(Sound* pSound, s32 nSize);
 s32 soundLoadBeep(Sound* pSound, SoundBeep iBeep, char* szNameFile);
 s32 soundEvent(Sound* pSound, s32 nEvent, void* pArgument);
 

@@ -57,7 +57,7 @@ typedef enum {
 #define OS_FONT_FIXED TRUE
 
 // Common functions.
-u16 OSGetFontEncode();
+u16 OSGetFontEncode(void);
 char* OSGetFontWidth(char* string, s32* width);
 
 // High-level functions.

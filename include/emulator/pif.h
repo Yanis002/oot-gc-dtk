@@ -29,7 +29,12 @@ typedef struct Pif {
 
 s32 pifReadRumble(Pif* pPIF, s32 channel, u16 address, u8* data);
 s32 pifWriteRumble(Pif* pPIF, s32 channel, u16 address, u8* data);
+s32 pifSetControllerType(Pif* pPIF, s32 channel, ControllerType type);
 s32 pifGetEControllerType(Pif* pPIF, s32 channel, ControllerType* type);
+s32 pifSetEEPROMType(Pif* pPIF, ControllerType type);
+s32 pifGetEEPROMSize(Pif* pPIF, u32* size);
+s32 pifSetData(Pif* pPIF, u8* acData);
+s32 pifGetData(Pif* pPIF, u8* acData);
 s32 pifEvent(Pif* pPIF, s32 nEvent, void* pArgument);
 
 extern _XL_OBJECTTYPE gClassPIF;

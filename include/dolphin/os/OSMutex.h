@@ -1,9 +1,8 @@
 #ifndef _DOLPHIN_OSMUTEX
 #define _DOLPHIN_OSMUTEX
 
-#include "dolphin/types.h"
-
 #include "dolphin/os/OSThread.h"
+#include "dolphin/types.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -22,6 +21,7 @@ struct OSCond {
 
 void OSInitMutex(OSMutex* mutex);
 void OSLockMutex(OSMutex* mutex);
+void __OSUnlockAllMutex(OSThread* thread);
 void OSUnlockMutex(OSMutex* mutex);
 BOOL OSTryLockMutex(OSMutex* mutex);
 void OSInitCond(OSCond* cond);

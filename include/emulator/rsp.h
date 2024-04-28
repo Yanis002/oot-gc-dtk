@@ -115,7 +115,7 @@ typedef struct Rsp {
     /* 0x0000 */ s32 nMode;
     /* 0x0004 */ struct __anon_0x57890 yield;
     /* 0x00DC */ u32 nTickLast;
-    /* 0x00E0 */ s32 (*pfUpdateWaiting)();
+    /* 0x00E0 */ s32 (*pfUpdateWaiting)(void);
     /* 0x00E4 */ u32 n2TriMult;
     /* 0x00E8 */ s32 aStatus[4];
     /* 0x00F8 */ f32 aMatrixOrtho[4][4];
@@ -209,6 +209,8 @@ typedef struct Rsp {
     /* 0x39C8 */ s32* dctBuf;
 } Rsp; // size = 0x39CC
 
+s32 rspPut32(Rsp* pRSP, u32 nAddress, s32* pData);
+s32 rspGet32(Rsp* pRSP, u32 nAddress, s32* pData);
 s32 rspInvalidateCache(Rsp* pRSP, s32 nOffset0, s32 nOffset1);
 s32 rspEnableABI(Rsp* pRSP, s32 bFlag);
 s32 rspFrameComplete(Rsp* pRSP);

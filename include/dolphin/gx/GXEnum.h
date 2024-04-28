@@ -838,32 +838,29 @@ typedef enum _GXTexCacheSize {
 } GXTexCacheSize;
 
 typedef enum _GXTlut {
-    GX_TLUT0 = 0, // TLUT (256 16-bit entries) ID 0.
-    GX_TLUT1 = 1,
-    GX_TLUT2 = 2,
-    GX_TLUT3 = 3,
-    GX_TLUT4 = 4,
-    GX_TLUT5 = 5,
-    GX_TLUT6 = 6,
-    GX_TLUT7 = 7,
-    GX_TLUT8 = 8,
-    GX_TLUT9 = 9,
-    GX_TLUT10 = 10,
-    GX_TLUT11 = 11,
-    GX_TLUT12 = 12,
-    GX_TLUT13 = 13,
-    GX_TLUT14 = 14,
-    GX_TLUT15 = 15,
+    GX_TLUT0,
+    GX_TLUT1,
+    GX_TLUT2,
+    GX_TLUT3,
+    GX_TLUT4,
+    GX_TLUT5,
+    GX_TLUT6,
+    GX_TLUT7,
+    GX_TLUT8,
+    GX_TLUT9,
+    GX_TLUT10,
+    GX_TLUT11,
+    GX_TLUT12,
+    GX_TLUT13,
+    GX_TLUT14,
+    GX_TLUT15,
+    GX_BIGTLUT0,
+    GX_BIGTLUT1,
+    GX_BIGTLUT2,
+    GX_BIGTLUT3,
 
     GX_MAX_TLUT = 16,
-
-    GX_BIGTLUT0 = 16, // BIGTLUT (1024 16-bit entries) ID 0.
-    GX_BIGTLUT1 = 17,
-    GX_BIGTLUT2 = 18,
-    GX_BIGTLUT3 = 19,
-
     GX_MAX_BIGTLUT = 4,
-
     GX_MAX_TLUT_ALL = GX_MAX_TLUT + GX_MAX_BIGTLUT, // 20
 } GXTlut;
 
