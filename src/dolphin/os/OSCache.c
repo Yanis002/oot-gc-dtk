@@ -232,7 +232,7 @@ _lockloop:
 }
 
 void LCEnable() {
-  BOOL enabled;
+  bool enabled;
 
   enabled = OSDisableInterrupts();
   __LCEnable();

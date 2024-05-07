@@ -84,22 +84,22 @@ volatile OSContext* __OSFPUContext AT_ADDRESS(OS_BASE_CACHED | 0x00D8);
 void __OSThreadInit(void);
 void OSInitThreadQueue(OSThreadQueue* queue);
 OSThread* OSGetCurrentThread(void);
-BOOL OSIsThreadSuspended(OSThread* thread);
-BOOL OSIsThreadTerminated(OSThread* thread);
+bool OSIsThreadSuspended(OSThread* thread);
+bool OSIsThreadTerminated(OSThread* thread);
 s32 OSDisableScheduler(void);
 s32 OSEnableScheduler(void);
 OSPriority __OSGetEffectivePriority(OSThread* thread);
 void __OSReschedule(void);
 void OSYieldThread(void);
-BOOL OSCreateThread(OSThread* thread, void* (*func)(void*), void* param, void* stack, u32 stackSize,
+bool OSCreateThread(OSThread* thread, void* (*func)(void*), void* param, void* stack, u32 stackSize,
                     OSPriority priority, u16 attr);
 void OSExitThread(void* val);
 void OSCancelThread(OSThread* thread);
-BOOL OSJoinThread(OSThread* thread, void** val);
+bool OSJoinThread(OSThread* thread, void** val);
 void OSDetachThread(OSThread* thread);
 s32 OSResumeThread(OSThread* thread);
 s32 OSSuspendThread(OSThread* thread);
-BOOL OSSetThreadPriority(OSThread* thread, OSPriority priority);
+bool OSSetThreadPriority(OSThread* thread, OSPriority priority);
 OSPriority OSGetThreadPriority(OSThread* thread);
 void OSSleepThread(OSThreadQueue* queue);
 void OSWakeupThread(OSThreadQueue* queue);

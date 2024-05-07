@@ -6,19 +6,19 @@
 vu16 __MEMRegs[64] : 0xCC004000;
 extern OSErrorHandler __OSErrorTable[16];
 
-static BOOL OnReset(BOOL final);
+static bool OnReset(bool final);
 
 static OSResetFunctionInfo ResetFunctionInfo = {
     OnReset,
     127,
 };
 
-static BOOL OnReset(BOOL final) {
-    if (final != FALSE) {
+static bool OnReset(bool final) {
+    if (final != false) {
         __MEMRegs[8] = 0xFF;
         __OSMaskInterrupts(0xf0000000);
     }
-    return TRUE;
+    return true;
 }
 
 u32 OSGetPhysicalMemSize() { return *(u32*)(OSPhysicalToCached(0x0028)); }
@@ -42,7 +42,7 @@ static void MEMIntrruptHandler(__OSInterrupt interrupt, OSContext* context) {
 }
 
 void OSProtectRange(u32 chan, void* addr, u32 nBytes, u32 control) {
-    BOOL enabled;
+    bool enabled;
     u32 start;
     u32 end;
     u16 reg;
@@ -188,7 +188,7 @@ asm void RealMode(register u32 addr) {
 void __OSInitMemoryProtection() {
     u32 padding[8];
     u32 simulatedSize;
-    BOOL enabled;
+    bool enabled;
     simulatedSize = OSGetConsoleSimulatedMemSize();
     enabled = OSDisableInterrupts();
 

@@ -49,7 +49,7 @@ static u32 GXTexRegionAddrTable[] = {
 };
 
 // forward declaring static reset function
-static BOOL __GXShutdown(BOOL);
+static bool __GXShutdown(bool);
 
 static OSResetFunctionInfo GXResetFuncInfo = {__GXShutdown, OS_RESET_PRIO_GX};
 
@@ -57,7 +57,7 @@ static OSResetFunctionInfo GXResetFuncInfo = {__GXShutdown, OS_RESET_PRIO_GX};
  * @note Address: N/A
  * @note Size: 0x10
  */
-asm BOOL IsWriteGatherBufferEmpty(void) {
+asm bool IsWriteGatherBufferEmpty(void) {
 #ifdef __MWERKS__ // clang-format off
 	nofralloc;
 	sync;
@@ -139,7 +139,7 @@ static GXTlutRegion* __GXDefaultTlutRegionCallback(u32 tlut) {
  * @note Address: 0x800E27A0
  * @note Size: 0x190
  */
-BOOL __GXShutdown(BOOL final) {
+bool __GXShutdown(bool final) {
     static u32 peCount;
     static OSTime time;
     static u32 calledOnce = 0;
@@ -153,20 +153,20 @@ BOOL __GXShutdown(BOOL final) {
             peCount = GXReadMEMReg(0x28, 0x27);
             time = OSGetTime();
             calledOnce = 1;
-            return FALSE;
+            return false;
         }
 
         newTime = OSGetTime();
         newPeCount = GXReadMEMReg(0x28, 0x27);
 
         if (newTime - time < 10) {
-            return FALSE;
+            return false;
         }
 
         if (newPeCount != peCount) {
             peCount = newPeCount;
             time = newTime;
-            return FALSE;
+            return false;
         }
 
     } else {
@@ -193,7 +193,7 @@ BOOL __GXShutdown(BOOL final) {
         __GXAbort();
     }
 
-    return TRUE;
+    return true;
 }
 
 /**

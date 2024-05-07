@@ -31,7 +31,7 @@ void OSCreateAlarm(OSAlarm* alarm);
 void OSCancelAlarm(OSAlarm* alarm);
 void OSCancelAlarms(u32 tag);
 
-BOOL OSCheckAlarmQueue(void);
+bool OSCheckAlarmQueue(void);
 
 #ifdef __cplusplus
 }

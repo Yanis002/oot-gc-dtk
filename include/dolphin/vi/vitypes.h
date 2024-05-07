@@ -101,8 +101,8 @@ typedef struct VIPositionInfo {
     u32 tfbb; // _34
     u32 bfbb; // _38
     u8 xof; // _3C
-    BOOL isBlack; // _40
-    BOOL is3D; // _44
+    bool isBlack; // _40
+    bool is3D; // _44
     u32 rbufAddr; // _48
     u32 rtfbb; // _4C
     u32 rbfbb; // _50

@@ -63,20 +63,20 @@ void GXSetVtxDesc(GXAttr attr, GXAttrType type) {
             break;
         case GX_VA_NRM:
             if (type != GX_NONE) {
-                gx->hasNrms = TRUE;
-                gx->hasBiNrms = FALSE;
+                gx->hasNrms = true;
+                gx->hasBiNrms = false;
                 gx->nrmType = type;
             } else {
-                gx->hasNrms = FALSE;
+                gx->hasNrms = false;
             }
             break;
         case GX_VA_NBT:
             if (type != GX_NONE) {
-                gx->hasBiNrms = TRUE;
-                gx->hasNrms = FALSE;
+                gx->hasBiNrms = true;
+                gx->hasNrms = false;
                 gx->nrmType = type;
             } else {
-                gx->hasBiNrms = FALSE;
+                gx->hasBiNrms = false;
             }
             break;
         case GX_VA_CLR0:
@@ -272,8 +272,8 @@ void GXClearVtxDesc(void) {
     gx->vcdLo = 0;
     GX_SET_REG(gx->vcdLo, GX_DIRECT, GX_CP_VCD_LO_POS_ST, GX_CP_VCD_LO_POS_END);
     gx->vcdHi = 0;
-    gx->hasNrms = FALSE;
-    gx->hasBiNrms = FALSE;
+    gx->hasNrms = false;
+    gx->hasBiNrms = false;
     gx->dirtyState |= GX_DIRTY_VCD;
 }
 
@@ -291,10 +291,10 @@ static inline void SETVAT(u32* vatA, u32* vatB, u32* vatC, GXAttr attr, GXCompCn
             if (compCnt == GX_NRM_NBT3) {
                 // Probably because the compCnt can only be one bit?
                 GX_SET_REG(*vatA, GX_NRM_NBT, GX_CP_VAT_GRP0_NRM_CNT_ST, GX_CP_VAT_GRP0_NRM_CNT_END);
-                GX_SET_REG(*vatA, TRUE, GX_CP_VAT_GRP0_NRMIDX3_ST, GX_CP_VAT_GRP0_NRMIDX3_END);
+                GX_SET_REG(*vatA, true, GX_CP_VAT_GRP0_NRMIDX3_ST, GX_CP_VAT_GRP0_NRMIDX3_END);
             } else {
                 GX_SET_REG(*vatA, compCnt, GX_CP_VAT_GRP0_NRM_CNT_ST, GX_CP_VAT_GRP0_NRM_CNT_END);
-                GX_SET_REG(*vatA, FALSE, GX_CP_VAT_GRP0_NRMIDX3_ST, GX_CP_VAT_GRP0_NRMIDX3_END);
+                GX_SET_REG(*vatA, false, GX_CP_VAT_GRP0_NRMIDX3_ST, GX_CP_VAT_GRP0_NRMIDX3_END);
             }
             break;
         case GX_VA_CLR0:

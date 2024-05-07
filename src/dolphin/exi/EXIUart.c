@@ -9,12 +9,12 @@ static u32 Dev;
 static u32 Enabled = 0;
 static u32 BarnacleEnabled = 0;
 
-static BOOL ProbeBarnacle(s32 chan, u32 dev, u32* revision) {
-    BOOL err;
+static bool ProbeBarnacle(s32 chan, u32 dev, u32* revision) {
+    bool err;
     u32 cmd;
 
     if (chan != 2 && dev == 0 && !EXIAttach(chan, NULL)) {
-        return FALSE;
+        return false;
     }
 
     err = !EXILock(chan, dev, NULL);
@@ -22,7 +22,7 @@ static BOOL ProbeBarnacle(s32 chan, u32 dev, u32* revision) {
         err = !EXISelect(chan, dev, EXI_FREQ_1M);
         if (!err) {
             cmd = 0x20011300;
-            err = FALSE;
+            err = false;
             err |= !EXIImm(chan, &cmd, 4, EXI_WRITE, NULL);
             err |= !EXISync(chan);
             err |= !EXIImm(chan, revision, 4, EXI_READ, NULL);
@@ -37,10 +37,10 @@ static BOOL ProbeBarnacle(s32 chan, u32 dev, u32* revision) {
     }
 
     if (err) {
-        return FALSE;
+        return false;
     }
 
-    return (*revision != 0xFFFFFFFF) ? TRUE : FALSE;
+    return (*revision != 0xFFFFFFFF) ? true : false;
 }
 
 void __OSEnableBarnacle(s32 chan, u32 dev) {
@@ -119,12 +119,12 @@ static int QueueLength(void) {
 u32 WriteUARTN(const void* buf, unsigned long len) {
     u32 cmd;
 #if DOLPHIN_REV > 2002
-    BOOL interrupt;
+    bool interrupt;
 #endif
     int qLen;
     long xLen;
     char* ptr;
-    BOOL locked;
+    bool locked;
     u32 error;
 
     if (Enabled != EXI_MAGIC)

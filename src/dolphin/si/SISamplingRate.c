@@ -22,7 +22,7 @@ static XY XYPAL[12] = {
 
 void SISetSamplingRate(u32 msec) {
     XY* xy;
-    BOOL enabled;
+    bool enabled;
 
     if (msec > 11) {
         msec = 11;

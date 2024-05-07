@@ -28,13 +28,13 @@ static DVDCommandBlock DriveBlock;
 static OSBootInfo* BootInfo;
 static u32* BI2DebugFlag;
 static u32* BI2DebugFlagHolder;
-__declspec(weak) BOOL __OSIsGcam = FALSE;
+__declspec(weak) bool __OSIsGcam = false;
 static f64 ZeroF;
 static f32 ZeroPS[2];
-static BOOL AreWeInitialized = FALSE;
+static bool AreWeInitialized = false;
 static __OSExceptionHandler* OSExceptionTable;
 OSTime __OSStartTime;
-BOOL __OSInIPL;
+bool __OSInIPL;
 
 extern u8 __ArenaHi[];
 extern u8 __ArenaLo[];
@@ -56,7 +56,7 @@ extern u32 __PADSpec;
 #define MSR_RI_BIT 0x1E
 
 void OSDefaultExceptionHandler(__OSException exception, OSContext* context);
-extern BOOL __DBIsExceptionMarked(__OSException);
+extern bool __DBIsExceptionMarked(__OSException);
 static void OSExceptionInit(void);
 
 /* clang-format off */
@@ -211,8 +211,8 @@ void OSInit(void) {
     u32 tdev;
 
     // check if we've already done all this or not
-    if ((BOOL)AreWeInitialized == FALSE) { // fantastic name
-        AreWeInitialized = TRUE; // flag to make sure we don't have to do this again
+    if ((bool)AreWeInitialized == false) { // fantastic name
+        AreWeInitialized = true; // flag to make sure we don't have to do this again
 
         // SYSTEM //
         __OSStartTime = __OSGetSystemTime();
@@ -291,7 +291,7 @@ void OSInit(void) {
         __OSThreadInit();
         __OSInitAudioSystem();
         PPCMthid2(PPCMfhid2() & 0xBFFFFFFF);
-        if ((BOOL)__OSInIPL == FALSE) {
+        if ((bool)__OSInIPL == false) {
             __OSInitMemoryProtection();
         }
 
@@ -382,9 +382,9 @@ void OSInit(void) {
         OSEnableInterrupts();
 
         // check if we can load OS from IPL; if not, grab it from DVD (?)
-        if ((BOOL)__OSInIPL == FALSE) {
+        if ((bool)__OSInIPL == false) {
             DVDInit();
-            if ((BOOL)__OSIsGcam) {
+            if ((bool)__OSIsGcam) {
                 __OSDeviceCode = 0x9000;
                 return;
             }

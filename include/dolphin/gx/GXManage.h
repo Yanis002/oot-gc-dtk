@@ -12,7 +12,7 @@ typedef void (*GXDrawDoneCallback)(void);
 ///////////// BASIC FUNCTIONS //////////////
 static GXTexRegion* __GXDefaultTexRegionCallback(GXTexObj* obj, GXTexMapID id);
 static GXTlutRegion* __GXDefaultTlutRegionCallback(u32 tlut);
-static BOOL __GXShutdown(BOOL final); // need to check types
+static bool __GXShutdown(bool final); // need to check types
 
 ////////////////////////////////////////////
 
@@ -54,7 +54,7 @@ extern void GXPokeDither(GXBool doDither);
 extern void GXPokeZMode(GXBool doCompare, GXCompare func, GXBool doUpdate);
 
 // Unused/inlined in P2.
-extern BOOL IsWriteGatherBufferEmpty();
+extern bool IsWriteGatherBufferEmpty();
 extern void EnableWriteGatherPipe();
 extern void DisableWriteGatherPipe();
 extern void GXResetWriteGatherPipe();

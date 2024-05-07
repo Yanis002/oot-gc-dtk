@@ -26,7 +26,7 @@ static u16 VolumeTable[128] = {
 };
 // clang-format on
 
-static BOOL Initialized;
+static bool Initialized;
 static s32 WorkBuffer[16];
 static OSMessageQueue PrepareReadyQueue;
 static OSMessageQueue UsedTextureSetQueue;
@@ -45,8 +45,8 @@ THPPlayer ActivePlayer;
 // forward declare statics
 static s16* audioCallbackWithMSound(s32 p1);
 static void PlayControl(u32);
-static BOOL ProperTimingForStart();
-static BOOL ProperTimingForGettingNextFrame();
+static bool ProperTimingForStart();
+static bool ProperTimingForGettingNextFrame();
 static void PushUsedTextureSet(OSMessage msg);
 static OSMessage PopUsedTextureSet();
 static void MixAudio(s16*, s16*, u32);
@@ -58,7 +58,7 @@ void THPGXRestore();
 s32 movieDVDRead(DVDFileInfo* pFileInfo, void* anData, s32 nSizeRead, s32 nOffset);
 static void THPAudioMixCallback();
 
-BOOL THPPlayerInit(s32 audioSystem) {
+bool THPPlayerInit(s32 audioSystem) {
     s32 old;
 
     memset(&ActivePlayer, 0, sizeof(THPPlayer));
@@ -66,7 +66,7 @@ BOOL THPPlayerInit(s32 audioSystem) {
     OSInitMessageQueue(&UsedTextureSetQueue, UsedTextureSetMessage, 3);
 
     if (!THPInit()) {
-        return FALSE;
+        return false;
     }
 
     old = OSDisableInterrupts();
@@ -92,15 +92,15 @@ BOOL THPPlayerInit(s32 audioSystem) {
         AIStartDMA();
     }
 
-    Initialized = TRUE;
-    return TRUE;
+    Initialized = true;
+    return true;
 }
 
 #ifdef UNUSED
 void THPPlayerQuit() {
     LCDisable();
     audioQuitWithMSound();
-    Initialized = FALSE;
+    Initialized = false;
 }
 #endif
 
@@ -108,28 +108,28 @@ s32 THPPlayerOpen(char* fileName, s32 onMemory) {
     u32 readOffset;
     s32 i;
 
-    if (Initialized == FALSE) {
+    if (Initialized == false) {
         OSReport("You must call THPPlayerInit before you call this function\n");
-        return FALSE;
+        return false;
     }
 
     if (ActivePlayer.open) {
         OSReport("Can't open %s because a thp file is already opened.\n");
-        return FALSE;
+        return false;
     }
 
     memset(&ActivePlayer.videoInfo, 0, sizeof(THPVideoInfo));
     memset(&ActivePlayer.audioInfo, 0, sizeof(THPAudioInfo));
 
-    if (DVDOpen((char*)fileName, &ActivePlayer.fileInfo) == FALSE) {
+    if (DVDOpen((char*)fileName, &ActivePlayer.fileInfo) == false) {
         OSReport("Can't open %s.\n", fileName);
-        return FALSE;
+        return false;
     }
 
     // gTHPReaderDvdAccess = 1;
     // if (DVDReadPrio(&ActivePlayer.fileInfo, WorkBuffer, 64, 0, 2) < 0) {
     // 	DVDClose(&ActivePlayer.fileInfo);
-    // 	return FALSE;
+    // 	return false;
     // }
     // gTHPReaderDvdAccess = 0;
     movieDVDRead(&ActivePlayer.fileInfo, WorkBuffer, 64, 0);
@@ -139,20 +139,20 @@ s32 THPPlayerOpen(char* fileName, s32 onMemory) {
     if (strcmp(ActivePlayer.header.magic, "THP") != 0) {
         OSReport("This file is not a THP file.\n");
         DVDClose(&ActivePlayer.fileInfo);
-        return FALSE;
+        return false;
     }
 
     if (ActivePlayer.header.version != 0x11000) {
         OSReport("invalid version.\n");
         DVDClose(&ActivePlayer.fileInfo);
-        return FALSE;
+        return false;
     }
 
     // gTHPReaderDvdAccess = 1;
     readOffset = ActivePlayer.header.compInfoDataOffsets;
     // if (DVDReadPrio(&ActivePlayer.fileInfo, WorkBuffer, 32, readOffset, 2) < 0) {
     // 	DVDClose(&ActivePlayer.fileInfo);
-    // 	return FALSE;
+    // 	return false;
     // }
     // gTHPReaderDvdAccess = 0;
     movieDVDRead(&ActivePlayer.fileInfo, WorkBuffer, 32, readOffset);
@@ -167,7 +167,7 @@ s32 THPPlayerOpen(char* fileName, s32 onMemory) {
                 // gTHPReaderDvdAccess = 1;
                 // if (DVDReadPrio(&ActivePlayer.fileInfo, WorkBuffer, 32, readOffset, 2) < 0) {
                 // 	DVDClose(&ActivePlayer.fileInfo);
-                // 	return FALSE;
+                // 	return false;
                 // }
                 // gTHPReaderDvdAccess = 0;
                 movieDVDRead(&ActivePlayer.fileInfo, WorkBuffer, 32, readOffset);
@@ -180,7 +180,7 @@ s32 THPPlayerOpen(char* fileName, s32 onMemory) {
                 // gTHPReaderDvdAccess = 1;
                 // if (DVDReadPrio(&ActivePlayer.fileInfo, WorkBuffer, 32, readOffset, 2) < 0) {
                 // 	DVDClose(&ActivePlayer.fileInfo);
-                // 	return FALSE;
+                // 	return false;
                 // }
                 // gTHPReaderDvdAccess = 0;
                 movieDVDRead(&ActivePlayer.fileInfo, WorkBuffer, 32, readOffset);
@@ -193,7 +193,7 @@ s32 THPPlayerOpen(char* fileName, s32 onMemory) {
 
             default:
                 OSReport("Unknown frame components.\n");
-                return FALSE;
+                return false;
         }
     }
 
@@ -201,23 +201,23 @@ s32 THPPlayerOpen(char* fileName, s32 onMemory) {
     ActivePlayer.state = 0;
     ActivePlayer.playFlag = 0;
     ActivePlayer.onMemory = onMemory;
-    ActivePlayer.open = TRUE;
+    ActivePlayer.open = true;
     ActivePlayer.curVolume = 127.0f;
     ActivePlayer.targetVolume = ActivePlayer.curVolume;
     ActivePlayer.rampCount = 0;
 
-    return TRUE;
+    return true;
 }
 
 #ifdef UNUSED
-BOOL THPPlayerClose() {
+bool THPPlayerClose() {
     if (ActivePlayer.open && ActivePlayer.state == 0) {
-        ActivePlayer.open = FALSE;
+        ActivePlayer.open = false;
         DVDClose(&ActivePlayer.fileInfo);
-        return TRUE;
+        return true;
     }
 
-    return FALSE;
+    return false;
 }
 #endif
 
@@ -246,7 +246,7 @@ u32 THPPlayerCalcNeedMemory() {
     return 0;
 }
 
-BOOL THPPlayerSetBuffer(u8* data) {
+bool THPPlayerSetBuffer(u8* data) {
     u32 i;
     u8* workPtr;
     u32 ySampleSize;
@@ -293,10 +293,10 @@ BOOL THPPlayerSetBuffer(u8* data) {
         }
 
         ActivePlayer.thpWork = workPtr;
-        return TRUE;
+        return true;
     }
 
-    return FALSE;
+    return false;
 }
 
 void InitAllMessageQueue() {
@@ -305,7 +305,7 @@ void InitAllMessageQueue() {
     THPTextureSet* textureSet;
     THPAudioBuffer* audioBuffer;
 
-    if (ActivePlayer.onMemory == FALSE) {
+    if (ActivePlayer.onMemory == false) {
         for (i = 0; i < 10; i++) {
             readBuffer = &ActivePlayer.readBuffer[i];
             PushFreeReadBuffer(readBuffer);
@@ -326,21 +326,21 @@ void InitAllMessageQueue() {
     OSInitMessageQueue(&PrepareReadyQueue, &PrepareReadyMessage, 1);
 }
 
-inline BOOL WaitUntilPrepare() {
+inline bool WaitUntilPrepare() {
     OSMessage msg;
 
     OSReceiveMessage(&PrepareReadyQueue, &msg, OS_MESSAGE_BLOCK);
 
-    if ((BOOL)msg) {
-        return TRUE;
+    if ((bool)msg) {
+        return true;
     } else {
-        return FALSE;
+        return false;
     }
 }
 
 void PrepareReady(s32 msg) { OSSendMessage(&PrepareReadyQueue, (OSMessage)msg, OS_MESSAGE_BLOCK); }
 
-BOOL THPPlayerPrepare(s32 frame, s32 flag, s32 audioTrack) {
+bool THPPlayerPrepare(s32 frame, s32 flag, s32 audioTrack) {
     s32 offset;
     u8* threadData;
 
@@ -348,7 +348,7 @@ BOOL THPPlayerPrepare(s32 frame, s32 flag, s32 audioTrack) {
         if (frame > 0) {
             if (ActivePlayer.header.offsetDataOffsets == 0) {
                 OSReport("This thp file doesn't have the offset data\n");
-                return FALSE;
+                return false;
             }
 
             if (ActivePlayer.header.numFrames > frame) {
@@ -360,7 +360,7 @@ BOOL THPPlayerPrepare(s32 frame, s32 flag, s32 audioTrack) {
 
             } else {
                 OSReport("Specified frame number is over total frame number\n");
-                return FALSE;
+                return false;
             }
 
         } else {
@@ -372,7 +372,7 @@ BOOL THPPlayerPrepare(s32 frame, s32 flag, s32 audioTrack) {
         if (ActivePlayer.audioExist) {
             if (audioTrack < 0 || audioTrack >= ActivePlayer.audioInfo.sndNumTracks) {
                 OSReport("Specified audio track number is invalid\n");
-                return FALSE;
+                return false;
             }
             ActivePlayer.curAudioTrack = audioTrack;
         }
@@ -386,7 +386,7 @@ BOOL THPPlayerPrepare(s32 frame, s32 flag, s32 audioTrack) {
             // if (DVDReadPrio(&ActivePlayer.fileInfo, ActivePlayer.movieData, ActivePlayer.header.movieDataSize,
             //                 ActivePlayer.header.movieDataOffsets, 2)
             //     < 0) {
-            // 	return FALSE;
+            // 	return false;
             // }
             // gTHPReaderDvdAccess = 0;
             movieDVDRead(&ActivePlayer.fileInfo, ActivePlayer.movieData, ActivePlayer.header.movieDataSize,
@@ -426,7 +426,7 @@ BOOL THPPlayerPrepare(s32 frame, s32 flag, s32 audioTrack) {
         }
 
         if (!WaitUntilPrepare()) {
-            return FALSE;
+            return false;
         }
 
         ActivePlayer.state = 1;
@@ -440,22 +440,22 @@ BOOL THPPlayerPrepare(s32 frame, s32 flag, s32 audioTrack) {
 
         // OSReport("THPPlayerPrepare()�I��\n"); // 'THPPlayerPrepare end'
 
-        return TRUE;
+        return true;
     }
 
-    return FALSE;
+    return false;
 }
 
-BOOL THPPlayerPlay() {
+bool THPPlayerPlay() {
     if (ActivePlayer.open && (ActivePlayer.state == 1 || ActivePlayer.state == 4)) {
         ActivePlayer.state = 2;
         ActivePlayer.prevCount = 0;
         ActivePlayer.curCount = 0;
         ActivePlayer.retraceCount = -1;
 
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    return false;
 }
 
 #ifdef UNUSED
@@ -491,13 +491,13 @@ void THPPlayerStop() {
     }
 }
 
-BOOL THPPlayerPause() {
+bool THPPlayerPause() {
     if (ActivePlayer.open && ActivePlayer.state == 2) {
         ActivePlayer.internalState = 4;
         ActivePlayer.state = 4;
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    return false;
 }
 #endif
 
@@ -587,32 +587,32 @@ static void PlayControl(u32 retraceCnt) {
     }
 }
 
-static BOOL ProperTimingForStart() {
+static bool ProperTimingForStart() {
     if (ActivePlayer.videoInfo.videoType & 1) {
         if (VIGetNextField() == 0) {
-            return TRUE;
+            return true;
         }
     } else if (ActivePlayer.videoInfo.videoType & 2) {
         if (VIGetNextField() == 1) {
-            return TRUE;
+            return true;
         }
     } else {
-        return TRUE;
+        return true;
     }
 
-    return FALSE;
+    return false;
 }
 
-static BOOL ProperTimingForGettingNextFrame() {
+static bool ProperTimingForGettingNextFrame() {
     s32 frameRate;
 
     if (ActivePlayer.videoInfo.videoType & 1) {
         if (VIGetNextField() == 0) {
-            return TRUE;
+            return true;
         }
     } else if (ActivePlayer.videoInfo.videoType & 2) {
         if (VIGetNextField() == 1) {
-            return TRUE;
+            return true;
         }
     } else {
         frameRate = ActivePlayer.header.frameRate * 100.0f;
@@ -624,11 +624,11 @@ static BOOL ProperTimingForGettingNextFrame() {
 
         if (ActivePlayer.prevCount != ActivePlayer.curCount) {
             ActivePlayer.prevCount = ActivePlayer.curCount;
-            return TRUE;
+            return true;
         }
     }
 
-    return FALSE;
+    return false;
 }
 
 s32 THPPlayerDrawCurrentFrame(GXRenderModeObj* obj, u32 x, u32 y, u32 polyWidth, u32 polyHeight) {
@@ -644,22 +644,22 @@ s32 THPPlayerDrawCurrentFrame(GXRenderModeObj* obj, u32 x, u32 y, u32 polyWidth,
 }
 
 #ifdef UNUSED
-BOOL THPPlayerGetVideoInfo(void* dst) {
+bool THPPlayerGetVideoInfo(void* dst) {
     if (ActivePlayer.open) {
         memcpy(dst, &ActivePlayer.videoInfo, sizeof(THPVideoInfo));
-        return TRUE;
+        return true;
     }
 
-    return FALSE;
+    return false;
 }
 
-BOOL THPPlayerGetAudioInfo(void* dst) {
+bool THPPlayerGetAudioInfo(void* dst) {
     if (ActivePlayer.open) {
         memcpy(dst, &ActivePlayer.audioInfo, sizeof(THPAudioInfo));
-        return TRUE;
+        return true;
     }
 
-    return FALSE;
+    return false;
 }
 
 u32 THPPlayerGetTotalFrame() {
@@ -686,7 +686,7 @@ static inline OSMessage PopUsedTextureSet() {
 void THPPlayerDrawDone() {
     // GXDrawDone();
     if (Initialized) {
-        while (TRUE) {
+        while (true) {
             OSMessage msg = PopUsedTextureSet();
             if (msg) {
                 PushFreeTextureSet((OSMessage*)msg);
@@ -750,7 +750,7 @@ static void MixAudio(s16* destination, s16* source, u32 sample) {
             dst = destination;
             libsrc = source;
 
-            while (TRUE) {
+            while (true) {
                 if (ActivePlayer.playAudioBuffer == NULL) {
                     if ((ActivePlayer.playAudioBuffer = (THPAudioBuffer*)PopDecodedAudioBuffer(0)) == NULL) {
                         memcpy(dst, libsrc, requestSample << 2);
@@ -826,7 +826,7 @@ static void MixAudio(s16* destination, s16* source, u32 sample) {
             requestSample = sample;
             dst = destination;
 
-            while (TRUE) {
+            while (true) {
                 if (ActivePlayer.playAudioBuffer == NULL) {
                     if ((ActivePlayer.playAudioBuffer = (THPAudioBuffer*)PopDecodedAudioBuffer(0)) == NULL) {
                         memset(dst, 0, requestSample * 4);
@@ -898,9 +898,9 @@ static void MixAudio(s16* destination, s16* source, u32 sample) {
 }
 
 #ifdef UNUSED
-BOOL THPPlayerSetVolume(s32 vol, s32 duration) {
+bool THPPlayerSetVolume(s32 vol, s32 duration) {
     u32 numSamples;
-    BOOL interrupt;
+    bool interrupt;
     if (ActivePlayer.open && ActivePlayer.audioExist) {
         numSamples = AIGetDSPSampleRate() == 0 ? 32 : 48;
 
@@ -932,8 +932,8 @@ BOOL THPPlayerSetVolume(s32 vol, s32 duration) {
         }
         OSRestoreInterrupts(interrupt);
 
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    return false;
 }
 #endif

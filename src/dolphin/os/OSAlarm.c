@@ -8,7 +8,7 @@ static struct OSAlarmQueue {
 } AlarmQueue;
 
 static void DecrementerExceptionHandler(__OSException exception, OSContext* context);
-static BOOL OnReset(BOOL final);
+static bool OnReset(bool final);
 
 #if DOLPHIN_REV > 2002
 static OSResetFunctionInfo ResetFunctionInfo = {OnReset, 0xFFFFFFFF};
@@ -88,7 +88,7 @@ static void InsertAlarm(OSAlarm* alarm, OSTime fire, OSAlarmHandler handler) {
 }
 
 void OSSetAlarm(OSAlarm* alarm, OSTime tick, OSAlarmHandler handler) {
-    BOOL enabled;
+    bool enabled;
     enabled = OSDisableInterrupts();
     alarm->period = 0;
     InsertAlarm(alarm, __OSGetSystemTime() + tick, handler);
@@ -96,7 +96,7 @@ void OSSetAlarm(OSAlarm* alarm, OSTime tick, OSAlarmHandler handler) {
 }
 
 void OSSetPeriodicAlarm(OSAlarm* alarm, OSTime start, OSTime period, OSAlarmHandler handler) {
-    BOOL enabled;
+    bool enabled;
     enabled = OSDisableInterrupts();
     alarm->period = period;
     alarm->start = __OSTimeToSystemTime(start);
@@ -106,7 +106,7 @@ void OSSetPeriodicAlarm(OSAlarm* alarm, OSTime start, OSTime period, OSAlarmHand
 
 void OSCancelAlarm(OSAlarm* alarm) {
     OSAlarm* next;
-    BOOL enabled;
+    bool enabled;
 
     enabled = OSDisableInterrupts();
 
@@ -190,7 +190,7 @@ static asm void DecrementerExceptionHandler(register __OSException exception, re
 }
 
 #if DOLPHIN_REV > 2002
-static BOOL OnReset(BOOL final) {
+static bool OnReset(bool final) {
     OSAlarm* alarm;
     OSAlarm* next;
 
@@ -199,7 +199,7 @@ static BOOL OnReset(BOOL final) {
         next = (alarm) ? alarm->next : NULL;
 
         while (alarm != NULL) {
-            if (__DVDTestAlarm(alarm) == FALSE) {
+            if (__DVDTestAlarm(alarm) == false) {
                 OSCancelAlarm(alarm);
             }
 
@@ -208,6 +208,6 @@ static BOOL OnReset(BOOL final) {
         }
     }
 
-    return TRUE;
+    return true;
 }
 #endif

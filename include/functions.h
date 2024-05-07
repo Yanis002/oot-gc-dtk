@@ -923,9 +923,9 @@
 // ======================= OSFont.c ===================================================
 /* 8009ECA4 global */ extern u16 OSGetFontEncode(void);
 // ======================= OSInterrupt.c ==============================================
-/* 8009ECFC global */ extern BOOL OSDisableInterrupts(void);
-/* 8009ED10 global */ extern BOOL OSEnableInterrupts(void);
-/* 8009ED24 global */ extern BOOL OSRestoreInterrupts(BOOL level);
+/* 8009ECFC global */ extern bool OSDisableInterrupts(void);
+/* 8009ED10 global */ extern bool OSEnableInterrupts(void);
+/* 8009ED24 global */ extern bool OSRestoreInterrupts(bool level);
 /* 8009ED48 global */ extern __OSInterruptHandler __OSSetInterruptHandler(__OSInterrupt interrupt,
                                                                           __OSInterruptHandler handler);
 /* 8009ED64 global */ extern __OSInterruptHandler __OSGetInterruptHandler(__OSInterrupt interrupt);
@@ -939,8 +939,8 @@
 /* 8009F568 global */ extern UNK_TYPE __OSModuleInit(UNK_TYPE...);
 // ======================= OSMessage.c ================================================
 /* 8009F580 global */ extern void OSInitMessageQueue(OSMessageQueue* mq, OSMessage* msgArray, s32 msgCount);
-/* 8009F5E0 global */ extern BOOL OSSendMessage(OSMessageQueue* mq, OSMessage msg, s32 flags);
-/* 8009F6A8 global */ extern BOOL OSReceiveMessage(OSMessageQueue* mq, OSMessage* msg, s32 flags);
+/* 8009F5E0 global */ extern bool OSSendMessage(OSMessageQueue* mq, OSMessage msg, s32 flags);
+/* 8009F6A8 global */ extern bool OSReceiveMessage(OSMessageQueue* mq, OSMessage* msg, s32 flags);
 // ======================= OSMemory.c =================================================
 /* 8009F784 local  */ // extern UNK_TYPE OnReset(UNK_TYPE...);
 /* 8009F7C0 local  */ // extern UNK_TYPE MEMIntrruptHandler(UNK_TYPE...);
@@ -958,11 +958,11 @@
 /* 8009FE28 global */ extern void OSRegisterResetFunction(OSResetFunctionInfo* info);
 /* 8009FEAC local  */ // extern UNK_TYPE Reset(UNK_TYPE...);
 /* 8009FF1C global */ extern UNK_TYPE __OSDoHotReset(UNK_TYPE...);
-/* 8009FF1C global */ extern void OSResetSystem(int reset, u32 resetCode, BOOL forceMenu);
+/* 8009FF1C global */ extern void OSResetSystem(int reset, u32 resetCode, bool forceMenu);
 /* 800A021C global */ extern u32 OSGetResetCode(void);
 // ======================= OSResetSW.c ================================================
 /* 800A024C global */ extern UNK_TYPE __OSResetSWInterruptHandler(UNK_TYPE...);
-/* 800A0340 global */ extern BOOL OSGetResetButtonState(void);
+/* 800A0340 global */ extern bool OSGetResetButtonState(void);
 // ======================= OSRtc.c ====================================================
 /* 800A05D8 local  */ // extern UNK_TYPE WriteSramCallback(UNK_TYPE...);
 /* 800A0638 local  */ // extern UNK_TYPE WriteSram(UNK_TYPE...);
@@ -994,7 +994,7 @@
 /* 800A1374 local  */ // extern UNK_TYPE SetEffectivePriority(UNK_TYPE...);
 /* 800A1534 local  */ // extern UNK_TYPE SelectThread(UNK_TYPE...);
 /* 800A175C global */ extern UNK_TYPE __OSReschedule(UNK_TYPE...);
-/* 800A178C global */ extern BOOL OSCreateThread(OSThread* thread, void* (*func)(void*), void* param, void* stack,
+/* 800A178C global */ extern bool OSCreateThread(OSThread* thread, void* (*func)(void*), void* param, void* stack,
                                                  u32 stackSize, OSPriority priority, u16 attr);
 /* 800A1974 global */ extern void OSExitThread(void* val);
 /* 800A1A58 global */ extern void OSCancelThread(OSThread* thread);
@@ -1032,7 +1032,7 @@
 /* 800A2E8C global */ extern UNK_TYPE EXIClearInterrupts(UNK_TYPE...);
 /* 800A2ED4 global */ extern UNK_TYPE EXISetExiCallback(UNK_TYPE...);
 /* 800A2F50 local  */ // extern UNK_TYPE __EXIProbe(UNK_TYPE...);
-/* 800A30C4 global */ extern BOOL EXIProbe(s32 chan);
+/* 800A30C4 global */ extern bool EXIProbe(s32 chan);
 /* 800A3144 global */ extern s32 EXIProbeEx(s32 chan);
 /* 800A31F8 global */ extern UNK_TYPE EXIAttach(UNK_TYPE...);
 /* 800A3304 global */ extern UNK_TYPE EXIDetach(UNK_TYPE...);
@@ -1091,7 +1091,7 @@
 /* 800A6DE4 global */ extern void VIConfigure(const GXRenderModeObj* rm);
 /* 800A760C global */ extern void VIFlush(void);
 /* 800A773C global */ extern void VISetNextFrameBuffer(void* fb);
-/* 800A77A8 global */ extern void VISetBlack(BOOL black);
+/* 800A77A8 global */ extern void VISetBlack(bool black);
 /* 800A7824 local  */ // extern UNK_TYPE GetCurrentDisplayPosition(UNK_TYPE...);
 /* 800A7860 local  */ // extern UNK_TYPE getCurrentFieldEvenOdd(UNK_TYPE...);
 /* 800A78C8 global */ extern u32 VIGetNextField(void);
@@ -1103,7 +1103,7 @@
 /* 800A7CE0 global */ extern UNK_TYPE DBInit(UNK_TYPE...);
 /* 800A7D08 global */ extern UNK_TYPE __DBExceptionDestinationAux(UNK_TYPE...);
 /* 800A7D50 global */ extern void __DBExceptionDestination(void);
-/* 800A7D60 global */ extern BOOL __DBIsExceptionMarked(__OSException exception);
+/* 800A7D60 global */ extern bool __DBIsExceptionMarked(__OSException exception);
 /* 800A7D7C global */ extern void DBPrintf(char* str, ...);
 // ======================= mtx.c ======================================================
 /* 800A7DCC global */ extern void PSMTXIdentity(Mtx m);
@@ -1336,9 +1336,9 @@
 /* 800B0278 local  */ // extern UNK_TYPE PADProbeCallback(UNK_TYPE...);
 /* 800B0350 local  */ // extern UNK_TYPE PADTypeAndStatusCallback(UNK_TYPE...);
 /* 800B067C local  */ // extern UNK_TYPE PADReceiveCheckCallback(UNK_TYPE...);
-/* 800B07BC global */ extern BOOL PADReset(u32 mask);
-/* 800B08CC global */ extern BOOL PADRecalibrate(u32 mask);
-/* 800B09E0 global */ extern BOOL PADInit(void);
+/* 800B07BC global */ extern bool PADReset(u32 mask);
+/* 800B08CC global */ extern bool PADRecalibrate(u32 mask);
+/* 800B09E0 global */ extern bool PADInit(void);
 /* 800B0B30 global */ extern u32 PADRead(PADStatus* status);
 /* 800B0E30 global */ extern void PADControlMotor(int chan, u32 command);
 /* 800B0EE8 global */ extern void PADSetSpec(u32 model);
@@ -1348,7 +1348,7 @@
 /* 800B16A0 local  */ // extern UNK_TYPE OnReset(UNK_TYPE...);
 /* 800B175C local  */ // extern UNK_TYPE SamplingHandler(UNK_TYPE...);
 /* 800B17BC global */ extern PADSamplingCallback PADSetSamplingCallback(PADSamplingCallback callback);
-/* 800B1810 global */ extern BOOL __PADDisableRecalibration(BOOL disable);
+/* 800B1810 global */ extern bool __PADDisableRecalibration(bool disable);
 // ======================= dvdlow.c ===================================================
 /* 800B188C weak   */ // extern UNK_TYPE __DVDInitWA(UNK_TYPE...);
 /* 800B18CC weak   */ // extern UNK_TYPE __DVDInterruptHandler(UNK_TYPE...);
@@ -1374,11 +1374,11 @@
 // ======================= dvdfs.c ====================================================
 /* 800B2708 global */ extern UNK_TYPE __DVDFSInit(UNK_TYPE...);
 /* 800B2740 global */ extern s32 DVDConvertPathToEntrynum(const char* pathPtr);
-/* 800B2A34 global */ extern BOOL DVDOpen(const char* fileName, DVDFileInfo* fileInfo);
-/* 800B2AFC global */ extern BOOL DVDClose(DVDFileInfo* fileInfo);
+/* 800B2A34 global */ extern bool DVDOpen(const char* fileName, DVDFileInfo* fileInfo);
+/* 800B2AFC global */ extern bool DVDClose(DVDFileInfo* fileInfo);
 /* 800B2B20 local  */ // extern UNK_TYPE entryToPath(UNK_TYPE...);
-/* 800B2C80 global */ extern BOOL DVDGetCurrentDir(char* path, u32 maxlen);
-/* 800B2D44 global */ extern BOOL DVDReadAsyncPrio(DVDFileInfo* fileInfo, void* addr, s32 length, s32 offset,
+/* 800B2C80 global */ extern bool DVDGetCurrentDir(char* path, u32 maxlen);
+/* 800B2D44 global */ extern bool DVDReadAsyncPrio(DVDFileInfo* fileInfo, void* addr, s32 length, s32 offset,
                                                    DVDCallback callback, s32 prio);
 /* 800B2E04 local  */ // extern UNK_TYPE cbForReadAsync(UNK_TYPE...);
 /* 800B2E34 global */ extern s32 DVDReadPrio(DVDFileInfo* fileInfo, void* addr, s32 length, s32 offset, s32 prio);
@@ -1422,9 +1422,9 @@
 /* 800B4F68 global */ extern UNK_TYPE DVDReset(UNK_TYPE...);
 /* 800B4FAC global */ extern s32 DVDGetCommandBlockStatus(const DVDCommandBlock* block);
 /* 800B4FF8 global */ extern s32 DVDGetDriveStatus(void);
-/* 800B50A4 global */ extern BOOL DVDSetAutoInvalidation(BOOL autoInval);
+/* 800B50A4 global */ extern bool DVDSetAutoInvalidation(bool autoInval);
 /* 800B50B4 global */ extern void DVDResume(void);
-/* 800B5104 global */ extern BOOL DVDCancelAsync(DVDCommandBlock* block, DVDCBCallback callback);
+/* 800B5104 global */ extern bool DVDCancelAsync(DVDCommandBlock* block, DVDCBCallback callback);
 /* 800B5380 global */ extern s32 DVDCancel(DVDCommandBlock* block);
 /* 800B542C local  */ // extern UNK_TYPE cbForCancelSync(UNK_TYPE...);
 /* 800B5450 global */ extern DVDDiskID* DVDGetCurrentDiskID(void);
@@ -1441,7 +1441,7 @@
 /* 800B589C local  */ // extern UNK_TYPE ErrorCode2Num(UNK_TYPE...);
 /* 800B59B8 global */ extern UNK_TYPE __DVDStoreErrorCode(UNK_TYPE...);
 // ======================= dvdidutils.c ===============================================
-/* 800B5A34 global */ extern BOOL DVDCompareDiskID(const DVDDiskID* id1, const DVDDiskID* id2);
+/* 800B5A34 global */ extern bool DVDCompareDiskID(const DVDDiskID* id1, const DVDDiskID* id2);
 // ======================= dvdFatal.c =================================================
 /* 800B5B2C global */ extern UNK_TYPE __DVDPrintFatalMessage(UNK_TYPE...);
 // ======================= fstload.c ==================================================
@@ -1477,7 +1477,7 @@
 // ======================= ai.c =======================================================
 /* 800B7F84 global */ extern AIDCallback AIRegisterDMACallback(AIDCallback callback);
 /* 800B7FC8 global */ extern void AIInitDMA(u32 start_addr, u32 length);
-/* 800B8050 global */ extern BOOL AIGetDMAEnableFlag(void);
+/* 800B8050 global */ extern bool AIGetDMAEnableFlag(void);
 /* 800B8060 global */ extern void AIStartDMA(void);
 /* 800B8078 global */ extern void AIStopDMA(void);
 /* 800B8090 global */ extern u32 AIGetDMABytesLeft(void);
@@ -1639,7 +1639,7 @@
 /* 800C75C0 local  */ // extern UNK_TYPE __THPHuffDecodeDCTCompY(UNK_TYPE...);
 /* 800C7C3C local  */ // extern UNK_TYPE __THPHuffDecodeDCTCompU(UNK_TYPE...);
 /* 800C82E4 local  */ // extern UNK_TYPE __THPHuffDecodeDCTCompV(UNK_TYPE...);
-/* 800C898C global */ extern BOOL THPInit(void);
+/* 800C898C global */ extern bool THPInit(void);
 // ======================= THPAudio.c =================================================
 /* 800C8A2C global */ extern u32 THPAudioDecode(s16* buffer, u8* audioFrame, s32 flag);
 /* 800C8E90 local  */ // extern UNK_TYPE __THPAudioGetNewSample(UNK_TYPE...);

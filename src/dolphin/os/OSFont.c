@@ -4,7 +4,7 @@
 #include "dolphin/vi.h"
 
 // outside functions
-BOOL __OSReadROM(void* buffer, s32 length, s32 offset);
+bool __OSReadROM(void* buffer, s32 length, s32 offset);
 
 static OSFontHeader* FontData; // type unsure
 static u8* SheetImage; // type unsure
@@ -199,12 +199,12 @@ static u16 ZenkakuToCode[]
 	};
 // clang-format on
 
-static BOOL IsSjisLeadByte(u8 letter) {
+static bool IsSjisLeadByte(u8 letter) {
     return (0x81 <= letter && letter <= 0x9F) || (0xE0 <= letter && letter <= 0xFC);
     // UNUSED FUNCTION
 }
 
-static BOOL IsSjisTrailByte(u8 letter) { return (letter >= 0x40 && letter <= 0xFC && letter != 0x7F); }
+static bool IsSjisTrailByte(u8 letter) { return (letter >= 0x40 && letter <= 0xFC && letter != 0x7F); }
 
 static int GetFontCode(u16 code) {
     int preCode;
@@ -440,7 +440,7 @@ static void ExpandFontSheet(u8* source, u8* dest) {
     DCStoreRange(dest, FontData->sheetFullSize);
 }
 
-BOOL OSInitFont(OSFontHeader* font) {
+bool OSInitFont(OSFontHeader* font) {
     u8* sheets;
     void* a;
     u32 size;
@@ -451,14 +451,14 @@ BOOL OSInitFont(OSFontHeader* font) {
     }
     size = OSLoadFont(font, (void*)((u32)a & ~0x1F));
     if (size == 0) {
-        return FALSE;
+        return false;
     }
 
     SheetImage = (u8*)FontData + FontData->sheetImage;
     SheetImage = (u8*)(((u32)SheetImage + 31) & ~0x1F); // ???
     ExpandFontSheet((u8*)FontData + FontData->sheetImage, (u8*)SheetImage);
 
-    return TRUE;
+    return true;
 }
 
 char* OSGetFontTexture(char* string, void** image, s32* x, s32* y, s32* width) {

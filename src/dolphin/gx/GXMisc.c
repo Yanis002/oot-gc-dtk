@@ -122,7 +122,7 @@ void GXAbortFrame(void) {
  */
 void GXSetDrawSync(u16 token) {
     u32 reg;
-    BOOL interrupts;
+    bool interrupts;
 
     interrupts = OSDisableInterrupts();
     reg = token | 0x48000000;
@@ -151,7 +151,7 @@ u16 GXReadDrawSync(void) {
  */
 void GXSetDrawDone(void) {
     u32 reg;
-    BOOL interrupts;
+    bool interrupts;
 
     interrupts = OSDisableInterrupts();
     reg = 0x45000002;
@@ -167,7 +167,7 @@ void GXSetDrawDone(void) {
  * @note Size: 0x4C
  */
 void GXWaitDrawDone(void) {
-    BOOL interrupts;
+    bool interrupts;
     interrupts = OSDisableInterrupts();
     while (!DrawDone) {
         OSSleepThread(&FinishQueue);
@@ -333,7 +333,7 @@ void GXPokeZ(u16 x, u16 y, u32 z) {
  */
 GXDrawSyncCallback GXSetDrawSyncCallback(GXDrawSyncCallback callback) {
     GXDrawSyncCallback prevCB;
-    BOOL interrupts;
+    bool interrupts;
 
     prevCB = TokenCB;
     interrupts = OSDisableInterrupts();
@@ -372,7 +372,7 @@ static void GXTokenInterruptHandler(__OSInterrupt interrupt, OSContext* context)
  */
 GXDrawDoneCallback GXSetDrawDoneCallback(GXDrawDoneCallback callback) {
     GXDrawDoneCallback prevCB;
-    BOOL interrupts;
+    bool interrupts;
 
     prevCB = DrawDoneCB;
     interrupts = OSDisableInterrupts();

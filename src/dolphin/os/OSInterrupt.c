@@ -23,7 +23,7 @@ static OSInterruptMask InterruptPrioTable[] = {
     0xFFFFFFFF,
 };
 
-asm BOOL OSDisableInterrupts(void) {
+asm bool OSDisableInterrupts(void) {
     // clang-format off
     nofralloc
 entry    __RAS_OSDisableInterrupts_begin
@@ -35,7 +35,7 @@ entry    __RAS_OSDisableInterrupts_end
     blr
     // clang-format on
 }
-asm BOOL OSEnableInterrupts(void) {
+asm bool OSEnableInterrupts(void) {
     // clang-format off
     nofralloc
 
@@ -47,7 +47,7 @@ asm BOOL OSEnableInterrupts(void) {
     // clang-format on
 }
 
-asm BOOL OSRestoreInterrupts(register BOOL level){
+asm bool OSRestoreInterrupts(register bool level){
     // clang-format off
 
     nofralloc
@@ -230,7 +230,7 @@ u32 SetInterruptMask(OSInterruptMask mask, OSInterruptMask current) {
 }
 
 OSInterruptMask __OSMaskInterrupts(OSInterruptMask global) {
-    BOOL enabled;
+    bool enabled;
     OSInterruptMask prev;
     OSInterruptMask local;
     OSInterruptMask mask;
@@ -249,7 +249,7 @@ OSInterruptMask __OSMaskInterrupts(OSInterruptMask global) {
 }
 
 OSInterruptMask __OSUnmaskInterrupts(OSInterruptMask global) {
-    BOOL enabled;
+    bool enabled;
     OSInterruptMask prev;
     OSInterruptMask local;
     OSInterruptMask mask;

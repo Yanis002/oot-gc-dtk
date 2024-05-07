@@ -53,11 +53,11 @@ void OSInitMutex(OSMutex* mutex) {
 }
 
 void OSLockMutex(OSMutex* mutex) {
-    BOOL enabled = OSDisableInterrupts();
+    bool enabled = OSDisableInterrupts();
     OSThread* currentThread = OSGetCurrentThread();
     OSThread* ownerThread;
 
-    while (TRUE) {
+    while (true) {
         ownerThread = ((OSMutex*)mutex)->thread;
         if (ownerThread == 0) {
             mutex->thread = currentThread;
@@ -78,7 +78,7 @@ void OSLockMutex(OSMutex* mutex) {
 }
 
 void OSUnlockMutex(OSMutex* mutex) {
-    BOOL enabled = OSDisableInterrupts();
+    bool enabled = OSDisableInterrupts();
     OSThread* currentThread = OSGetCurrentThread();
 
     if (mutex->thread == currentThread && --mutex->count == 0) {
@@ -104,20 +104,20 @@ void __OSUnlockAllMutex(OSThread* thread) {
     }
 }
 
-BOOL OSTryLockMutex(OSMutex* mutex) {
-    BOOL enabled = OSDisableInterrupts();
+bool OSTryLockMutex(OSMutex* mutex) {
+    bool enabled = OSDisableInterrupts();
     OSThread* currentThread = OSGetCurrentThread();
-    BOOL locked;
+    bool locked;
     if (mutex->thread == 0) {
         mutex->thread = currentThread;
         mutex->count++;
         PushTail(&currentThread->queueMutex, mutex, link);
-        locked = TRUE;
+        locked = true;
     } else if (mutex->thread == currentThread) {
         mutex->count++;
-        locked = TRUE;
+        locked = true;
     } else {
-        locked = FALSE;
+        locked = false;
     }
     OSRestoreInterrupts(enabled);
     return locked;
@@ -126,7 +126,7 @@ BOOL OSTryLockMutex(OSMutex* mutex) {
 void OSInitCond(OSCond* cond) { OSInitThreadQueue(&cond->queue); }
 
 void OSWaitCond(OSCond* cond, OSMutex* mutex) {
-    BOOL enabled = OSDisableInterrupts();
+    bool enabled = OSDisableInterrupts();
     OSThread* currentThread = OSGetCurrentThread();
     s32 count;
 
@@ -153,71 +153,71 @@ void OSWaitCond(OSCond* cond, OSMutex* mutex) {
 
 void OSSignalCond(OSCond* cond) { OSWakeupThread(&cond->queue); }
 
-static BOOL IsMember(OSMutexQueue* queue, OSMutex* mutex) {
+static bool IsMember(OSMutexQueue* queue, OSMutex* mutex) {
     OSMutex* member;
 
     for (member = queue->head; member; member = member->link.next) {
         if (mutex == member)
-            return TRUE;
+            return true;
     }
-    return FALSE;
+    return false;
 }
 
-BOOL __OSCheckMutex(OSMutex* mutex) {
+bool __OSCheckMutex(OSMutex* mutex) {
     OSThread* thread;
     OSThreadQueue* queue;
     OSPriority priority = 0;
 
     queue = &mutex->queue;
     if (!(queue->head == NULL || queue->head->link.prev == NULL))
-        return FALSE;
+        return false;
     if (!(queue->tail == NULL || queue->tail->link.next == NULL))
-        return FALSE;
+        return false;
     for (thread = queue->head; thread; thread = thread->link.next) {
         if (!(thread->link.next == NULL || thread == thread->link.next->link.prev))
-            return FALSE;
+            return false;
         if (!(thread->link.prev == NULL || thread == thread->link.prev->link.next))
-            return FALSE;
+            return false;
 
         if (thread->state != OS_THREAD_STATE_WAITING)
-            return FALSE;
+            return false;
 
         if (thread->priority < priority)
-            return FALSE;
+            return false;
         priority = thread->priority;
     }
 
     if (mutex->thread) {
         if (mutex->count <= 0)
-            return FALSE;
+            return false;
     } else {
         if (0 != mutex->count)
-            return FALSE;
+            return false;
     }
 
-    return TRUE;
+    return true;
 }
 
-BOOL __OSCheckDeadLock(OSThread* thread) {
+bool __OSCheckDeadLock(OSThread* thread) {
     OSMutex* mutex;
 
     mutex = thread->mutex;
     while (mutex && mutex->thread) {
         if (mutex->thread == thread)
-            return TRUE;
+            return true;
         mutex = mutex->thread->mutex;
     }
-    return FALSE;
+    return false;
 }
 
-BOOL __OSCheckMutexes(OSThread* thread) {
+bool __OSCheckMutexes(OSThread* thread) {
     OSMutex* mutex;
 
     for (mutex = thread->queueMutex.head; mutex; mutex = mutex->link.next) {
         if (mutex->thread != thread)
-            return FALSE;
+            return false;
         if (!__OSCheckMutex(mutex))
-            return FALSE;
+            return false;
     }
-    return TRUE;
+    return true;
 }

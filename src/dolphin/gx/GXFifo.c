@@ -5,7 +5,7 @@ static GXFifoObj* CPUFifo;
 static GXFifoObj* GPFifo;
 static OSThread* __GXCurrentThread;
 static u8 CPGPLinked;
-static BOOL GXOverflowSuspendInProgress;
+static bool GXOverflowSuspendInProgress;
 static GXBreakPtCallback BreakPointCB;
 static u32 __GXOverflowCount;
 static u32 __GXCurrentBP; // unused and removed
@@ -18,7 +18,7 @@ void GXOverflowHandler() {
     __GXOverflowCount += 1;
     __GXWriteFifoIntEnable(0, 1);
     __GXWriteFifoIntReset(1, 0);
-    GXOverflowSuspendInProgress = TRUE;
+    GXOverflowSuspendInProgress = true;
     OSSuspendThread(__GXCurrentThread);
 }
 
@@ -28,7 +28,7 @@ void GXOverflowHandler() {
  */
 void GXUnderflowHandler() {
     OSResumeThread(__GXCurrentThread);
-    GXOverflowSuspendInProgress = FALSE;
+    GXOverflowSuspendInProgress = false;
     __GXWriteFifoIntReset(1, 1);
     __GXWriteFifoIntEnable(1, 0);
 }
@@ -117,7 +117,7 @@ void GXInitFifoLimits(GXFifoObj* fifo, u32 highWatermark, u32 lowWatermark) {
  * @note Size: 0x128
  */
 void GXSetCPUFifo(GXFifoObj* fifo) {
-    BOOL interrupts;
+    bool interrupts;
     interrupts = OSDisableInterrupts();
 
     CPUFifo = fifo;
@@ -405,7 +405,7 @@ void __GXInsaneWatermark(void) {
  * @note Size: 0x100
  */
 void __GXCleanGPFifo(void) {
-    BOOL interrupts;
+    bool interrupts;
     GXFifoObjPriv tempObj; // 0x14
     u32 i, j, k; // stack alloc
     GXFifoObjPriv* gpFifo; // r31

@@ -37,7 +37,7 @@ asm OSTick OSGetTick(void){
 #define OS_SYSTEMTIME_BASE 0x30D8
 
 OSTime __OSGetSystemTime(void) {
-    BOOL enabled;
+    bool enabled;
     OSTime* timeAdjustAddr = (OSTime*)(OS_BASE_CACHED + OS_SYSTEMTIME_BASE);
     OSTime result;
 
@@ -49,7 +49,7 @@ OSTime __OSGetSystemTime(void) {
 }
 
 OSTime __OSTimeToSystemTime(OSTime time) {
-    BOOL enabled;
+    bool enabled;
     OSTime* timeAdjustAddr = (OSTime*)(OS_BASE_CACHED + OS_SYSTEMTIME_BASE);
     OSTime result;
 
@@ -60,7 +60,7 @@ OSTime __OSTimeToSystemTime(OSTime time) {
     return result;
 }
 
-static BOOL IsLeapYear(s32 year) { return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0); }
+static bool IsLeapYear(s32 year) { return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0); }
 
 static s32 GetYearDays(s32 year, s32 mon) { return (IsLeapYear(year) ? LeapYearDays : YearDays)[mon]; }
 

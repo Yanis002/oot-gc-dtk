@@ -23,7 +23,7 @@ void OSInitMutex(OSMutex* mutex);
 void OSLockMutex(OSMutex* mutex);
 void __OSUnlockAllMutex(OSThread* thread);
 void OSUnlockMutex(OSMutex* mutex);
-BOOL OSTryLockMutex(OSMutex* mutex);
+bool OSTryLockMutex(OSMutex* mutex);
 void OSInitCond(OSCond* cond);
 void OSWaitCond(OSCond* cond, OSMutex* mutex);
 void OSSignalCond(OSCond* cond);

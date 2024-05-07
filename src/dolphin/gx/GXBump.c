@@ -196,7 +196,7 @@ void GXSetNumIndStages(u8 num) {
  */
 // modified from Open_RVL
 void GXSetTevDirect(GXTevStageID stage) {
-    GXSetTevIndirect(stage, GX_IND_TEX_STAGE_0, GX_ITF_8, GX_ITB_NONE, GX_ITM_OFF, GX_ITW_OFF, GX_ITW_OFF, FALSE, FALSE,
+    GXSetTevIndirect(stage, GX_IND_TEX_STAGE_0, GX_ITF_8, GX_ITB_NONE, GX_ITM_OFF, GX_ITW_OFF, GX_ITW_OFF, false, false,
                      GX_ITBA_OFF);
 }
 
@@ -210,7 +210,7 @@ void GXSetTevIndWarp(GXTevStageID stage, GXIndTexStageID indStage, GXBool doSign
     GXIndTexWrap wrapVal = ((doWrap) ? GX_ITW_0 : GX_ITW_OFF);
 
     GXSetTevIndirect(stage, indStage, GX_ITF_8, ((doSignedBias) ? GX_ITB_STU : GX_ITB_NONE), mtxID, wrapVal, wrapVal,
-                     FALSE, FALSE, GX_ITBA_OFF);
+                     false, false, GX_ITBA_OFF);
 }
 #endif
 
