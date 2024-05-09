@@ -295,7 +295,7 @@ config.libs = [
     SIM(
         "Fire",
         [
-            Object(NonMatching, "emulator/Fire/simGCN.c"),
+            Object(Matching, "emulator/Fire/simGCN.c"),
             Object(Matching, "emulator/Fire/movie.c"),
         ]
     ),
