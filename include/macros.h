@@ -16,6 +16,12 @@
 #define INLINE inline
 #endif
 
+#if VERSION == 0 // D43J01
+#define STATIC
+#else
+#define STATIC static
+#endif
+
 // Adds no-ops to increase a function's size, preventing automatic inlining
 #define NO_INLINE() \
     (void)0;        \

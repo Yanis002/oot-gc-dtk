@@ -43,13 +43,14 @@ typedef struct Sound {
     /* 0xD4 */ s32 nSizeRamp;
 } Sound; // size = 0xD8
 
-s32 soundSetLength(Sound* pSound, s32 nSize);
-s32 soundSetDACRate(Sound* pSound, s32 nDacRate);
-s32 soundSetAddress(Sound* pSound, void* pData);
-s32 soundGetDMABuffer(Sound* pSound, u32* pnSize);
-s32 soundSetBufferSize(Sound* pSound, s32 nSize);
-s32 soundLoadBeep(Sound* pSound, SoundBeep iBeep, char* szNameFile);
-s32 soundEvent(Sound* pSound, s32 nEvent, void* pArgument);
+bool soundSetLength(Sound* pSound, s32 nSize);
+bool soundSetDACRate(Sound* pSound, s32 nDacRate);
+bool soundSetAddress(Sound* pSound, void* pData);
+bool soundGetDMABuffer(Sound* pSound, u32* pnSize);
+bool soundSetBufferSize(Sound* pSound, s32 nSize);
+bool soundLoadBeep(Sound* pSound, SoundBeep iBeep, char* szNameFile);
+bool soundPlayBeep(Sound* pSound, SoundBeep iBeep);
+bool soundEvent(Sound* pSound, s32 nEvent, void* pArgument);
 
 extern _XL_OBJECTTYPE gClassSound;
 

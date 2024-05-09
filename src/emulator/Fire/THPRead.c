@@ -1,9 +1,7 @@
 #include "emulator/THPRead.h"
-#include "dolphin.h"
-#include "dolphin/__start.h"
+#include "emulator/THPBuffer.h"
 #include "emulator/THPPlayer.h"
 #include "emulator/simGCN.h"
-#include "emulator/xlCoreGCN.h"
 #include "macros.h"
 
 #define STACK_SIZE 0x1000
@@ -12,29 +10,30 @@
 static OSMessageQueue FreeReadBufferQueue;
 static OSMessageQueue ReadedBufferQueue;
 static OSMessageQueue ReadedBufferQueue2;
-static void* FreeReadBufferMessage[BUFFER_COUNT];
-static void* ReadedBufferMessage[BUFFER_COUNT];
-static void* ReadedBufferMessage2[BUFFER_COUNT];
+static void* FreeReadBufferMessage[10];
+static void* ReadedBufferMessage[10];
+static void* ReadedBufferMessage2[10];
 static OSThread ReadThread;
 static u8 ReadThreadStack[4096];
+static f32 gOrthoMtx[4][4];
 
-Mtx44 gOrthoMtx;
+//! TODO: make static (data ordering issues)
+// and remove suffix (there's other global variables sharing the same name)
+u32 gnTickReset_thpread;
+bool gbReset_thpread;
+bool toggle_184;
 
-static s32 gbReset;
-static u32 gnTickReset;
+bool gMovieErrorToggle;
+bool ReadThreadCreated;
 
-s32 gMovieErrorToggle;
-s32 ReadThreadCreated;
+static void* Reader(void* ptr);
 
-static void* Reader();
-
-s32 movieGXInit(void) {
-    // Local variables
-    s32 i; // r31
-    GXColor GX_DEFAULT_BG = {0}; // r1+0x58
-    GXColor BLACK = {0}; // r1+0x54
-    GXColor WHITE = {0}; // r1+0x50
-    Mtx identity_mtx = {{1.0, 0.0, 0.0, 0.0}, {0.0, 1.0, 0.0, 0.0}, {0.0, 0.0, 1.0, -1.0}}; // r1+0x20
+bool movieGXInit(void) {
+    s32 i;
+    GXColor GX_DEFAULT_BG = {0};
+    GXColor BLACK = {0};
+    GXColor WHITE = {0};
+    Mtx identity_mtx = {{1.0, 0.0, 0.0, 0.0}, {0.0, 1.0, 0.0, 0.0}, {0.0, 0.0, 1.0, -1.0}};
 
     // possible bug? GX_TG_MTX3x4 vs GX_TG_MTX2x4 (see identity_mtx)
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, 0x3C, GX_FALSE, 0x7D);
@@ -150,10 +149,10 @@ s32 movieGXInit(void) {
     GXPokeZMode(GX_ENABLE, GX_ALWAYS, GX_ENABLE);
     GXSetGPMetric(GX_PERF0_NONE, GX_PERF0_TRIANGLES_7TEX);
     GXClearGPMetric();
-    return 1;
+    return true;
 }
 
-s32 movieDrawImage(TEXPalettePtr tpl, s16 nX0, s16 nY0) {
+bool movieDrawImage(TEXPalettePtr tpl, s16 nX0, s16 nY0) {
     GXTexObj texObj;
     s32 pad2;
     GXColor color;
@@ -218,7 +217,7 @@ s32 movieDrawImage(TEXPalettePtr tpl, s16 nX0, s16 nY0) {
     Vert_s16[7] = nY0 + tpl->descriptorArray->textureHeader->height;
     Vert_s16[9] = nX0;
     Vert_s16[10] = nY0 + tpl->descriptorArray->textureHeader->height;
-    DCStoreRange(&Vert_s16, sizeof(Vert_s16));
+    DCStoreRange(&Vert_s16, 24);
 
     C_MTXOrtho(gOrthoMtx, 0.0f, 240.0f, 0.0f, 320.0f, 0.10000000149011612f, 10000.0f);
     GXSetProjection(gOrthoMtx, GX_ORTHOGRAPHIC);
@@ -259,49 +258,53 @@ s32 movieDrawImage(TEXPalettePtr tpl, s16 nX0, s16 nY0) {
     DEMODoneRender();
 
     PAD_STACK();
-    return 1;
+    return true;
 }
 
-s32 movieDrawErrorMessage(MovieMessage movieMessage) {
+bool movieDrawErrorMessage(MovieMessage movieMessage) {
     switch (movieMessage) {
         case M_M_DISK_COVER_OPEN:
-            movieDrawImage(&gcoverOpen, 0xA0 - ((s32)gcoverOpen.descriptorArray->textureHeader->width / 2),
-                           0x78 - ((s32)gcoverOpen.descriptorArray->textureHeader->height / 2));
+            movieDrawImage((TEXPalettePtr)(u8*)gcoverOpen,
+                           160 - ((TEXPalettePtr)(u8*)gcoverOpen)->descriptorArray->textureHeader->width / 2,
+                           120 - ((TEXPalettePtr)(u8*)gcoverOpen)->descriptorArray->textureHeader->height / 2);
             break;
         case M_M_DISK_WRONG_DISK:
-            movieDrawImage(&gwrongDisk, 0xA0 - ((s32)gwrongDisk.descriptorArray->textureHeader->width / 2),
-                           0x78 - ((s32)gwrongDisk.descriptorArray->textureHeader->height / 2));
+            movieDrawImage((TEXPalettePtr)(u8*)gwrongDisk,
+                           160 - ((TEXPalettePtr)(u8*)gwrongDisk)->descriptorArray->textureHeader->width / 2,
+                           120 - ((TEXPalettePtr)(u8*)gwrongDisk)->descriptorArray->textureHeader->height / 2);
             break;
         case M_M_DISK_READING_DISK:
-            movieDrawImage(&greadingDisk, 0xA0 - ((s32)greadingDisk.descriptorArray->textureHeader->width / 2),
-                           0x78 - ((s32)greadingDisk.descriptorArray->textureHeader->height / 2));
+            movieDrawImage((TEXPalettePtr)(u8*)greadingDisk,
+                           160 - ((TEXPalettePtr)(u8*)greadingDisk)->descriptorArray->textureHeader->width / 2,
+                           120 - ((TEXPalettePtr)(u8*)greadingDisk)->descriptorArray->textureHeader->height / 2);
             break;
         case M_M_DISK_RETRY_ERROR:
-            movieDrawImage(&gretryErr, 0xA0 - ((s32)gretryErr.descriptorArray->textureHeader->width / 2),
-                           0x78 - ((s32)gretryErr.descriptorArray->textureHeader->height / 2));
+            movieDrawImage((TEXPalettePtr)(u8*)gretryErr,
+                           160 - ((TEXPalettePtr)(u8*)gretryErr)->descriptorArray->textureHeader->width / 2,
+                           120 - ((TEXPalettePtr)(u8*)gretryErr)->descriptorArray->textureHeader->height / 2);
             break;
         case M_M_DISK_FATAL_ERROR:
-            movieDrawImage(&gfatalErr, 0xA0 - ((s32)gfatalErr.descriptorArray->textureHeader->width / 2),
-                           0x78 - ((s32)gfatalErr.descriptorArray->textureHeader->height / 2));
+            movieDrawImage((TEXPalettePtr)(u8*)gfatalErr,
+                           160 - ((TEXPalettePtr)(u8*)gfatalErr)->descriptorArray->textureHeader->width / 2,
+                           120 - ((TEXPalettePtr)(u8*)gfatalErr)->descriptorArray->textureHeader->height / 2);
             break;
         case M_M_DISK_NO_DISK:
-            movieDrawImage(&gnoDisk, 0xA0 - ((s32)gnoDisk.descriptorArray->textureHeader->width / 2),
-                           0x78 - ((s32)gnoDisk.descriptorArray->textureHeader->height / 2));
+            movieDrawImage((TEXPalettePtr)(u8*)gnoDisk,
+                           160 - ((TEXPalettePtr)(u8*)gnoDisk)->descriptorArray->textureHeader->width / 2,
+                           120 - ((TEXPalettePtr)(u8*)gnoDisk)->descriptorArray->textureHeader->height / 2);
             break;
         case M_M_DISK_DEFAULT_ERROR:
-            movieDrawImage(&gfatalErr, 0xA0 - ((s32)gfatalErr.descriptorArray->textureHeader->width / 2),
-                           0x78 - ((s32)gfatalErr.descriptorArray->textureHeader->height / 2));
+            movieDrawImage((TEXPalettePtr)(u8*)gfatalErr,
+                           160 - ((TEXPalettePtr)(u8*)gfatalErr)->descriptorArray->textureHeader->width / 2,
+                           120 - ((TEXPalettePtr)(u8*)gfatalErr)->descriptorArray->textureHeader->height / 2);
             break;
     }
 
-    return 1;
+    return true;
 }
 
-s32 movieDVDShowError(s32 nStatus, void*, s32, u32) {
-    static s32 toggle;
+bool movieDVDShowError(s32 nStatus, void*, s32, u32) {
     MovieMessage nMessage;
-    s32 nTick;
-    u32 bFlag;
 
     nMessage = M_M_NONE;
     switch (nStatus) {
@@ -324,73 +327,48 @@ s32 movieDVDShowError(s32 nStatus, void*, s32, u32) {
 
     if ((nStatus != 1) && (nStatus != 0) && (nStatus != 2) && (nStatus != 3) && (nStatus != 7) && (nStatus != 8) &&
         (nStatus != 0xA)) {
-        gMovieErrorToggle = 1;
-        toggle = 1;
-    } else if (toggle == 1) {
-        toggle = 0;
+        gMovieErrorToggle = true;
+        toggle_184 = true;
+    } else if (toggle_184 == true) {
+        toggle_184 = false;
         nMessage = M_M_DISK_READING_DISK;
     }
 
     if (nStatus == 5) {
-        nTick = OSGetTick();
-        DEMOPadRead();
-        bFlag = OSGetResetButtonState();
-        if ((DemoPad[0].pst.button & 0x1600) != 0x1600) {
-            gnTickReset = nTick;
-            if ((gbReset == 0) || (bFlag != 0U)) {
-                gbReset = bFlag;
-            } else {
-                movieReset(1, 1);
-            }
-        } else if ((nTick - gnTickReset) >= OSSecondsToTicks(0.5f)) {
-            movieReset(1, 1);
-        }
+        movieTestReset(true, true);
     } else if (nStatus != -1) {
-        nTick = OSGetTick();
-        DEMOPadRead();
-        bFlag = OSGetResetButtonState();
-        if ((DemoPad[0].pst.button & 0x1600) != 0x1600) {
-            gnTickReset = nTick;
-            if ((gbReset == 0) || (bFlag != 0U)) {
-                gbReset = bFlag;
-            } else {
-                movieReset(1, 0);
-            }
-        } else if ((nTick - gnTickReset) >= OSSecondsToTicks(0.5f)) {
-            movieReset(1, 0);
-        }
+        movieTestReset(true, false);
     }
 
     if (nMessage != M_M_NONE) {
         movieDrawErrorMessage(nMessage);
     }
 
-    PAD_STACK();
     return 1;
 }
 
-s32 movieDVDRead(DVDFileInfo* pFileInfo, void* anData, s32 nSizeRead, s32 nOffset) {
+bool movieDVDRead(DVDFileInfo* pFileInfo, void* anData, s32 nSizeRead, s32 nOffset) {
     s32 nStatus;
-    s32 bRetry;
+    bool bRetry;
 
     do {
-        bRetry = 0;
+        bRetry = false;
         DVDReadAsync(pFileInfo, anData, nSizeRead, nOffset, NULL);
         while ((nStatus = DVDGetCommandBlockStatus(&pFileInfo->cb)) != 0) {
             movieDVDShowError(nStatus, anData, nSizeRead, nOffset);
             if ((nStatus == 11) || (nStatus == -1)) {
                 DVDCancel(&pFileInfo->cb);
-                bRetry = 1;
+                bRetry = true;
                 break;
             }
         }
     } while (bRetry);
 
-    gMovieErrorToggle = 0;
-    return 1;
+    gMovieErrorToggle = false;
+    return true;
 }
 
-s32 movieTestReset(s32 IPL, s32 forceMenu) {
+bool movieTestReset(bool IPL, bool forceMenu) {
     s32 nTick;
     u32 bFlag;
 
@@ -399,71 +377,40 @@ s32 movieTestReset(s32 IPL, s32 forceMenu) {
     bFlag = OSGetResetButtonState();
 
     if ((DemoPad[0].pst.button & 0x1600) != 0x1600) {
-        gnTickReset = nTick;
-        if ((gbReset == 0) || (bFlag != 0U)) {
-            gbReset = bFlag;
+        gnTickReset_thpread = nTick;
+        if (!gbReset_thpread || bFlag) {
+            gbReset_thpread = bFlag;
             return 1;
         }
-        VISetBlack(1);
-        VIFlush();
-        VIWaitForRetrace();
-        PADRecalibrate(0xF0000000);
-        GXAbortFrame();
-        LCDisable();
-        VIWaitForRetrace();
-        if (IPL == 1) {
-            if (forceMenu == 1) {
-                OSResetSystem(1, 0, 1);
-            } else {
-                OSResetSystem(1, 0, 0);
-            }
-        } else {
-            OSResetSystem(0, 0, 0);
-        }
-    } else if ((nTick - gnTickReset) >= OSSecondsToTicks(0.5f)) {
-        VISetBlack(1);
-        VIFlush();
-        VIWaitForRetrace();
-        PADRecalibrate(0xF0000000);
-        GXAbortFrame();
-        LCDisable();
-        VIWaitForRetrace();
-        if (IPL == 1) {
-            if (forceMenu == 1) {
-                OSResetSystem(1, 0, 1);
-            } else {
-                OSResetSystem(1, 0, 0);
-            }
-        } else {
-            OSResetSystem(0, 0, 0);
-        }
+        movieReset(IPL, forceMenu);
+    } else if (nTick - gnTickReset_thpread >= OSSecondsToTicks(0.5f)) {
+        movieReset(IPL, forceMenu);
     }
 
     PAD_STACK();
-    return 1;
+    return true;
 }
 
-void movieReset(s32 IPL, s32 forceMenu) {
-    VISetBlack(1);
+void movieReset(bool IPL, bool forceMenu) {
+    VISetBlack(true);
     VIFlush();
     VIWaitForRetrace();
     PADRecalibrate(0xF0000000);
     GXAbortFrame();
     LCDisable();
     VIWaitForRetrace();
-    if (IPL == 1) {
-        if (forceMenu == 1) {
-            OSResetSystem(1, 0, 1);
-            return;
+    if (IPL == true) {
+        if (forceMenu == true) {
+            OSResetSystem(OS_RESET_HOTRESET, 0, true);
+        } else {
+            OSResetSystem(OS_RESET_HOTRESET, 0, false);
         }
-        OSResetSystem(1, 0, 0);
-        return;
+    } else {
+        OSResetSystem(OS_RESET_RESTART, 0, false);
     }
-    OSResetSystem(0, 0, 0);
-    NO_INLINE();
 }
 
-s32 CreateReadThread(OSPriority priority) {
+bool CreateReadThread(OSPriority priority) {
     if (OSCreateThread(&ReadThread, Reader, NULL, ReadThreadStack + STACK_SIZE, STACK_SIZE, priority, 1) == false) {
         OSReport("Can't create read thread\n");
         return false;
@@ -478,29 +425,21 @@ s32 CreateReadThread(OSPriority priority) {
 }
 
 void ReadThreadStart() {
-    if (ReadThreadCreated != false) {
+    if (ReadThreadCreated) {
         OSResumeThread(&ReadThread);
     }
 }
 
-#ifdef UNUSED
-void ReadThreadCancel() {
-    if (ReadThreadCreated != false) {
-        OSCancelThread(&ReadThread);
-        ReadThreadCreated = false;
-    }
-}
-#endif
-
-static void* Reader() {
+// regalloc issues
+#ifndef NON_MATCHING
+#pragma GLOBAL_ASM("asm/non_matchings/THPRead/Reader.s")
+#else
+static void* Reader(void* ptr) {
     THPReadBuffer* readBuffer;
     s32 offset;
     s32 size;
     s32 readFrame;
-    s32 bRetry;
-    s32 nStatus;
     s32 frameNumber;
-    u8* ptr;
 
     readFrame = 0;
     offset = ActivePlayer.initOffset;
@@ -508,22 +447,7 @@ static void* Reader() {
 
     while (true) {
         readBuffer = PopFreeReadBuffer();
-        ptr = readBuffer->ptr;
-
-        do {
-            bRetry = 0;
-            DVDReadAsync(&ActivePlayer.fileInfo, ptr, size, offset, NULL);
-            while ((nStatus = DVDGetCommandBlockStatus(&ActivePlayer.fileInfo.cb)) != 0) {
-                movieDVDShowError(nStatus, ptr, size, offset);
-                if ((nStatus == 11) || (nStatus == -1)) {
-                    DVDCancel(&ActivePlayer.fileInfo.cb);
-                    bRetry = 1;
-                    break;
-                }
-            }
-        } while (bRetry);
-
-        gMovieErrorToggle = 0;
+        movieDVDRead(&ActivePlayer.fileInfo, readBuffer->ptr, size, offset);
         readBuffer->frameNumber = readFrame;
         PushReadedBuffer(readBuffer);
         offset += size;
@@ -539,10 +463,9 @@ static void* Reader() {
 
         readFrame++;
     }
-
-    PAD_STACK();
     return NULL;
 }
+#endif
 
 void* PopReadedBuffer() {
     OSMessage msg;

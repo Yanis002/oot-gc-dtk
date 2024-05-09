@@ -44,7 +44,17 @@ typedef struct THPPlayer {
     /* 0x1A8 */ THPAudioBuffer audioBuffer[3];
 } THPPlayer; // size = 0x1D0
 
-extern char gpErrorMessageBuffer[20480];
+bool THPPlayerInit(bool audioSystem);
+void THPPlayerQuit(void);
+bool THPPlayerOpen(char* fileName, bool onMemory);
+bool THPPlayerClose(void);
+u32 THPPlayerCalcNeedMemory(void);
+bool THPPlayerSetBuffer(u8* buffer);
+bool THPPlayerPrepare(s32 frameNum, s32 playFlag, s32 audioTrack);
+bool THPPlayerPlay(void);
+s32 THPPlayerDrawCurrentFrame(GXRenderModeObj* rmode, u32 x, u32 y, u32 polygonW, u32 polygonH);
+void THPPlayerDrawDone(void);
+
 extern THPPlayer ActivePlayer;
 
 #endif

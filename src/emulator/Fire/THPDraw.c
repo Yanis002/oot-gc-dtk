@@ -29,7 +29,7 @@ void THPGXYuv2RgbSetup(GXRenderModeObj* rmode) {
     scrHeight = rmode->efbHeight;
 
     GXSetPixelFmt(GX_PF_RGB8_Z24, GX_ZC_LINEAR);
-    MTXOrtho(pMtx, 0.0f, (f32)scrHeight, 0.0f, (f32)scrWidth, 0.0f, -1.0F);
+    C_MTXOrtho(pMtx, 0.0f, (f32)scrHeight, 0.0f, (f32)scrWidth, 0.0f, -1.0F);
     GXSetProjection(pMtx, GX_ORTHOGRAPHIC);
     GXSetViewport(0.0F, 0.0F, (f32)scrWidth, (f32)scrHeight, 0.0F, 1.0F);
     GXSetScissor(0, 0, (u32)scrWidth, (u32)scrHeight);

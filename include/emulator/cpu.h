@@ -24,15 +24,15 @@
 #define MIPS_FS(inst) (((inst) >> 11) & 0x1F)
 #define MIPS_FD(inst) (((inst) >> 6) & 0x1F)
 
-typedef s32 (*Put8Func)(void* pObject, u32 nAddress, s8* pData);
-typedef s32 (*Put16Func)(void* pObject, u32 nAddress, s16* pData);
-typedef s32 (*Put32Func)(void* pObject, u32 nAddress, s32* pData);
-typedef s32 (*Put64Func)(void* pObject, u32 nAddress, s64* pData);
+typedef bool (*Put8Func)(void* pObject, u32 nAddress, s8* pData);
+typedef bool (*Put16Func)(void* pObject, u32 nAddress, s16* pData);
+typedef bool (*Put32Func)(void* pObject, u32 nAddress, s32* pData);
+typedef bool (*Put64Func)(void* pObject, u32 nAddress, s64* pData);
 
-typedef s32 (*Get8Func)(void* pObject, u32 nAddress, s8* pData);
-typedef s32 (*Get16Func)(void* pObject, u32 nAddress, s16* pData);
-typedef s32 (*Get32Func)(void* pObject, u32 nAddress, s32* pData);
-typedef s32 (*Get64Func)(void* pObject, u32 nAddress, s64* pData);
+typedef bool (*Get8Func)(void* pObject, u32 nAddress, s8* pData);
+typedef bool (*Get16Func)(void* pObject, u32 nAddress, s16* pData);
+typedef bool (*Get32Func)(void* pObject, u32 nAddress, s32* pData);
+typedef bool (*Get64Func)(void* pObject, u32 nAddress, s64* pData);
 
 // __anon_0x3994B
 typedef enum CpuExceptionCode {
@@ -86,42 +86,6 @@ typedef enum CpuSize {
     CS_32BIT = 0,
     CS_64BIT = 1,
 } CpuSize;
-
-// __anon_0x3DE78
-typedef struct CpuJump {
-    /* 0x0 */ s32 nOffsetHost;
-    /* 0x4 */ s32 nAddressN64;
-} CpuJump; // size = 0x8
-
-// cpu_callerID
-typedef struct CpuCallerID {
-    /* 0x0 */ s32 N64address;
-    /* 0x4 */ s32 GCNaddress;
-} CpuCallerID; // size = 0x8
-
-typedef struct CpuFunction CpuFunction;
-
-// cpu_function
-struct CpuFunction {
-    /* 0x00 */ void* pnBase;
-    /* 0x04 */ void* pfCode;
-    /* 0x08 */ s32 nCountJump;
-    /* 0x0C */ CpuJump* aJump;
-    /* 0x10 */ s32 nAddress0;
-    /* 0x14 */ s32 nAddress1;
-    /* 0x18 */ CpuCallerID* block;
-    /* 0x1C */ s32 callerID_total;
-    /* 0x20 */ s32 callerID_flag;
-    /* 0x24 */ u32 nChecksum;
-    /* 0x28 */ s32 timeToLive;
-    /* 0x2C */ s32 memory_size;
-    /* 0x30 */ s32 heapID;
-    /* 0x34 */ s32 heapWhere;
-    /* 0x38 */ s32 treeheapWhere;
-    /* 0x3C */ CpuFunction* prev;
-    /* 0x40 */ CpuFunction* left;
-    /* 0x44 */ CpuFunction* right;
-}; // size = 0x48
 
 // __anon_0x3E22D
 typedef union CpuGpr {
@@ -215,6 +179,42 @@ typedef struct CpuDevice {
     /* 0x30 */ u32 nAddressPhysical1;
 } CpuDevice; // size = 0x34
 
+// __anon_0x3DE78
+typedef struct CpuJump {
+    /* 0x0 */ s32 nOffsetHost;
+    /* 0x4 */ s32 nAddressN64;
+} CpuJump; // size = 0x8
+
+// cpu_callerID
+typedef struct CpuCallerID {
+    /* 0x0 */ s32 N64address;
+    /* 0x4 */ s32 GCNaddress;
+} CpuCallerID; // size = 0x8
+
+typedef struct CpuFunction CpuFunction;
+
+// cpu_function
+struct CpuFunction {
+    /* 0x00 */ void* pnBase;
+    /* 0x04 */ void* pfCode;
+    /* 0x08 */ s32 nCountJump;
+    /* 0x0C */ CpuJump* aJump;
+    /* 0x10 */ s32 nAddress0;
+    /* 0x14 */ s32 nAddress1;
+    /* 0x18 */ CpuCallerID* block;
+    /* 0x1C */ s32 callerID_total;
+    /* 0x20 */ s32 callerID_flag;
+    /* 0x24 */ u32 nChecksum;
+    /* 0x28 */ s32 timeToLive;
+    /* 0x2C */ s32 memory_size;
+    /* 0x30 */ s32 heapID;
+    /* 0x34 */ s32 heapWhere;
+    /* 0x38 */ s32 treeheapWhere;
+    /* 0x3C */ CpuFunction* prev;
+    /* 0x40 */ CpuFunction* left;
+    /* 0x44 */ CpuFunction* right;
+}; // size = 0x48
+
 // cpu_treeRoot
 typedef struct CpuTreeRoot {
     /* 0x00 */ u16 total;
@@ -262,7 +262,7 @@ typedef struct CpuOptimize {
 } CpuOptimize; // size = 0x28
 
 typedef struct Cpu Cpu;
-typedef s32 (*CpuExecuteFunc)(Cpu* pCPU, s32 nCount, s32 nAddressN64, s32 nAddressGCN);
+typedef bool (*CpuExecuteFunc)(Cpu* pCPU, s32 nCount, s32 nAddressN64, s32 nAddressGCN);
 
 // _CPU
 struct Cpu {
@@ -347,30 +347,30 @@ struct Cpu {
         ->pfPut64(CPU_DEVICE(apDevice, aiDevice, nAddress)->pObject, \
                   (nAddress) + CPU_DEVICE(apDevice, aiDevice, nAddress)->nOffsetAddress, (s64*)pValue)
 
-s32 cpuFreeCachedAddress(Cpu* pCPU, s32 nAddress0, s32 nAddress1);
-s32 cpuTestInterrupt(Cpu* pCPU, s32 nMaskIP);
-s32 cpuException(Cpu* pCPU, CpuExceptionCode eCode, s32 nMaskIP);
-s32 cpuExecute(Cpu* pCPU, u64 nAddressBreak);
-s32 cpuSetRegisterCP0(Cpu* pCPU, s32 iRegister, s64 nData);
-s32 cpuGetRegisterCP0(Cpu* pCPU, s32 iRegister, s64* pnData);
-s32 __cpuERET(Cpu* pCPU);
-s32 __cpuBreak(Cpu* pCPU);
-s32 cpuSetXPC(Cpu* pCPU, s64 nPC, s64 nLo, s64 nHi);
-s32 cpuReset(Cpu* pCPU);
-s32 cpuSetCodeHack(Cpu* pCPU, s32 nAddress, s32 nOpcodeOld, s32 nOpcodeNew);
-s32 cpuMapObject(Cpu* pCPU, void* pObject, u32 nAddress0, u32 nAddress1, s32 nType);
-s32 cpuSetDeviceGet(Cpu* pCPU, CpuDevice* pDevice, Get8Func pfGet8, Get16Func pfGet16, Get32Func pfGet32,
-                    Get64Func pfGet64);
-s32 cpuSetDevicePut(Cpu* pCPU, CpuDevice* pDevice, Put8Func pfPut8, Put16Func pfPut16, Put32Func pfPut32,
-                    Put64Func pfPut64);
-s32 cpuEvent(Cpu* pCPU, s32 nEvent, void* pArgument);
-s32 cpuGetAddressOffset(Cpu* pCPU, s32* pnOffset, u32 nAddress);
-s32 cpuGetAddressBuffer(Cpu* pCPU, void** ppBuffer, u32 nAddress);
-s32 cpuGetOffsetAddress(Cpu* pCPU, u32* anAddress, s32* pnCount, u32 nOffset, u32 nSize);
-s32 cpuInvalidateCache(Cpu* pCPU, s32 nAddress0, s32 nAddress1);
-s32 cpuGetFunctionChecksum(Cpu* pCPU, u32* pnChecksum, CpuFunction* pFunction);
-s32 cpuHeapTake(void* heap, Cpu* pCPU, CpuFunction* pFunction, int memory_size);
-s32 cpuFindFunction(Cpu* pCPU, s32 theAddress, CpuFunction** tree_node);
+bool cpuFreeCachedAddress(Cpu* pCPU, s32 nAddress0, s32 nAddress1);
+bool cpuTestInterrupt(Cpu* pCPU, s32 nMaskIP);
+bool cpuException(Cpu* pCPU, CpuExceptionCode eCode, s32 nMaskIP);
+bool cpuExecute(Cpu* pCPU, u64 nAddressBreak);
+bool cpuSetRegisterCP0(Cpu* pCPU, s32 iRegister, s64 nData);
+bool cpuGetRegisterCP0(Cpu* pCPU, s32 iRegister, s64* pnData);
+bool __cpuERET(Cpu* pCPU);
+bool __cpuBreak(Cpu* pCPU);
+bool cpuSetXPC(Cpu* pCPU, s64 nPC, s64 nLo, s64 nHi);
+bool cpuReset(Cpu* pCPU);
+bool cpuSetCodeHack(Cpu* pCPU, s32 nAddress, s32 nOpcodeOld, s32 nOpcodeNew);
+bool cpuMapObject(Cpu* pCPU, void* pObject, u32 nAddress0, u32 nAddress1, s32 nType);
+bool cpuSetDeviceGet(Cpu* pCPU, CpuDevice* pDevice, Get8Func pfGet8, Get16Func pfGet16, Get32Func pfGet32,
+                     Get64Func pfGet64);
+bool cpuSetDevicePut(Cpu* pCPU, CpuDevice* pDevice, Put8Func pfPut8, Put16Func pfPut16, Put32Func pfPut32,
+                     Put64Func pfPut64);
+bool cpuEvent(Cpu* pCPU, s32 nEvent, void* pArgument);
+bool cpuGetAddressOffset(Cpu* pCPU, s32* pnOffset, u32 nAddress);
+bool cpuGetAddressBuffer(Cpu* pCPU, void** ppBuffer, u32 nAddress);
+bool cpuGetOffsetAddress(Cpu* pCPU, u32* anAddress, s32* pnCount, u32 nOffset, u32 nSize);
+bool cpuInvalidateCache(Cpu* pCPU, s32 nAddress0, s32 nAddress1);
+bool cpuGetFunctionChecksum(Cpu* pCPU, u32* pnChecksum, CpuFunction* pFunction);
+bool cpuHeapTake(void* heap, Cpu* pCPU, CpuFunction* pFunction, int memory_size);
+bool cpuFindFunction(Cpu* pCPU, s32 theAddress, CpuFunction** tree_node);
 
 extern _XL_OBJECTTYPE gClassCPU;
 
