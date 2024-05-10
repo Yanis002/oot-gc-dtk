@@ -1,6 +1,6 @@
+#include "dolphin/exi.h"
 #include "dolphin/hw_regs.h"
 #include "dolphin/os.h"
-#include "dolphin/exi.h"
 
 #pragma scheduling off
 

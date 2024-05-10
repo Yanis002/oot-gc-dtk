@@ -16,6 +16,7 @@
 #include "macros.h"
 #include "string.h"
 
+// clang-format off
 #include "gcoverOpen.inc"
 #include "gnoDisk.inc"
 #include "gretryErr.inc"
@@ -26,6 +27,7 @@
 #include "gyes.inc"
 #include "gno.inc"
 #include "gmesgOK.inc"
+// clang-format on
 
 s16 Vert_s16[12] ALIGNAS(32) = {
     0x0000, 0x0000, 0xFFFF, 0x00C8, 0x0000, 0xFFFF, 0x00C8, 0x00C8, 0xFFFF, 0x0000, 0x00C8, 0xFFFF,
@@ -297,8 +299,7 @@ bool simulatorDVDShowError(s32 nStatus, void* anData, s32 nSizeRead, u32 nOffset
 
 #if VERSION > 0 // D43J01
     do {
-        if ((nStatus != 1) && (nStatus != 0) && (nStatus != 2) && (nStatus != 3) && (nStatus != 7) && (nStatus != 8)
-        &&
+        if ((nStatus != 1) && (nStatus != 0) && (nStatus != 2) && (nStatus != 3) && (nStatus != 7) && (nStatus != 8) &&
             (nStatus != 10)) {
             continueToggle = true;
         } else {
@@ -361,6 +362,7 @@ bool simulatorDVDShowError(s32 nStatus, void* anData, s32 nSizeRead, u32 nOffset
             }
         }
 #else
+        // clang-format off
         if ((gDVDResetToggle == 1) && (((u32)nStatus <= 3) || (((u32)nStatus - 7) <= 1) || (nStatus == 10))) {
             if (!simulatorTestReset(false, false, true, false)) {
                 return false;
@@ -368,6 +370,7 @@ bool simulatorDVDShowError(s32 nStatus, void* anData, s32 nSizeRead, u32 nOffset
         } else if (nStatus != -1 && !simulatorTestReset(true, false, true, false)) {
             return false;
         }
+        // clang-format on
 #endif
 
         if (nMessage != S_M_NONE) {

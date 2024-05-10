@@ -1,5 +1,5 @@
-#include "dolphin/os.h"
 #include "dolphin/exi.h"
+#include "dolphin/os.h"
 
 #define EXI_TX 0x800400u
 #define EXI_MAGIC 0xa5ff005a
