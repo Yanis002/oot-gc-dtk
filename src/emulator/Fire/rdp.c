@@ -766,7 +766,9 @@ bool rdpEvent(Rdp* pRDP, s32 nEvent, void* pArgument) {
         case 0:
         case 1:
         case 3:
+#if VERSION > 0 // D43J01
         case 0x1003:
+#endif
             break;
         default:
             return false;

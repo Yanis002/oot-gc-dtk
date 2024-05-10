@@ -322,7 +322,7 @@ config.libs = [
             Object(NonMatching, "emulator/Fire/pif.c"),
             Object(Matching, "emulator/Fire/ram.c"),
             Object(Matching, "emulator/Fire/rom.c"),
-            Object(NonMatching, "emulator/Fire/rdp.c"),
+            Object(Matching, "emulator/Fire/rdp.c"),
             Object(Matching, "emulator/Fire/rdb.c"),
             Object(NonMatching, "emulator/Fire/rsp.c"),
             Object(Matching, "emulator/Fire/mips.c"),
