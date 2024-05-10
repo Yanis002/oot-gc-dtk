@@ -283,12 +283,6 @@ void simulatorUnpackTexPalette(TEXPalettePtr pal) {
 bool gButtonDownToggle = false;
 bool gDVDResetToggle = false;
 
-#if VERSION == 0 // D43J01
-#define LINE_NBR 750
-#else
-#define LINE_NBR 763
-#endif
-
 bool simulatorDVDShowError(s32 nStatus, void* anData, s32 nSizeRead, u32 nOffset) {
     static s32 toggle;
 
@@ -335,7 +329,7 @@ bool simulatorDVDShowError(s32 nStatus, void* anData, s32 nSizeRead, u32 nOffset
                 break;
             default:
                 nMessage = S_M_DISK_DEFAULT_ERROR;
-                xlPostText("ShowError: Unknown FileInfoStatus: %d", "simGCN.c", LINE_NBR, nStatus);
+                xlPostText("ShowError: Unknown FileInfoStatus: %d", "simGCN.c", VERSION == 0 ? 750 : 763, nStatus);
                 break;
         }
 
@@ -2258,12 +2252,6 @@ char _dummy3[] = "How many audio frames the\ngame must be playing before it\ncon
 char _dummy4[] = "How many audio frames the\ngame must NOT play before it\nconsiders itself unstable";
 char _dummy5[] = "How many audio frames to\nperform a fade up on the audio";
 
-#if VERSION == 0 // D43J01
-#define ROM_FILENAME "urazlj_f.n64"
-#else
-#define ROM_FILENAME "zlj_f.n64"
-#endif
-
 bool xlMain(void) {
     GXColor color;
     SystemMode eMode;
@@ -2352,7 +2340,7 @@ bool xlMain(void) {
     if (simulatorGetArgument(SAT_NAME, &szNameROM)) {
         strcpy(acNameROM, szNameROM);
     } else {
-        strcpy(acNameROM, ROM_FILENAME);
+        strcpy(acNameROM, VERSION == 0 ? "urazlj_f.n64" : "zlj_f.n64");
     }
 
     iName = strlen(acNameROM) - 1;

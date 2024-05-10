@@ -9,6 +9,12 @@
 #include "emulator/xlHeap.h"
 #include "macros.h"
 
+#if VERSION == 0 // D43J01
+#define ROMCACHEGAME_CHECK_OOT_VERSION (romTestCode(pROM, "CZLE") || romTestCode(pROM, "CZLJ"))
+#else
+#define ROMCACHEGAME_CHECK_OOT_VERSION (bIsCZLE || bIsCZLJ)
+#endif
+
 static bool romMakeFreeCache(Rom* pROM, s32* piCache, RomCacheType eType);
 static bool romSetBlockCache(Rom* pROM, s32 iBlock, RomCacheType eType);
 
@@ -431,12 +437,6 @@ static bool romCacheGame_ZELDA(f32 rProgress) {
     return true;
 }
 
-#if VERSION == 0 // D43J01
-#define IS_OOT (romTestCode(pROM, "CZLE") || romTestCode(pROM, "CZLJ"))
-#else
-#define IS_OOT (bIsCZLE || bIsCZLJ)
-#endif
-
 static bool romCacheGame(Rom* pROM) {
     s32 blockCount;
 #if VERSION > 0 // D43J01
@@ -458,7 +458,7 @@ static bool romCacheGame(Rom* pROM) {
     bIsCZLJ = romTestCode(pROM, "CZLJ");
 #endif
 
-    if (IS_OOT) {
+    if (ROMCACHEGAME_CHECK_OOT_VERSION) {
         if (gnFlagZelda & 2) {
 #if VERSION == 0 // D43J01
             pROM->anOffsetBlock = ganOffsetBlock_ZLJ;
@@ -561,15 +561,9 @@ static bool romLoadUpdate(Rom* pROM) {
             return true;
         }
 
-#if VERSION == 0 // D43J01
-        if (!simulatorTestReset(false, false, true)) {
+        if (!SIMULATOR_TEST_RESET(false, false, true, false)) {
             return false;
         }
-#else
-        if (!simulatorTestReset(false, false, true, false)) {
-            return false;
-        }
-#endif
 
         pBlock = &pROM->aBlock[iBlock0];
         pBlock->nTickUsed = ++pROM->nTick;
@@ -636,15 +630,9 @@ static bool romCopyUpdate(Rom* pROM) {
             return true;
         }
 
-#if VERSION == 0 // D43J01
-        if (!simulatorTestReset(false, false, true)) {
+        if (!SIMULATOR_TEST_RESET(false, false, true, false)) {
             return false;
         }
-#else
-        if (!simulatorTestReset(false, false, true, false)) {
-            return false;
-        }
-#endif
 
         iBlock = pROM->copy.nOffset / 0x2000;
         pBlock = &pROM->aBlock[iBlock];
@@ -767,15 +755,9 @@ static bool romLoadFullOrPart(Rom* pROM) {
             simulatorShowLoad(1, pROM->acNameFile, 1.0f);
         } else {
             for (i = 0; i < (s32)pROM->nSize;) {
-#if VERSION == 0 // D43J01
-                if (!simulatorTestReset(false, false, true)) {
+                if (!SIMULATOR_TEST_RESET(false, false, true, false)) {
                     return false;
                 }
-#else
-                if (!simulatorTestReset(false, false, true, false)) {
-                    return false;
-                }
-#endif
 
                 xlFileGet(pFile, (void*)((u32)pROM->pBuffer + i), (s32)temp_r28);
                 i += temp_r28;

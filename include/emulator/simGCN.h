@@ -127,4 +127,12 @@ bool simulatorGetArgument(SimArgumentType eType, char** pszArgument);
 bool simulatorPlayMovie(void);
 bool xlMain(void);
 
+#if VERSION == 0 // D43J01
+#define SIMULATOR_TEST_RESET(IPL, forceMenu, allowReset, usePreviousSettings) \
+    simulatorTestReset(IPL, forceMenu, allowReset)
+#else
+#define SIMULATOR_TEST_RESET(IPL, forceMenu, allowReset, usePreviousSettings) \
+    simulatorTestReset(IPL, forceMenu, allowReset, usePreviousSettings)
+#endif
+
 #endif

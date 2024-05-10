@@ -25,6 +25,18 @@
 #include "stdlib.h"
 #include "string.h"
 
+#if VERSION == 0 // D43J01
+// "The Legend of Zelda: Ocarina of Time GC"
+#define ZELDA_GC_JP "ゼルダの伝説　時のオカリナＧＣ"
+#define MCARD_FILE_NAME "ZELDA"
+#define MCARD_FILE_SIZE (0xC000 * 2)
+#else
+// "Zelda Collection"
+#define ZELDA_GC_JP "ゼルダコレクション"
+#define MCARD_FILE_NAME "ZELDA1"
+#define MCARD_FILE_SIZE (0xC000)
+#endif
+
 _XL_OBJECTTYPE gClassSystem = {
     "SYSTEM (N64)",
     sizeof(System),
@@ -136,18 +148,6 @@ u32 gnFlagZelda;
 
 #define Z_ICON_PATH "TPL/z_icon.tpl"
 #define Z_BNR_PATH "TPL/z_bnr.tpl"
-
-#if VERSION == 0 // D43J01
-// "The Legend of Zelda: Ocarina of Time GC"
-#define ZELDA_GC_JP "ゼルダの伝説　時のオカリナＧＣ"
-#define MCARD_FILE_NAME "ZELDA"
-#define MCARD_FILE_SIZE 0x18000
-#else
-// "Zelda Collection"
-#define ZELDA_GC_JP "ゼルダコレクション"
-#define MCARD_FILE_NAME "ZELDA1"
-#define MCARD_FILE_SIZE 0xC000
-#endif
 
 static bool systemSetupGameRAM(System* pSystem) {
     char* szExtra;
