@@ -250,6 +250,7 @@ bool simulatorGXInit(void) {
     GXSetGPMetric(GX_PERF0_NONE, GX_PERF1_NONE);
     GXClearGPMetric();
 
+    NO_INLINE();
     return true;
 }
 
@@ -280,20 +281,30 @@ void simulatorUnpackTexPalette(TEXPalettePtr pal) {
 bool gButtonDownToggle = false;
 bool gDVDResetToggle = false;
 
-bool simulatorDVDShowError(s32 nStatus, void* anData, s32 nSizeRead, u32 nOffset) {
+#if VERSION == 0 // D43J01
+#define LINE_NBR 750
+#else
+#define LINE_NBR 763
+#endif
 
+bool simulatorDVDShowError(s32 nStatus, void* anData, s32 nSizeRead, u32 nOffset) {
     static s32 toggle;
 
+#if VERSION > 0 // D43J01
     s32 continueToggle;
+#endif
     __anon_0x61D7 nMessage = S_M_NONE;
 
+#if VERSION > 0 // D43J01
     do {
-        if ((nStatus != 1) && (nStatus != 0) && (nStatus != 2) && (nStatus != 3) && (nStatus != 7) && (nStatus != 8) &&
+        if ((nStatus != 1) && (nStatus != 0) && (nStatus != 2) && (nStatus != 3) && (nStatus != 7) && (nStatus != 8)
+        &&
             (nStatus != 10)) {
             continueToggle = true;
         } else {
             continueToggle = false;
         }
+#endif
 
         switch (nStatus) {
             case -1:
@@ -323,7 +334,7 @@ bool simulatorDVDShowError(s32 nStatus, void* anData, s32 nSizeRead, u32 nOffset
                 break;
             default:
                 nMessage = S_M_DISK_DEFAULT_ERROR;
-                xlPostText("ShowError: Unknown FileInfoStatus: %d", "simGCN.c", 763, nStatus);
+                xlPostText("ShowError: Unknown FileInfoStatus: %d", "simGCN.c", LINE_NBR, nStatus);
                 break;
         }
 
@@ -335,13 +346,29 @@ bool simulatorDVDShowError(s32 nStatus, void* anData, s32 nSizeRead, u32 nOffset
             nMessage = S_M_DISK_READING_DISK;
         }
 
-        if ((gDVDResetToggle == 1) && ((nStatus <= 3U) || ((nStatus - 7) <= 1U) || (nStatus == 10))) {
+#if VERSION == 0 // D43J01
+        if (nStatus == 5) {
+            if (!simulatorTestReset(true, true, true)) {
+                return false;
+            }
+        } else if (nStatus != -1) {
+            if (gDVDResetToggle == 1 && (((u32)nStatus <= 3) || (((u32)nStatus - 7) <= 1) || (nStatus == 10))) {
+                if (!simulatorTestReset(false, false, true)) {
+                    return false;
+                }
+            } else if (!simulatorTestReset(true, false, true)) {
+                return false;
+            }
+        }
+#else
+        if ((gDVDResetToggle == 1) && (((u32)nStatus <= 3) || (((u32)nStatus - 7) <= 1) || (nStatus == 10))) {
             if (!simulatorTestReset(false, false, true, false)) {
                 return false;
             }
-        } else if ((nStatus != -1) && (!simulatorTestReset(true, false, true, false))) {
+        } else if (nStatus != -1 && !simulatorTestReset(true, false, true, false)) {
             return false;
         }
+#endif
 
         if (nMessage != S_M_NONE) {
             while (!(frameBeginOK(gpSystem->pFrame)))
@@ -350,8 +377,10 @@ bool simulatorDVDShowError(s32 nStatus, void* anData, s32 nSizeRead, u32 nOffset
             simulatorDrawErrorMessage(nMessage, 0, 0);
         }
 
+#if VERSION > 0 // D43J01
         nStatus = DVDGetDriveStatus();
     } while (continueToggle == true);
+#endif
 
     return true;
 }
@@ -1907,15 +1936,25 @@ bool simulatorRumbleStop(s32 channel) {
     return true;
 }
 
-bool simulatorTestReset(bool IPL, bool forceMenu, bool allowReset, bool usePreviousSettings) {
+#if VERSION == 0 // D43J01
+bool simulatorTestReset(bool IPL, bool forceMenu, bool allowReset)
+#else
+bool simulatorTestReset(bool IPL, bool forceMenu, bool allowReset, bool usePreviousSettings)
+#endif
+{
     u32 bFlag;
     u32 nTick;
+
+#if VERSION > 0 // D43J01
     bool prevIPLSetting;
     bool prevForceMenuSetting;
     bool prevAllowResetSetting;
     s32 pad;
+#endif
 
     nTick = OSGetTick();
+
+#if VERSION > 0 // D43J01
     prevAllowResetSetting = gPreviousAllowResetSetting;
     prevIPLSetting = gPreviousIPLSetting;
     prevForceMenuSetting = gPreviousForceMenuSetting;
@@ -1929,6 +1968,7 @@ bool simulatorTestReset(bool IPL, bool forceMenu, bool allowReset, bool usePrevi
         gPreviousForceMenuSetting = forceMenu;
         gPreviousAllowResetSetting = allowReset;
     }
+#endif
 
     DEMOPadRead();
     bFlag = OSGetResetButtonState();
@@ -1941,11 +1981,15 @@ bool simulatorTestReset(bool IPL, bool forceMenu, bool allowReset, bool usePrevi
         }
 
         if (allowReset == true) {
+#if VERSION == 0 // D43J01
+            simulatorReset(IPL, forceMenu);
+#else
             if (prevAllowResetSetting == true) {
                 simulatorReset(IPL, forceMenu);
             } else {
                 simulatorReset(prevIPLSetting, prevForceMenuSetting);
             }
+#endif
         }
     } else {
         gResetBeginFlag = false;
@@ -1960,19 +2004,27 @@ bool simulatorTestReset(bool IPL, bool forceMenu, bool allowReset, bool usePrevi
         }
 
         if (allowReset == true) {
+#if VERSION == 0 // D43J01
+            simulatorReset(IPL, forceMenu);
+#else
             if (prevAllowResetSetting == true) {
                 simulatorReset(IPL, forceMenu);
             } else {
                 simulatorReset(prevIPLSetting, prevForceMenuSetting);
             }
+#endif
         }
     } else {
         if (((nTick - gnTickReset) >= OSSecondsToTicks(0.5f)) && (allowReset == true)) {
+#if VERSION == 0 // D43J01
+            simulatorReset(IPL, forceMenu);
+#else
             if (prevAllowResetSetting == true) {
                 simulatorReset(IPL, forceMenu);
             } else {
                 simulatorReset(prevIPLSetting, prevForceMenuSetting);
             }
+#endif
         }
     }
 
@@ -1980,10 +2032,12 @@ bool simulatorTestReset(bool IPL, bool forceMenu, bool allowReset, bool usePrevi
 }
 
 bool simulatorDrawMCardText(void) {
+#if VERSION > 0 // D43J01
     if ((s32)(((TEXPalettePtr)gpErrorMessageBuffer)->versionNumber) == 0) {
         xlPostText("Invalid Message Image Data - Assuming SV09", "simGCN.c", 1623);
         simulatorPrepareMessage(S_M_CARD_SV09);
     }
+#endif
     simulatorDrawImage((TEXPalettePtr)gpErrorMessageBuffer,
                        160 - (((TEXPalettePtr)gpErrorMessageBuffer)->descriptorArray->textureHeader->width / 2),
                        120 - (((TEXPalettePtr)gpErrorMessageBuffer)->descriptorArray->textureHeader->height / 2), 0, 0);
@@ -2001,10 +2055,12 @@ s32 simulatorMCardPollDrawBar(void) {
 
     rate = (rate < 0.0f) ? 0.0f : rate;
 
+#if VERSION > 0 // D43J01
     if ((s32)(((TEXPalettePtr)gpErrorMessageBuffer)->versionNumber) == 0) {
         xlPostText("Invalid Message Image Data - Assuming SV09", "simGCN.c", 1623);
         simulatorPrepareMessage(S_M_CARD_SV09);
     }
+#endif
     simulatorDrawImage((TEXPalettePtr)gpErrorMessageBuffer,
                        160 - (((TEXPalettePtr)gpErrorMessageBuffer)->descriptorArray->textureHeader->width / 2),
                        120 - (((TEXPalettePtr)gpErrorMessageBuffer)->descriptorArray->textureHeader->height / 2), 1,
@@ -2023,10 +2079,12 @@ s32 simulatorMCardPollDrawFormatBar(void) {
 
     rate = (rate < 0.0f) ? 0.0f : rate;
 
+#if VERSION > 0 // D43J01
     if ((s32)(((TEXPalettePtr)gpErrorMessageBuffer)->versionNumber) == 0) {
         xlPostText("Invalid Message Image Data - Assuming SV09", "simGCN.c", 1623);
         simulatorPrepareMessage(S_M_CARD_SV09);
     }
+#endif
     simulatorDrawImage((TEXPalettePtr)gpErrorMessageBuffer,
                        160 - (((TEXPalettePtr)gpErrorMessageBuffer)->descriptorArray->textureHeader->width / 2),
                        120 - (((TEXPalettePtr)gpErrorMessageBuffer)->descriptorArray->textureHeader->height / 2), 0,
@@ -2197,6 +2255,12 @@ char _dummy3[] = "How many audio frames the\ngame must be playing before it\ncon
 char _dummy4[] = "How many audio frames the\ngame must NOT play before it\nconsiders itself unstable";
 char _dummy5[] = "How many audio frames to\nperform a fade up on the audio";
 
+#if VERSION == 0 // D43J01
+#define ROM_FILENAME "urazlj_f.n64"
+#else
+#define ROM_FILENAME "zlj_f.n64"
+#endif
+
 bool xlMain(void) {
     GXColor color;
     SystemMode eMode;
@@ -2277,13 +2341,15 @@ bool xlMain(void) {
     }
 
     mCard.bufferCreated = 0;
+#if VERSION > 0 // D43J01
     mCard.isBroken = 0;
+#endif
     mcardInit(&mCard);
 
     if (simulatorGetArgument(SAT_NAME, &szNameROM)) {
         strcpy(acNameROM, szNameROM);
     } else {
-        strcpy(acNameROM, "zlj_f.n64");
+        strcpy(acNameROM, ROM_FILENAME);
     }
 
     iName = strlen(acNameROM) - 1;
