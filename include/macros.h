@@ -31,6 +31,12 @@
     (void)0;        \
     (void)0;        \
     (void)0;        \
+    (void)0;        \
+    (void)0;        \
+    (void)0;        \
+    (void)0;        \
+    (void)0;        \
+    (void)0;        \
     (void)0
 
 // Adds a stack variable in an inline function, which can be used to pad the

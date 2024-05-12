@@ -29,6 +29,10 @@ extern void GXSetTexCoordGen2(GXTexCoordID coord, GXTexGenType genType, GXTexGen
                               GXBool doNormalise, u32 postMtx);
 extern void GXSetNumTexGens(u8 count);
 
+static inline void GXSetTexCoordGen(GXTexCoordID dst_coord, GXTexGenType func, GXTexGenSrc src_param, u32 mtx) {
+    GXSetTexCoordGen2(dst_coord, func, src_param, mtx, GX_FALSE, GX_PTIDENTITY);
+}
+
 // Geometry functions.
 extern void GXSetLineWidth(u8 width, GXTexOffset offset);
 extern void GXSetPointSize(u8 pointSize, GXTexOffset offset);
