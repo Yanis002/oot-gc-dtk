@@ -25,7 +25,8 @@ from tools.project import (
     is_windows,
 )
 
-# Game versions
+### Game versions
+
 VERSIONS = [
     "MQ-J",  # 0
     # "MQ-U",  # 1
@@ -36,6 +37,8 @@ VERSIONS = [
 ]
 
 DEFAULT_VERSION = VERSIONS.index("MQ-J")
+
+### Script's arguments
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -116,8 +119,10 @@ parser.add_argument(
 
 args = parser.parse_args()
 
+### Create new project configuration
+
 config = ProjectConfig()
-config.version = args.version.upper()
+config.version = args.version.upper() # allows users to use lowercase when defining the version to use
 version_num = VERSIONS.index(config.version)
 
 # Apply arguments
@@ -135,16 +140,20 @@ if not is_windows():
 if args.no_asm:
     config.asm_dir = None
 
-# Tool versions
+### Tool versions
+
 config.binutils_tag = "2.42-1"
 config.compilers_tag = "20231018"
 config.dtk_tag = "v0.7.5"
 config.sjiswrap_tag = "v1.1.1"
 config.wibo_tag = "0.6.11"
 
-# Project
+### Project
+
 config.config_path = Path("config") / config.version / "config.yml"
 config.check_sha_path = Path("config") / config.version / "build.sha1"
+
+### Flags (same as zeldaret/oot-gc)
 
 config.asflags = [
     "-mgekko",
@@ -159,8 +168,6 @@ config.ldflags = [
     "-warn off"
 ]
 
-# Base flags, common to most GC/Wii games.
-# Generally leave untouched, with overrides added below.
 cflags_base = [
     "-Cpp_exceptions off",
     "-proc gekko",
@@ -176,6 +183,8 @@ cflags_base = [
     "-inline auto",
     "-nodefaults",
     "-msgstyle gcc",
+
+    # includes and macros
     "-i include",
     "-i libc",
     f"-i build/{config.version}/include",
@@ -189,15 +198,34 @@ if config.debug:
 else:
     cflags_base.append("-DNDEBUG=1")
 
-config.linker_version = "GC/1.1"
-
 # SIM flags
 cflags_sim = [
     *cflags_base,
     "-inline auto,deferred",
 ]
 
-# Helper function for SIM objects
+# Dolphin SDK/Libraries flags
+cflags_dolphin = [
+    *cflags_base,
+]
+
+# Metrowerks library flags (TBD)
+cflags_runtime = [
+    *cflags_base,
+    "-msgstyle gcc",
+    # "-use_lmw_stmw on",
+    # "-str reuse,pool,readonly",
+    # "-gccinc",
+    # "-common off",
+    "-inline auto,deferred",
+]
+
+# Set linker version to use
+config.linker_version = "GC/1.1"
+
+### Helper functions
+
+# for SIM objects (the emulator files)
 def SIM(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
     return {
         "lib": lib_name,
@@ -206,11 +234,6 @@ def SIM(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
         "host": False,
         "objects": objects,
     }
-
-# Dolphin SDK/Libraries flags
-cflags_dolphin = [
-    *cflags_base,
-]
 
 # Helper function for THP objects inside the emulator folders
 def THP(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
@@ -232,17 +255,6 @@ def DolphinLib(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
         "objects": objects,
     }
 
-# Metrowerks library flags (TBD)
-cflags_runtime = [
-    *cflags_base,
-    "-msgstyle gcc",
-    # "-use_lmw_stmw on",
-    # "-str reuse,pool,readonly",
-    # "-gccinc",
-    # "-common off",
-    "-inline auto,deferred",
-]
-
 # Helper function for libraries sharing the same informations
 def GenericLib(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
     return {
@@ -252,6 +264,8 @@ def GenericLib(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
         "host": False,
         "objects": objects,
     }
+
+### Link order
 
 Matching = True
 NonMatching = False
@@ -340,7 +354,7 @@ config.libs = [
             Object(Matching, "dolphin/os/OSMessage.c"),
             Object(Matching, "dolphin/os/OSMemory.c"),
             Object(Matching, "dolphin/os/OSMutex.c"),
-            Object(Matching if version_num > VERSIONS.index("MQ-J") else NonMatching, "dolphin/os/OSReboot.c"), # MQ missing __OSReboot (symbols)
+            Object(Matching if version_num > VERSIONS.index("MQ-J") else NonMatching, "dolphin/os/OSReboot.c"),
             Object(Matching, "dolphin/os/OSReset.c"),
             Object(Matching, "dolphin/os/OSResetSW.c"),
             Object(Matching, "dolphin/os/OSRtc.c"),
@@ -475,7 +489,7 @@ config.libs = [
         ],
     ),
     DolphinLib(
-        "thp",
+        "THP",
         [
             Object(NonMatching, "dolphin/thp/THPDec.c"),
             Object(NonMatching, "dolphin/thp/THPAudio.c"),
@@ -574,6 +588,8 @@ config.libs = [
         ]
     ),
 ]
+
+### Execute mode
 
 if args.mode == "configure":
     # Write build.ninja and objdiff.json
