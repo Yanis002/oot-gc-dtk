@@ -32,7 +32,7 @@ VERSIONS = [
     # "MQ-U",  # 1
     # "MQ-P",  # 2
     "CE-J",  # 3
-    # "CE-U",  # 4
+    "CE-U",  # 4
     # "CE-P",  # 5
 ]
 
