@@ -2,7 +2,7 @@
 #include "dolphin/os.h"
 
 // Can't use this due to weird condition register issues
-//#include "asm_types.h"
+// #include "asm_types.h"
 #define HID2 920
 
 #include "dolphin/db.h"

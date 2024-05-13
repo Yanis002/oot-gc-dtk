@@ -122,85 +122,84 @@ _MATH_INLINE float powf(float __x, float __y) { return pow(__x, __y); }
 #define FP_SUBNORMAL 5
 
 static inline int __fpclassifyf(float x) {
-  switch ((*(_INT32*)&x) & 0x7f800000) {
-  case 0x7f800000: {
-    if ((*(_INT32*)&x) & 0x007fffff)
-      return FP_NAN;
-    else
-      return FP_INFINITE;
-    break;
-  }
-  case 0: {
-    if ((*(_INT32*)&x) & 0x007fffff)
-      return FP_SUBNORMAL;
-    else
-      return FP_ZERO;
-    break;
-  }
-  }
-  return FP_NORMAL;
+    switch ((*(_INT32*)&x) & 0x7f800000) {
+        case 0x7f800000: {
+            if ((*(_INT32*)&x) & 0x007fffff)
+                return FP_NAN;
+            else
+                return FP_INFINITE;
+            break;
+        }
+        case 0: {
+            if ((*(_INT32*)&x) & 0x007fffff)
+                return FP_SUBNORMAL;
+            else
+                return FP_ZERO;
+            break;
+        }
+    }
+    return FP_NORMAL;
 }
 
 static inline int __fpclassifyd(double x) {
-  switch (__HI(x) & 0x7ff00000) {
-  case 0x7ff00000: {
-    if ((__HI(x) & 0x000fffff) || (__LO(x) & 0xffffffff))
-      return FP_NAN;
-    else
-      return FP_INFINITE;
-    break;
-  }
-  case 0: {
-    if ((__HI(x) & 0x000fffff) || (__LO(x) & 0xffffffff))
-      return FP_SUBNORMAL;
-    else
-      return FP_ZERO;
-    break;
-  }
-  }
-  return FP_NORMAL;
+    switch (__HI(x) & 0x7ff00000) {
+        case 0x7ff00000: {
+            if ((__HI(x) & 0x000fffff) || (__LO(x) & 0xffffffff))
+                return FP_NAN;
+            else
+                return FP_INFINITE;
+            break;
+        }
+        case 0: {
+            if ((__HI(x) & 0x000fffff) || (__LO(x) & 0xffffffff))
+                return FP_SUBNORMAL;
+            else
+                return FP_ZERO;
+            break;
+        }
+    }
+    return FP_NORMAL;
 }
 
-#define fpclassify(x)                                                                              \
-  (sizeof(x) == sizeof(float) ? __fpclassifyf((float)(x)) : __fpclassifyd((double)(x)))
+#define fpclassify(x) (sizeof(x) == sizeof(float) ? __fpclassifyf((float)(x)) : __fpclassifyd((double)(x)))
 #define isnormal(x) (fpclassify(x) == FP_NORMAL)
 #define isnan(x) (fpclassify(x) == FP_NAN)
 #define isinf(x) (fpclassify(x) == FP_INFINITE)
 #define isfinite(x) ((fpclassify(x) > FP_INFINITE))
 
 extern inline float sqrtf(float x) {
-  const double _half = .5;
-  const double _three = 3.0;
-  volatile float y;
+    const double _half = .5;
+    const double _three = 3.0;
+    volatile float y;
 
-  if (x > 0.0f) {
-    double guess = __frsqrte((double)x);                  /* returns an approximation to	*/
-    guess = _half * guess * (_three - guess * guess * x); /* now have 12 sig bits
-                                                           */
-    guess = _half * guess * (_three - guess * guess * x); /* now have 24 sig bits
-                                                           */
-    guess = _half * guess * (_three - guess * guess * x); /* now have 32 sig bits
-                                                           */
-    y = (float)(x * guess);
-    return y;
-  }
-  return x;
+    if (x > 0.0f) {
+        double guess = __frsqrte((double)x); /* returns an approximation to	*/
+        guess = _half * guess * (_three - guess * guess * x); /* now have 12 sig bits
+                                                               */
+        guess = _half * guess * (_three - guess * guess * x); /* now have 24 sig bits
+                                                               */
+        guess = _half * guess * (_three - guess * guess * x); /* now have 32 sig bits
+                                                               */
+        y = (float)(x * guess);
+        return y;
+    }
+    return x;
 }
 
 _MATH_INLINE double sqrt(double x) {
-  if (x > 0.0) {
-    double guess = __frsqrte(x);                    /* returns an approximation to  */
-    guess = .5 * guess * (3.0 - guess * guess * x); /* now have 8 sig bits          */
-    guess = .5 * guess * (3.0 - guess * guess * x); /* now have 16 sig bits         */
-    guess = .5 * guess * (3.0 - guess * guess * x); /* now have 32 sig bits         */
-    guess = .5 * guess * (3.0 - guess * guess * x); /* now have > 53 sig bits       */
-    return x * guess;
-  } else if (x == 0.0) {
-    return 0;
-  } else if (x) {
-    return NAN;
-  }
-  return INFINITY;
+    if (x > 0.0) {
+        double guess = __frsqrte(x); /* returns an approximation to  */
+        guess = .5 * guess * (3.0 - guess * guess * x); /* now have 8 sig bits          */
+        guess = .5 * guess * (3.0 - guess * guess * x); /* now have 16 sig bits         */
+        guess = .5 * guess * (3.0 - guess * guess * x); /* now have 32 sig bits         */
+        guess = .5 * guess * (3.0 - guess * guess * x); /* now have > 53 sig bits       */
+        return x * guess;
+    } else if (x == 0.0) {
+        return 0;
+    } else if (x) {
+        return NAN;
+    }
+    return INFINITY;
 }
 
 static inline float ldexpf(float x, int exp) { return (float)ldexp((double)x, exp); }

@@ -356,7 +356,7 @@ bool simulatorDVDShowError(s32 nStatus, void* anData, s32 nSizeRead, u32 nOffset
             }
         }
 #else
-        // clang-format off
+    // clang-format off
         if ((gDVDResetToggle == 1) && (((u32)nStatus <= 3) || (((u32)nStatus - 7) <= 1) || (nStatus == 10))) {
             if (!simulatorTestReset(false, false, true, false)) {
                 return false;
@@ -364,7 +364,7 @@ bool simulatorDVDShowError(s32 nStatus, void* anData, s32 nSizeRead, u32 nOffset
         } else if (nStatus != -1 && !simulatorTestReset(true, false, true, false)) {
             return false;
         }
-        // clang-format on
+    // clang-format on
 #endif
 
         if (nMessage != S_M_NONE) {

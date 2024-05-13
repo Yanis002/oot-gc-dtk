@@ -11,8 +11,10 @@
 
 #if VERSION == MQ_J
 #define ROMCACHEGAME_CHECK_OOT_VERSION (romTestCode(pROM, "CZLE") || romTestCode(pROM, "CZLJ"))
+#define ROMCACHEGAME_ELSE else
 #else
 #define ROMCACHEGAME_CHECK_OOT_VERSION (bIsCZLE || bIsCZLJ)
+#define ROMCACHEGAME_ELSE else if (!bIsCZLE)
 #endif
 
 static bool romMakeFreeCache(Rom* pROM, s32* piCache, RomCacheType eType);
@@ -469,14 +471,11 @@ static bool romCacheGame(Rom* pROM) {
                 pROM->nCountOffsetBlocks = 0xC6;
             }
 #endif
-        } else
-#if VERSION >= CE_J
-            if (!bIsCZLE)
-#endif
-            {
-                pROM->anOffsetBlock = ganOffsetBlock_URAZLJ;
-                pROM->nCountOffsetBlocks = 0xC6;
-            }
+        }
+        ROMCACHEGAME_ELSE {
+            pROM->anOffsetBlock = ganOffsetBlock_URAZLJ;
+            pROM->nCountOffsetBlocks = 0xC6;
+        }
 
 #if VERSION == MQ_J
         szName = gnFlagZelda & 2 ? "zlj.tpl" : "urazlj.tpl";

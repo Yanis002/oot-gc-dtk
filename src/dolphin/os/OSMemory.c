@@ -1,7 +1,7 @@
 #include "dolphin/os.h"
 
-#define TRUNC(n, a) (((u32)(n)) & ~((a)-1))
-#define ROUND(n, a) (((u32)(n) + (a)-1) & ~((a)-1))
+#define TRUNC(n, a) (((u32)(n)) & ~((a) - 1))
+#define ROUND(n, a) (((u32)(n) + (a) - 1) & ~((a) - 1))
 
 vu16 __MEMRegs[64] : 0xCC004000;
 extern OSErrorHandler __OSErrorTable[16];

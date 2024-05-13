@@ -16,7 +16,7 @@ static u32 IDSerialPort1;
 #define MAX_CHAN 3
 
 #define REG_MAX 5
-#define REG(chan, idx) (__EXIRegs[((chan)*REG_MAX) + (idx)])
+#define REG(chan, idx) (__EXIRegs[((chan) * REG_MAX) + (idx)])
 
 #define STATE_IDLE 0x00
 #define STATE_DMA 0x01

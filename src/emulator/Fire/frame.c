@@ -896,7 +896,6 @@ bool frameEnd(Frame* pFrame) {
 
 #pragma GLOBAL_ASM("asm/non_matchings/frame/_frameDrawRectangle.s")
 
-
 //! TODO: make sFrameObj a static variable in the function
 void ZeldaDrawFrameNoBlend(Frame* pFrame, u16* pData) {
     Mtx matrix;

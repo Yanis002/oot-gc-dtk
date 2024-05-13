@@ -8,9 +8,9 @@ extern "C" {
 #endif // ifdef __cplusplus
 
 #define GX_BITFIELD(field, pos, size, value) \
-    (__rlwimi((field), (value), 31 - (pos) - (size) + 1, (pos), (pos) + (size)-1))
+    (__rlwimi((field), (value), 31 - (pos) - (size) + 1, (pos), (pos) + (size) - 1))
 #define GX_BITFIELD_SET(field, pos, size, value) ((field) = GX_BITFIELD(field, pos, size, value))
-#define GX_BITFIELD_TRUNC(field, pos, size, value) (__rlwimi((field), (value), 0, (pos), (pos) + (size)-1))
+#define GX_BITFIELD_TRUNC(field, pos, size, value) (__rlwimi((field), (value), 0, (pos), (pos) + (size) - 1))
 #define GX_BITGET(field, pos, size) ((field) >> (31 - (pos) - (size) + 1) & ((1 << (size)) - 1))
 
 /**
