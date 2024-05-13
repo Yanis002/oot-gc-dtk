@@ -31,7 +31,7 @@ bool libraryFunctionReplaced(Library* pLibrary, s32 iFunction);
 bool libraryCall(Library* pLibrary, Cpu* pCPU, s32 iFunction);
 bool libraryEvent(Library* pLibrary, s32 nEvent, void* pArgument);
 
-#if VERSION == 0 // D43J01
+#if VERSION == MQ_J
 bool libraryUpdate(Library* pLibrary);
 #endif
 

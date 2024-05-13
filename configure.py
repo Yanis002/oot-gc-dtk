@@ -27,6 +27,9 @@ from tools.project import (
 
 ### Game versions
 
+# Note: update ``.vscode/c_cpp_properties.json``'s defines
+# when updating this list
+
 VERSIONS = [
     "MQ-J",  # 0
     # "MQ-U",  # 1

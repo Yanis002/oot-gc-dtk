@@ -10,13 +10,13 @@
 
 #define OFFSETOF(p, field) ((u8*)&(p)->field - (u8*)(p))
 
-#if VERSION == 0 // D43J01
+#if VERSION == MQ_J
 #define INLINE
 #else
 #define INLINE inline
 #endif
 
-#if VERSION == 0 // D43J01
+#if VERSION == MQ_J
 #define STATIC
 #else
 #define STATIC static

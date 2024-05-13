@@ -9,7 +9,7 @@
 #include "emulator/xlHeap.h"
 #include "macros.h"
 
-#if VERSION == 0 // D43J01
+#if VERSION == MQ_J
 #define ROMCACHEGAME_CHECK_OOT_VERSION (romTestCode(pROM, "CZLE") || romTestCode(pROM, "CZLJ"))
 #else
 #define ROMCACHEGAME_CHECK_OOT_VERSION (bIsCZLE || bIsCZLJ)
@@ -439,12 +439,12 @@ static bool romCacheGame_ZELDA(f32 rProgress) {
 
 static bool romCacheGame(Rom* pROM) {
     s32 blockCount;
-#if VERSION > 0 // D43J01
+#if VERSION >= CE_J
     s32 pad[2];
 #endif
     s32 nSize;
     char* szName;
-#if VERSION > 0 // D43J01
+#if VERSION >= CE_J
     s32 bIsCZLE;
     s32 bIsCZLJ;
 #endif
@@ -453,14 +453,14 @@ static bool romCacheGame(Rom* pROM) {
     blockCount = 0;
     gDVDResetToggle = true;
 
-#if VERSION > 0 // D43J01
+#if VERSION >= CE_J
     bIsCZLE = romTestCode(pROM, "CZLE");
     bIsCZLJ = romTestCode(pROM, "CZLJ");
 #endif
 
     if (ROMCACHEGAME_CHECK_OOT_VERSION) {
         if (gnFlagZelda & 2) {
-#if VERSION == 0 // D43J01
+#if VERSION == MQ_J
             pROM->anOffsetBlock = ganOffsetBlock_ZLJ;
             pROM->nCountOffsetBlocks = 0xC6;
 #else
@@ -470,7 +470,7 @@ static bool romCacheGame(Rom* pROM) {
             }
 #endif
         } else
-#if VERSION > 0 // D43J01
+#if VERSION >= CE_J
             if (!bIsCZLE)
 #endif
             {
@@ -478,7 +478,7 @@ static bool romCacheGame(Rom* pROM) {
                 pROM->nCountOffsetBlocks = 0xC6;
             }
 
-#if VERSION == 0 // D43J01
+#if VERSION == MQ_J
         szName = gnFlagZelda & 2 ? "zlj.tpl" : "urazlj.tpl";
 #else
         if (bIsCZLE) {
@@ -1307,7 +1307,7 @@ bool romEvent(Rom* pROM, s32 nEvent, void* pArgument) {
             break;
         case 0:
         case 1:
-#if VERSION > 0 // D43J01
+#if VERSION >= CE_J
         case 0x1003:
 #endif
             break;

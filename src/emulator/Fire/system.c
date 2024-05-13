@@ -25,7 +25,7 @@
 #include "stdlib.h"
 #include "string.h"
 
-#if VERSION == 0 // D43J01
+#if VERSION == MQ_J
 // "The Legend of Zelda: Ocarina of Time GC"
 #define ZELDA_GC_JP "ゼルダの伝説　時のオカリナＧＣ"
 #define MCARD_FILE_NAME "ZELDA"
@@ -181,7 +181,7 @@ static bool systemSetupGameRAM(System* pSystem) {
     if (romTestCode(pROM, "CZLJ") || romTestCode(pROM, "CZLE") || romTestCode(pROM, "NZSJ") ||
         romTestCode(pROM, "NZSE")) {
         switch (nCode) {
-#if VERSION == 0 // D43J01
+#if VERSION == MQ_J
             case 0x5CAC1CF7:
                 gnFlagZelda = 2;
                 break;
@@ -217,7 +217,7 @@ static bool systemSetupGameRAM(System* pSystem) {
 #endif
         }
 
-#if VERSION > 0 // D43J01
+#if VERSION >= CE_J
         if (gnFlagZelda & 1) {
             bExpansion = true;
         }
@@ -291,7 +291,7 @@ bool systemGetInitialConfiguration(System* pSystem, Rom* pROM, s32 index) {
     systemSetControllerConfiguration(&gSystemRomConfigurationList[index], 0, false);
     gSystemRomConfigurationList[index].storageDevice = SOT_CPU;
 
-#if VERSION == 0 // D43J01
+#if VERSION == MQ_J
     if (!simulatorGetArgument(SAT_VIBRATION, &szText) || (*szText == '1')) {
         if (!simulatorGetArgument(SAT_CONTROLLER, &szText) || (*szText == '0')) {
             systemSetControllerConfiguration(&gSystemRomConfigurationList[index], 0x82828282, true);
@@ -310,14 +310,14 @@ bool systemGetInitialConfiguration(System* pSystem, Rom* pROM, s32 index) {
     if (romTestCode(pROM, "NSME") || romTestCode(pROM, "NSMJ")) {
         // Super Mario 64
         systemSetControllerConfiguration(&gSystemRomConfigurationList[index], 0x01010101, false);
-#if VERSION > 0 // D43J01
+#if VERSION >= CE_J
         gSystemRomConfigurationList[index].storageDevice = SOT_RSP;
 #endif
     } else if (romTestCode(pROM, "CZLE") || romTestCode(pROM, "CZLJ")) {
         // Ocarina of Time
         gSystemRomConfigurationList[index].storageDevice = SOT_PIF;
 
-#if VERSION > 0 // D43J01
+#if VERSION >= CE_J
         if (!simulatorGetArgument(SAT_VIBRATION, &szText) || (*szText == '1')) {
             if (!simulatorGetArgument(SAT_CONTROLLER, &szText) || (*szText == '0')) {
                 systemSetControllerConfiguration(&gSystemRomConfigurationList[index], 0x82828282, true);
@@ -336,7 +336,7 @@ bool systemGetInitialConfiguration(System* pSystem, Rom* pROM, s32 index) {
         // Majora's Mask
         gSystemRomConfigurationList[index].storageDevice = SOT_RAM;
 
-#if VERSION > 0 // D43J01
+#if VERSION >= CE_J
         if (!simulatorGetArgument(SAT_VIBRATION, &szText) || (*szText == '1')) {
             if (!simulatorGetArgument(SAT_CONTROLLER, &szText) || (*szText == '0')) {
                 systemSetControllerConfiguration(&gSystemRomConfigurationList[index], 0x82828282, true);
@@ -521,7 +521,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
         pSystem->eTypeROM = SRT_ZELDA1;
         nSizeSound = 0x1000;
 
-#if VERSION == 0 // D43J01
+#if VERSION == MQ_J
         if ((gnFlagZelda & 1)) {
             if (!cpuSetCodeHack(pCPU, 0x80062D64, 0x94639680, -1)) {
                 return false;
@@ -923,7 +923,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
             } else if (romTestCode(pROM, "NK4E")) {
                 // Kirby 64
 
-#if VERSION > 0 // D43J01
+#if VERSION >= CE_J
                 if (!audioEnable(SYSTEM_AUDIO(pSystem), false)) {
                     return false;
                 }
@@ -1540,7 +1540,7 @@ bool systemReset(System* pSystem) {
             return false;
         }
 
-#if VERSION == 0 // D43J01
+#if VERSION == MQ_J
         if (!libraryUpdate(SYSTEM_LIBRARY(pSystem))) {
             return false;
         }
@@ -1692,7 +1692,7 @@ bool systemEvent(System* pSystem, s32 nEvent, void* pArgument) {
             pSystem->pFrame = gpFrame;
             pSystem->pSound = gpSound;
 
-#if VERSION == 0 // D43J01
+#if VERSION == MQ_J
             pSystem->apObject[SOT_CPU] = NULL;
             pSystem->apObject[SOT_PIF] = NULL;
             pSystem->apObject[SOT_RAM] = NULL;
@@ -1901,7 +1901,7 @@ bool systemEvent(System* pSystem, s32 nEvent, void* pArgument) {
         case 5:
         case 6:
         case 7:
-#if VERSION > 0 // D43J01
+#if VERSION >= CE_J
         case 0x1003:
 #endif
             break;

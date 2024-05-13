@@ -111,7 +111,7 @@ bool serialEvent(Serial* pSerial, s32 nEvent, void* pArgument) {
         case 0:
         case 1:
         case 3:
-#if VERSION > 0 // D43J01
+#if VERSION >= CE_J
         case 0x1003:
 #endif
             break;
