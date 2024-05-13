@@ -13,15 +13,13 @@
     "files.insertFinalNewline": true,
     "files.trimFinalNewlines": true,
     "files.associations": {
-        "*.inc": "cpp"
+        "*.c": "c",
+        "*.h": "c",
+        "*.inc": "c",
     },
     "search.useIgnoreFiles": false,
     "search.exclude": {
-        "build/*/config.json": true,
-        "build/**/*.MAP": true,
-        "build.ninja": true,
         ".ninja_*": true,
-        "objdiff.json": true,
         ".mypy_cache": true
     }
 }

@@ -168,6 +168,9 @@ config.ldflags = [
     "-warn off"
 ]
 
+# ``-DMQ_J=0 -DMQ-U=2, ...``
+version_defines = " ".join(f"-D{version.replace('-', '_')}={i}" for i, version in enumerate(VERSIONS))
+
 cflags_base = [
     "-Cpp_exceptions off",
     "-proc gekko",
@@ -188,6 +191,7 @@ cflags_base = [
     "-i include",
     "-i libc",
     f"-i build/{config.version}/include",
+    f"{version_defines}",
     f"-DVERSION={version_num}",
     f"-DDOLPHIN_REV={2002 if version_num == VERSIONS.index('MQ-J') else 2003}",
 ]

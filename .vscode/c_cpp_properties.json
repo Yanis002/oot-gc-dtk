@@ -3,7 +3,8 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/include/**",
+                "${workspaceFolder}/include",
+                "${workspaceFolder}/libc",
                 "${workspaceFolder}/build/*/include"
             ],
             "cStandard": "c99",
@@ -16,7 +17,18 @@
                     "${workspaceFolder}/include"
                 ],
                 "limitSymbolsToIncludedHeaders": true
-            }
+            },
+            "defines": [
+                // see ``VERSIONS``
+                "MQ_J=0",
+                // "MQ_U=0",
+                // "MQ_P=0",
+                "CE_J=1",
+                "CE_U=2",
+                // "CE_P=0",
+                "VERSION=MQ_J",
+                "DOLPHIN_REV=2003"
+            ]
         }
     ],
     "version": 4
