@@ -76,7 +76,7 @@ Building
   git clone https://github.com/yanis42/oot-gc-dtk.git
   ```
 
-- Using [Dolphin Emulator](https://dolphin-emu.org), extract the content of the TGC file you extracted earlier to ``orig/[GAMEID]``.
+- Using [Dolphin Emulator](https://dolphin-emu.org), extract the content of the TGC file you extracted earlier to ``orig/[GAMEID]``. Note: you don't need to extract the whole disc, you can use "Extract System Data".
 
 ![](assets/dolphin-extract.png)
 
