@@ -26,15 +26,16 @@ from tools.project import (
 )
 
 # Game versions
-DEFAULT_VERSION = 0
 VERSIONS = [
-    "D43J01",  # 0, OoT MQ-JP (Master Quest)
-    # "D43E01",  # 1, OoT MQ-US (Master Quest)
-    # "D43P01",  # 2, OoT MQ-EU (Master Quest)
-    "PZLJ01",  # 3, Zelda: CE-JP (Collector's Edition)
-    # "PZLE01",  # 4, Zelda: CE-US (Collector's Edition)
-    # "PZLP01",  # 5, Zelda: CE-EU (Collector's Edition)
+    "MQ-J",  # 0
+    # "MQ-U",  # 1
+    # "MQ-P",  # 2
+    "CE-J",  # 3
+    # "CE-U",  # 4
+    # "CE-P",  # 5
 ]
+
+DEFAULT_VERSION = VERSIONS.index("MQ-J")
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -45,6 +46,7 @@ parser.add_argument(
     nargs="?",
 )
 parser.add_argument(
+    "-v",
     "--version",
     choices=VERSIONS,
     type=str.upper,
@@ -111,10 +113,11 @@ parser.add_argument(
     action="store_true",
     help="print verbose output",
 )
+
 args = parser.parse_args()
 
 config = ProjectConfig()
-config.version = args.version
+config.version = args.version.upper()
 version_num = VERSIONS.index(config.version)
 
 # Apply arguments
@@ -125,8 +128,10 @@ config.compilers_path = args.compilers
 config.debug = args.debug
 config.generate_map = args.map
 config.sjiswrap_path = args.sjiswrap
+
 if not is_windows():
     config.wrapper = args.wrapper
+
 if args.no_asm:
     config.asm_dir = None
 
@@ -140,46 +145,42 @@ config.wibo_tag = "0.6.11"
 # Project
 config.config_path = Path("config") / config.version / "config.yml"
 config.check_sha_path = Path("config") / config.version / "build.sha1"
+
 config.asflags = [
     "-mgekko",
-    # "--strip-local-absolute",
     "-I include",
+    "-I libc",
     f"-I build/{config.version}/include",
-    f"--defsym version={version_num}",
 ]
+
 config.ldflags = [
     "-fp hardware",
     "-nodefaults",
-    "-warn off" # TODO: this is a temp solution until ``note.split`` is fixed
-    # "-listclosure", # Uncomment for Wii linkers
+    "-warn off"
 ]
 
 # Base flags, common to most GC/Wii games.
 # Generally leave untouched, with overrides added below.
 cflags_base = [
-    "-nodefaults",
-    "-proc gekko",
-    # "-align powerpc",
-    "-enum int",
-    "-fp hardware", # -fp hard
     "-Cpp_exceptions off",
-    # # "-W all",
+    "-proc gekko",
+    "-fp hardware",
+    "-fp_contract on",
+    "-enum int",
+    "-align powerpc",
+    "-nosyspath",
+    "-RTTI off",
+    "-str reuse",
+    "-multibyte",
     "-O4,p",
     "-inline auto",
-    # '-pragma "cats off"',
-    # '-pragma "warn_notinlined off"',
-    # "-maxerrors 1",
-    # "-nosyspath",
-    # "-RTTI off",
-    "-fp_contract on",
-    # "-str reuse",
-    # "-multibyte",  # For Wii compilers, replace with `-enc SJIS`
+    "-nodefaults",
+    "-msgstyle gcc",
     "-i include",
     "-i libc",
     f"-i build/{config.version}/include",
     f"-DVERSION={version_num}",
-    # NOTE: Update this when other versions are done, 99 means unknown (used for CE-J)
-    f"-DDOLPHIN_REV={2002 if version_num == 0 else 2003}",
+    f"-DDOLPHIN_REV={2002 if version_num == VERSIONS.index('MQ-J') else 2003}",
 ]
 
 # Debug flags
@@ -188,38 +189,13 @@ if config.debug:
 else:
     cflags_base.append("-DNDEBUG=1")
 
-cflags_dolphin = [
-    *cflags_base,
-    "-align powerpc",
-    '-pragma "cats off"',
-    '-pragma "warn_notinlined off"',
-    "-maxerrors 1",
-    "-nosyspath",
-    "-RTTI off",
-    "-str reuse",
-    "-multibyte",  # For Wii compilers, replace with `-enc SJIS`
-]
-
-# Metrowerks library flags
-cflags_runtime = [
-    *cflags_base,
-    "-msgstyle gcc",
-    # "-use_lmw_stmw on",
-    # "-str reuse,pool,readonly",
-    # "-gccinc",
-    # "-common off",
-    "-inline auto,deferred",
-]
-
-# REL flags
-cflags_rel = [
-    *cflags_base,
-    "-sdata 0",
-    "-sdata2 0",
-]
-
 config.linker_version = "GC/1.1"
 
+# SIM flags
+cflags_sim = [
+    *cflags_base,
+    "-inline auto,deferred",
+]
 
 # Helper function for SIM objects
 def SIM(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
@@ -231,6 +207,11 @@ def SIM(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
         "objects": objects,
     }
 
+# Dolphin SDK/Libraries flags
+cflags_dolphin = [
+    *cflags_base,
+]
+
 # Helper function for THP objects inside the emulator folders
 def THP(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
     return {
@@ -240,18 +221,6 @@ def THP(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
         "host": False,
         "objects": objects,
     }
-
-
-# Helper function for libraries sharing the same informations
-def GenericLib(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
-    return {
-        "lib": lib_name,
-        "mw_version": "GC/1.3.2",
-        "cflags": cflags_runtime,
-        "host": False,
-        "objects": objects,
-    }
-
 
 # Helper function for Dolphin libraries
 def DolphinLib(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
@@ -263,23 +232,33 @@ def DolphinLib(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
         "objects": objects,
     }
 
+# Metrowerks library flags (TBD)
+cflags_runtime = [
+    *cflags_base,
+    "-msgstyle gcc",
+    # "-use_lmw_stmw on",
+    # "-str reuse,pool,readonly",
+    # "-gccinc",
+    # "-common off",
+    "-inline auto,deferred",
+]
 
-# Helper function for REL script objects
-def Rel(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
+# Helper function for libraries sharing the same informations
+def GenericLib(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
     return {
         "lib": lib_name,
         "mw_version": "GC/1.3.2",
-        "cflags": cflags_rel,
-        "host": True,
+        "cflags": cflags_runtime,
+        "host": False,
         "objects": objects,
     }
-
 
 Matching = True
 NonMatching = False
 
 config.warn_missing_config = True
 config.warn_missing_source = False
+
 config.libs = [
     SIM(
         "Core",
@@ -361,7 +340,7 @@ config.libs = [
             Object(Matching, "dolphin/os/OSMessage.c"),
             Object(Matching, "dolphin/os/OSMemory.c"),
             Object(Matching, "dolphin/os/OSMutex.c"),
-            Object(Matching if version_num > 0 else NonMatching, "dolphin/os/OSReboot.c"), # MQ missing __OSReboot (symbols)
+            Object(Matching if version_num > VERSIONS.index("MQ-J") else NonMatching, "dolphin/os/OSReboot.c"), # MQ missing __OSReboot (symbols)
             Object(Matching, "dolphin/os/OSReset.c"),
             Object(Matching, "dolphin/os/OSResetSW.c"),
             Object(Matching, "dolphin/os/OSRtc.c"),
