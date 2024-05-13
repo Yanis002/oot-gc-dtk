@@ -1,6 +1,7 @@
 #include "dolphin/base/PPCArch.h"
 #include "dolphin/os/OSPriv.h"
 #include "dolphin/os/OSReset.h"
+#include "macros.h"
 
 static struct OSAlarmQueue {
     OSAlarm* head;
@@ -10,7 +11,7 @@ static struct OSAlarmQueue {
 static void DecrementerExceptionHandler(__OSException exception, OSContext* context);
 static bool OnReset(bool final);
 
-#if DOLPHIN_REV > 2002
+#if DOLPHIN_REV == 2003
 static OSResetFunctionInfo ResetFunctionInfo = {OnReset, 0xFFFFFFFF};
 #endif
 
@@ -18,7 +19,7 @@ void OSInitAlarm(void) {
     if (__OSGetExceptionHandler(8) != DecrementerExceptionHandler) {
         AlarmQueue.head = AlarmQueue.tail = NULL;
         __OSSetExceptionHandler(8, DecrementerExceptionHandler);
-#if DOLPHIN_REV > 2002
+#if DOLPHIN_REV == 2003
         OSRegisterResetFunction(&ResetFunctionInfo);
 #endif
     }
@@ -29,7 +30,7 @@ void OSCreateAlarm(OSAlarm* alarm) {
     alarm->tag = 0;
 }
 
-static void SetTimer(OSAlarm* alarm) {
+static inline void SetTimer(OSAlarm* alarm) {
     OSTime delta;
 
     delta = alarm->fire - __OSGetSystemTime();
@@ -92,15 +93,6 @@ void OSSetAlarm(OSAlarm* alarm, OSTime tick, OSAlarmHandler handler) {
     enabled = OSDisableInterrupts();
     alarm->period = 0;
     InsertAlarm(alarm, __OSGetSystemTime() + tick, handler);
-    OSRestoreInterrupts(enabled);
-}
-
-void OSSetPeriodicAlarm(OSAlarm* alarm, OSTime start, OSTime period, OSAlarmHandler handler) {
-    bool enabled;
-    enabled = OSDisableInterrupts();
-    alarm->period = period;
-    alarm->start = __OSTimeToSystemTime(start);
-    InsertAlarm(alarm, 0, handler);
     OSRestoreInterrupts(enabled);
 }
 
@@ -180,16 +172,16 @@ static void DecrementerExceptionCallback(register __OSException exception, regis
     OSLoadContext(context);
 }
 
-static asm void DecrementerExceptionHandler(register __OSException exception, register OSContext* context) {
-    // clang-format off
-    nofralloc 
+static ASM void DecrementerExceptionHandler(register __OSException exception, register OSContext* context) {
+#ifdef __MWERKS__ // clang-format off
+    nofralloc
     OS_EXCEPTION_SAVE_GPRS(context)
     stwu r1, -8(r1)
     b DecrementerExceptionCallback
-    // clang-format on
+#endif // clang-format on
 }
 
-#if DOLPHIN_REV > 2002
+#if DOLPHIN_REV == 2003
 static bool OnReset(bool final) {
     OSAlarm* alarm;
     OSAlarm* next;

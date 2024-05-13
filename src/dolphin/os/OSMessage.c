@@ -8,6 +8,7 @@ void OSInitMessageQueue(OSMessageQueue* mq, OSMessage* msgArray, s32 msgCount) {
     mq->firstIndex = 0;
     mq->usedCount = 0;
 }
+
 bool OSSendMessage(OSMessageQueue* mq, OSMessage msg, s32 flags) {
     bool enabled;
     s32 lastIndex;
@@ -54,30 +55,6 @@ bool OSReceiveMessage(OSMessageQueue* mq, OSMessage* msg, s32 flags) {
     mq->usedCount--;
 
     OSWakeupThread(&mq->queueSend);
-
-    OSRestoreInterrupts(enabled);
-    return true;
-}
-
-bool OSJamMessage(OSMessageQueue* mq, OSMessage msg, s32 flags) {
-    bool enabled;
-
-    enabled = OSDisableInterrupts();
-
-    while (mq->msgCount <= mq->usedCount) {
-        if (!(flags & OS_MESSAGE_BLOCK)) {
-            OSRestoreInterrupts(enabled);
-            return false;
-        } else {
-            OSSleepThread(&mq->queueSend);
-        }
-    }
-
-    mq->firstIndex = (mq->firstIndex + mq->msgCount - 1) % mq->msgCount;
-    mq->msgArray[mq->firstIndex] = msg;
-    mq->usedCount++;
-
-    OSWakeupThread(&mq->queueReceive);
 
     OSRestoreInterrupts(enabled);
     return true;

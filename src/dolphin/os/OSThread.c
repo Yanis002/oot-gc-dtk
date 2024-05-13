@@ -11,10 +11,10 @@ static OSContext IdleContext;
 static void DefaultSwitchThreadCallback(OSThread* from, OSThread* to);
 static OSSwitchThreadCallback SwitchThreadCallback = DefaultSwitchThreadCallback;
 
-OSThread* __OSCurrentThread : OS_BASE_CACHED + 0x00E4;
-OSThreadQueue __OSActiveThreadQueue : OS_BASE_CACHED + 0x00DC;
-volatile OSContext __OSCurrentContext : OS_BASE_CACHED + 0x00D4;
-volatile OSContext* __OSFPUContext : OS_BASE_CACHED + 0x00D8;
+OSThread* __OSCurrentThread AT_ADDRESS(OS_BASE_CACHED + 0x00E4);
+OSThreadQueue __OSActiveThreadQueue AT_ADDRESS(OS_BASE_CACHED + 0x00DC);
+volatile OSContext __OSCurrentContext AT_ADDRESS(OS_BASE_CACHED + 0x00D4);
+volatile OSContext* __OSFPUContext AT_ADDRESS(OS_BASE_CACHED + 0x00D8);
 
 static void DefaultSwitchThreadCallback(OSThread* from, OSThread* to) {}
 
@@ -151,12 +151,13 @@ s32 OSEnableScheduler() {
     return count;
 }
 
-static void SetRun(OSThread* thread) {
+static inline void SetRun(OSThread* thread) {
     thread->queue = &RunQueue[thread->priority];
     AddTail(thread->queue, thread, link);
     RunQueueBits |= 1u << (OS_PRIORITY_MAX - thread->priority);
     RunQueueHint = true;
 }
+
 #pragma dont_inline on
 static void UnsetRun(OSThread* thread) {
     OSThreadQueue* queue;
@@ -206,7 +207,7 @@ static OSThread* SetEffectivePriority(OSThread* thread, OSPriority priority) {
     return NULL;
 }
 
-static void UpdatePriority(OSThread* thread) {
+static inline void UpdatePriority(OSThread* thread) {
     OSPriority priority;
 
     do {
@@ -221,7 +222,7 @@ static void UpdatePriority(OSThread* thread) {
     } while (thread);
 }
 
-static void __OSSwitchThread(OSThread* nextThread) {
+static inline void __OSSwitchThread(OSThread* nextThread) {
     OSSetCurrentThread(nextThread);
     OSSetCurrentContext(&nextThread->context);
     OSLoadContext(&nextThread->context);
@@ -266,7 +267,7 @@ static OSThread* SelectThread(bool yield) {
 #endif
 
     if (RunQueueBits == 0) {
-#if DOLPHIN_REV > 2002
+#if DOLPHIN_REV == 2003
         OSSetCurrentThread(NULL);
 #endif
 
@@ -381,14 +382,6 @@ void OSExitThread(void* val) {
     }
 
     OSRestoreInterrupts(enable);
-}
-
-void OSYieldThread(void) {
-    bool enabled;
-
-    enabled = OSDisableInterrupts();
-    SelectThread(true);
-    OSRestoreInterrupts(enabled);
 }
 
 void OSCancelThread(OSThread* thread) {

@@ -22,83 +22,12 @@ typedef struct SramControlBlock {
 
 static SramControlBlock Scb ATTRIBUTE_ALIGN(32);
 
-#if DOLPHIN_REV > 2002
+#if DOLPHIN_REV == 2003
 u16 OSGetGbsMode();
 void OSSetGbsMode(u16 mode);
 #endif
 
-static bool GetRTC(u32* rtc) {
-    bool err;
-    u32 cmd;
-
-    if (!EXILock(RTC_CHAN, RTC_DEV, 0)) {
-        return false;
-    }
-    if (!EXISelect(RTC_CHAN, RTC_DEV, RTC_FREQ)) {
-        EXIUnlock(RTC_CHAN);
-        return false;
-    }
-
-    cmd = RTC_CMD_READ;
-    err = false;
-    err |= !EXIImm(RTC_CHAN, &cmd, 4, 1, NULL);
-    err |= !EXISync(RTC_CHAN);
-    err |= !EXIImm(RTC_CHAN, &cmd, 4, 0, NULL);
-    err |= !EXISync(RTC_CHAN);
-    err |= !EXIDeselect(RTC_CHAN);
-    EXIUnlock(RTC_CHAN);
-
-    *rtc = cmd;
-
-    return !err;
-}
-
-bool __OSGetRTC(u32* rtc) {
-    bool err;
-    u32 t0;
-    u32 t1;
-    int i;
-
-    for (i = 0; i < 16; i++) {
-        err = false;
-        err |= !GetRTC(&t0);
-        err |= !GetRTC(&t1);
-        if (err) {
-            break;
-        }
-        if (t0 == t1) {
-            *rtc = t0;
-            return true;
-        }
-    }
-    return false;
-}
-
-bool __OSSetRTC(u32 rtc) {
-    bool err;
-    u32 cmd;
-
-    if (!EXILock(RTC_CHAN, RTC_DEV, 0)) {
-        return false;
-    }
-    if (!EXISelect(RTC_CHAN, RTC_DEV, RTC_FREQ)) {
-        EXIUnlock(RTC_CHAN);
-        return false;
-    }
-
-    cmd = RTC_CMD_WRITE;
-    err = false;
-    err |= !EXIImm(RTC_CHAN, &cmd, 4, 1, NULL);
-    err |= !EXISync(RTC_CHAN);
-    err |= !EXIImm(RTC_CHAN, &rtc, 4, 1, NULL);
-    err |= !EXISync(RTC_CHAN);
-    err |= !EXIDeselect(RTC_CHAN);
-    EXIUnlock(RTC_CHAN);
-
-    return !err;
-}
-
-static bool ReadSram(void* buffer) {
+static inline bool ReadSram(void* buffer) {
     bool err;
     u32 cmd;
 
@@ -160,12 +89,12 @@ void __OSInitSram() {
     Scb.locked = Scb.enabled = false;
     Scb.sync = ReadSram(Scb.sram);
     Scb.offset = RTC_SRAM_SIZE;
-#if DOLPHIN_REV > 2002
+#if DOLPHIN_REV == 2003
     OSSetGbsMode(OSGetGbsMode());
 #endif
 }
 
-static void* LockSram(u32 offset) {
+static inline void* LockSram(u32 offset) {
     bool enabled;
     enabled = OSDisableInterrupts();
 
@@ -206,7 +135,7 @@ static bool UnlockSram(bool commit, u32 offset) {
             Scb.offset = offset;
         }
 
-#if DOLPHIN_REV > 2002
+#if DOLPHIN_REV == 2003
         if (Scb.offset <= 20) {
             // this seems to work? esp. since we have GbsMode functions when prime doesn't
             // wacky tho
@@ -232,32 +161,6 @@ bool __OSUnlockSram(bool commit) { return UnlockSram(commit, 0); }
 bool __OSUnlockSramEx(bool commit) { return UnlockSram(commit, sizeof(OSSram)); }
 
 bool __OSSyncSram() { return Scb.sync; }
-
-bool __OSReadROM(void* buffer, s32 length, s32 offset) {
-    bool err;
-    u32 cmd;
-
-    DCInvalidateRange(buffer, (u32)length);
-
-    if (!EXILock(RTC_CHAN, RTC_DEV, 0)) {
-        return false;
-    }
-    if (!EXISelect(RTC_CHAN, RTC_DEV, RTC_FREQ)) {
-        EXIUnlock(RTC_CHAN);
-        return false;
-    }
-
-    cmd = (u32)(offset << 6);
-    err = false;
-    err |= !EXIImm(RTC_CHAN, &cmd, 4, 1, NULL);
-    err |= !EXISync(RTC_CHAN);
-    err |= !EXIDma(RTC_CHAN, buffer, length, 0, NULL);
-    err |= !EXISync(RTC_CHAN);
-    err |= !EXIDeselect(RTC_CHAN);
-    EXIUnlock(RTC_CHAN);
-
-    return !err;
-}
 
 inline OSSram* __OSLockSramHACK() { return LockSram(0); }
 u32 OSGetSoundMode() {
@@ -286,42 +189,6 @@ void OSSetSoundMode(u32 mode) {
     __OSUnlockSram(true);
 }
 
-u32 OSGetProgressiveMode() {
-    OSSram* sram;
-    u32 mode;
-
-    sram = __OSLockSramHACK();
-    mode = (sram->flags & 0x80) >> 7;
-    __OSUnlockSram(false);
-    return mode;
-}
-
-void OSSetProgressiveMode(u32 mode) {
-    OSSram* sram;
-    mode <<= 7;
-    mode &= 0x80;
-
-    sram = __OSLockSramHACK();
-    if (mode == (sram->flags & 0x80)) {
-        __OSUnlockSram(false);
-        return;
-    }
-
-    sram->flags &= ~0x80;
-    sram->flags |= mode;
-    __OSUnlockSram(true);
-}
-
-u8 OSGetLanguage() {
-    OSSram* sram;
-    u8 language;
-
-    sram = __OSLockSramHACK();
-    language = sram->language;
-    __OSUnlockSram(false);
-    return language;
-}
-
 u16 OSGetWirelessID(s32 channel) {
     OSSramEx* sram;
     u16 id;
@@ -345,7 +212,7 @@ void OSSetWirelessID(s32 channel, u16 id) {
     __OSUnlockSramEx(false);
 }
 
-#if DOLPHIN_REV > 2002
+#if DOLPHIN_REV == 2003
 u16 OSGetGbsMode() {
     OSSramEx* sram;
     u16 id;

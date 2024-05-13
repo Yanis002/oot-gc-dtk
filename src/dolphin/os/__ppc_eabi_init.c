@@ -1,14 +1,16 @@
 #include "dolphin/__ppc_eabi_init.h"
 #include "dolphin/base/PPCArch.h"
+#include "macros.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 void __OSPSInit();
 void __OSCacheInit();
 
-asm void __init_hardware(void) {
-    // clang-format off
+ASM void __init_hardware(void){
+#ifdef __MWERKS__ // clang-format off
     nofralloc
     mfmsr r0
     ori r0, r0, 0x2000
@@ -16,17 +18,17 @@ asm void __init_hardware(void) {
 
     mflr r31
     bl __OSPSInit
-    #if DOLPHIN_REV > 2002
+    #if DOLPHIN_REV == 2003
     bl __OSFPRInit
     #endif
     bl __OSCacheInit
     mtlr r31
     blr
-    // clang-format on
+#endif // clang-format on
 }
 
-asm void __flush_cache(register void* address, register unsigned int size) {
-    // clang-format off
+ASM void __flush_cache(register void* address, register unsigned int size) {
+#ifdef __MWERKS__ // clang-format off
     nofralloc
     lis r5,  ~0
     ori r5, r5, ~14
@@ -34,16 +36,16 @@ asm void __flush_cache(register void* address, register unsigned int size) {
     subf r3, r5, r3
     add r4, r4, r3
 
-loop:    
+loop:
     dcbst r0, r5
     sync
     icbi r0, r5
     addic r5, r5, 8
-    subic. r4, r4, 8    
+    subic. r4, r4, 8
     bge loop
     isync
     blr
-    // clang-format on
+#endif // clang-format on
 }
 
 void InitMetroTRK_BBA() { return; }
@@ -51,8 +53,8 @@ void InitMetroTRK_BBA() { return; }
 void __init_user() { __init_cpp(); }
 
 typedef void (*voidfunctionptr)(void); // pointer to function returning void
-__declspec(section ".init") extern voidfunctionptr _ctors[];
-__declspec(section ".init") extern voidfunctionptr _dtors[];
+INIT extern voidfunctionptr _ctors[];
+INIT extern voidfunctionptr _dtors[];
 
 void __init_cpp(void) {
     voidfunctionptr* constructor;

@@ -1,7 +1,9 @@
 #include "dolphin/__start.h"
 #include "__ppc_eabi_linker.h"
+#include "dolphin/__ppc_eabi_init.h"
+#include "macros.h"
 
-u16 Pad3Button : PAD3_BUTTON_ADDR;
+u16 Pad3Button AT_ADDRESS(PAD3_BUTTON_ADDR);
 static u8 Debug_BBA = 0;
 
 static void __init_registers(void);
@@ -13,14 +15,13 @@ void __check_pad3(void) {
     return;
 }
 
-#if DOLPHIN_REV > 2002
-__declspec(section ".init") static void __set_debug_bba(void) { Debug_BBA = 1; }
-
-__declspec(section ".init") static u8 __get_debug_bba(void) { return Debug_BBA; }
+#if DOLPHIN_REV == 2003
+INIT static void __set_debug_bba(void) { Debug_BBA = 1; }
+INIT static u8 __get_debug_bba(void) { return Debug_BBA; }
 #endif
 
-__declspec(weak) asm void __start(void) {
-    // clang-format off
+WEAK ASM void __start(void) {
+#ifdef __MWERKS__ // clang-format off
     nofralloc
     bl __init_registers
     bl __init_hardware
@@ -42,7 +43,7 @@ _check_TRK:
     beq _load_lomem_debug_flag
     lwz r7, OS_BI2_DEBUGFLAG_OFFSET(r6)
     b _check_debug_flag
-    
+
 _load_lomem_debug_flag:
     lis r5, ARENAHI_ADDR@ha
     addi r5, r5, ARENAHI_ADDR@l
@@ -81,7 +82,7 @@ _goto_inittrk:
     addi r6, r6, InitMetroTRK@l
     mtlr r6
     blrl
-    
+
 _goto_main:
     lis r6, BOOTINFO2_ADDR@ha
     addi r6, r6, BOOTINFO2_ADDR@l
@@ -133,7 +134,7 @@ _end_of_parseargs:
 _check_pad3:
     bl __check_pad3
 
-#if DOLPHIN_REV > 2002
+#if DOLPHIN_REV == 2003
 _skip_crc:
     bl __get_debug_bba
     cmplwi r3, 1
@@ -147,13 +148,13 @@ _goto_skip_init_bba:
     mr r4, r15
     bl main
     b exit
-    // clang-format on
+#endif // clang-format on
 }
 
-asm static void __init_registers(void) {
-    // clang-format off
+ASM static void __init_registers(void) {
+#ifdef __MWERKS__ // clang-format off
     nofralloc
-    #if DOLPHIN_REV > 2002
+    #if DOLPHIN_REV == 2003
         li r0, 0
         li r3, 0
         li r4, 0
@@ -191,7 +192,7 @@ asm static void __init_registers(void) {
     lis r13, _SDA_BASE_@h
     ori r13, r13, _SDA_BASE_@l
     blr
-    // clang-format on
+#endif // clang-format on
 }
 
 inline static void __copy_rom_section(void* dst, const void* src, unsigned long size) {
@@ -207,7 +208,6 @@ inline static void __init_bss_section(void* dst, unsigned long size) {
     }
 }
 
-#pragma scheduling off
 void __init_data(void) {
     __rom_copy_info* dci;
     __bss_init_info* bii;

@@ -40,7 +40,7 @@ inline void ReadApploader(OSTime time1) {
 
 #pragma dont_inline on
 
-asm void Run() {
+ASM void Run() {
 #ifdef __MWERKS__ // clang-format off
     nofralloc
     sync
@@ -124,20 +124,3 @@ void __OSReboot(u32 resetCode, u32 bootDol) {
     ICFlashInvalidate();
     Run((void*)OS_BOOTROM_ADDR);
 }
-
-#ifdef UNUSED
-void OSSetSaveRegion(void* start, void* end) {
-    SaveStart = start;
-    SaveEnd = end;
-}
-
-void OSGetSaveRegion(void** start, void** end) {
-    *start = SaveStart;
-    *end = SaveEnd;
-}
-
-void OSGetSavedRegion(void** start, void** end) {
-    *start = __OSSavedRegionStart;
-    *end = __OSSavedRegionEnd;
-}
-#endif
