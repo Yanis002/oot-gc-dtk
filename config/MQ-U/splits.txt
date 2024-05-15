@@ -14,6 +14,7 @@ emulator/Core/xlCoreGCN.c:
 	.text       start:0x80005500 end:0x80005D64
 	.sdata      start:0x801354C0 end:0x801354C8
 	.sbss       start:0x80135D60 end:0x80135D80
+	.bss        start:0x800F4780 end:0x800F4840
 
 emulator/Core/xlPostGCN.c:
 	.text       start:0x80005D64 end:0x80005DC8
@@ -24,10 +25,12 @@ emulator/Core/xlFileGCN.c:
 
 emulator/Core/xlList.c:
 	.text       start:0x800061E0 end:0x800065A8
+	.bss        start:0x800F4840 end:0x800F4850
 
 emulator/Core/xlHeap.c:
 	.text       start:0x800065A8 end:0x80007B20
 	.sbss       start:0x80135D88 end:0x80135DA8
+	.bss        start:0x800F4850 end:0x800F4DE0
 
 emulator/Core/xlObject.c:
 	.text       start:0x80007B20 end:0x80007EE0
@@ -39,6 +42,7 @@ emulator/Fire/simGCN.c:
 	.sdata      start:0x801354C8 end:0x80135590
 	.sbss       start:0x80135DB0 end:0x80135DF0
 	.sdata2     start:0x801364B8 end:0x80136510
+	.bss        start:0x800F4DE0 end:0x800F9F80
 
 emulator/Fire/movie.c:
 	.text       start:0x8000F738 end:0x8000F7FC
@@ -49,10 +53,12 @@ emulator/Fire/THPPlayer.c:
 	.sdata      start:0x80135590 end:0x80135598
 	.sbss       start:0x80135DF8 end:0x80135E18
 	.sdata2     start:0x80136510 end:0x80136518
+	.bss        start:0x800F9F80 end:0x800FA6F0
 
 emulator/Fire/THPAudioDecode.c:
 	.text       start:0x80010D08 end:0x800110A4
 	.sbss       start:0x80135E18 end:0x80135E20
+	.bss        start:0x800FA6F0 end:0x800FBA60
 
 emulator/Fire/THPDraw.c:
 	.text       start:0x800110A4 end:0x800118A4
@@ -63,15 +69,18 @@ emulator/Fire/THPRead.c:
 	.rodata     start:0x800D2590 end:0x800D2620
 	.sbss       start:0x80135E20 end:0x80135E38
 	.sdata2     start:0x80136540 end:0x80136578
+	.bss        start:0x800FBA60 end:0x800FCE90
 
 emulator/Fire/THPVideoDecode.c:
 	.text       start:0x80012E8C end:0x800133AC
 	.sbss       start:0x80135E38 end:0x80135E40
+	.bss        start:0x800FCE90 end:0x800FE200
 
 emulator/Fire/mcardGCN.c:
 	.text       start:0x800133AC end:0x8001C41C
 	.sdata      start:0x80135598 end:0x801355A0
 	.sbss       start:0x80135E40 end:0x80135E60
+	.bss        start:0x800FE200 end:0x80108A20
 
 emulator/Fire/codeGCN.c:
 	.text       start:0x8001C41C end:0x8001C470
@@ -82,6 +91,7 @@ emulator/Fire/soundGCN.c:
 	.text       start:0x8001C470 end:0x8001D324
 	.sdata      start:0x801355A8 end:0x801355B8
 	.sdata2     start:0x80136578 end:0x801365A0
+	.bss        start:0x80108A20 end:0x80108E40
 
 emulator/Fire/frame.c:
 	.text       start:0x8001D324 end:0x8002C9EC
@@ -89,18 +99,21 @@ emulator/Fire/frame.c:
 	.sdata      start:0x801355B8 end:0x80135640
 	.sbss       start:0x80135E68 end:0x80135EB8
 	.sdata2     start:0x801365A0 end:0x80136730
+	.bss        start:0x80108E40 end:0x80131180
 
 emulator/Fire/system.c:
 	.text       start:0x8002C9EC end:0x80030EC0
 	.sdata      start:0x80135640 end:0x80135880
 	.sbss       start:0x80135EB8 end:0x80135EC0
 	.sdata2     start:0x80136730 end:0x80136740
+	.bss        start:0x80131180 end:0x801312F8
 
 emulator/Fire/cpu.c:
 	.text       start:0x80030EC0 end:0x8006BEB8
 	.sdata      start:0x80135880 end:0x80135A40
 	.sbss       start:0x80135EC0 end:0x80135F40
 	.sdata2     start:0x80136740 end:0x80136770
+	.bss        start:0x801312F8 end:0x801314F0
 
 emulator/Fire/pif.c:
 	.text       start:0x8006BEB8 end:0x8006CDE8
@@ -176,3 +189,4 @@ emulator/Fire/_buildtev.c:
 	.text       start:0x800986F4 end:0x8009BB0C
 	.sdata      start:0x80135BD8 end:0x80135BE8
 	.sdata2     start:0x80136878 end:0x80136880
+	.bss        start:0x801314F0 end:0x801317C0
