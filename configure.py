@@ -32,7 +32,7 @@ from tools.project import (
 
 VERSIONS = [
     "MQ-J",  # 0
-    # "MQ-U",  # 1
+    "MQ-U",  # 1
     # "MQ-P",  # 2
     "CE-J",  # 3
     "CE-U",  # 4

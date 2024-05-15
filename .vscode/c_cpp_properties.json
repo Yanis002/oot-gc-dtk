@@ -21,10 +21,10 @@
             "defines": [
                 // see ``VERSIONS``
                 "MQ_J=0",
-                // "MQ_U=0",
+                "MQ_U=1",
                 // "MQ_P=0",
-                "CE_J=1",
-                "CE_U=2",
+                "CE_J=2",
+                "CE_U=3",
                 // "CE_P=0",
                 "VERSION=MQ_J",
                 "DOLPHIN_REV=2003"
