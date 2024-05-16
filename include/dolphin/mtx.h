@@ -1,8 +1,26 @@
 #ifndef _DOLPHIN_MTX_H
 #define _DOLPHIN_MTX_H
 
-#include "dolphin/GeoTypes.h"
 #include "dolphin/types.h"
+
+typedef struct Vec {
+    f32 x, y, z;
+} Vec, *VecPtr, Point3d, *Point3dPtr;
+
+typedef struct S16Vec {
+    s16 x, y, z;
+} S16Vec, *S16VecPtr;
+
+typedef struct Quaternion {
+    f32 x, y, z, w;
+} Quaternion, *QuaternionPtr, Qtrn, *QtrnPtr;
+
+typedef f32 Mtx[3][4];
+typedef f32 ROMtx[4][3];
+typedef f32 Mtx44[4][4];
+typedef f32 (*MtxPtr)[4];
+typedef f32 (*ROMtxPtr)[3];
+typedef f32 (*Mtx44Ptr)[4];
 
 #ifdef __cplusplus
 extern "C" {
@@ -31,8 +49,8 @@ typedef struct {
 
 } MtxStack, *MtxStackPtr;
 
-#define MTXDegToRad(a) ((a)*0.01745329252f)
-#define MTXRadToDeg(a) ((a)*57.29577951f)
+#define MTXDegToRad(a) ((a) * 0.01745329252f)
+#define MTXRadToDeg(a) ((a) * 57.29577951f)
 #define MTXRowCol(m, r, c) ((m)[(r)][(c)])
 
 void C_MTXIdentity(Mtx m);

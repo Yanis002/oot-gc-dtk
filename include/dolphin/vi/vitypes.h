@@ -3,6 +3,8 @@
 
 #include "dolphin/types.h"
 
+#define VI_TVMODE(format, interlace) (((format) << 2) + (interlace))
+
 #define VI_INTERLACE 0
 #define VI_NON_INTERLACE 1
 #define VI_PROGRESSIVE 2
@@ -16,47 +18,33 @@
 #define VI_EURGB60 5
 #define VI_GCA 6
 
-#define VI_TVMODE(format, interlace) (((format) << 2) + (interlace))
-
 typedef void (*VIRetraceCallback)(u32 retraceCount);
 typedef void (*VIPositionCallback)(s16 x, s16 y);
 typedef void (*VIRetraceCallback)(u32 retraceCount);
 
 typedef enum VITVMode {
-    // NTSC
     VI_TVMODE_NTSC_INT = VI_TVMODE(VI_NTSC, VI_INTERLACE),
     VI_TVMODE_NTSC_DS = VI_TVMODE(VI_NTSC, VI_NON_INTERLACE),
     VI_TVMODE_NTSC_PROG = VI_TVMODE(VI_NTSC, VI_PROGRESSIVE),
     VI_TVMODE_NTSC_3D = VI_TVMODE(VI_NTSC, VI_3D),
-
-    // PAL
     VI_TVMODE_PAL_INT = VI_TVMODE(VI_PAL, VI_INTERLACE),
     VI_TVMODE_PAL_DS = VI_TVMODE(VI_PAL, VI_NON_INTERLACE),
-
-    // MPAL
+    VI_TVMODE_EURGB60_INT = VI_TVMODE(VI_EURGB60, VI_INTERLACE),
+    VI_TVMODE_EURGB60_DS = VI_TVMODE(VI_EURGB60, VI_NON_INTERLACE),
     VI_TVMODE_MPAL_INT = VI_TVMODE(VI_MPAL, VI_INTERLACE),
     VI_TVMODE_MPAL_DS = VI_TVMODE(VI_MPAL, VI_NON_INTERLACE),
-
-    // Debug
     VI_TVMODE_DEBUG_INT = VI_TVMODE(VI_DEBUG, VI_INTERLACE),
-
-    // Debug PAL
     VI_TVMODE_DEBUG_PAL_INT = VI_TVMODE(VI_DEBUG_PAL, VI_INTERLACE),
     VI_TVMODE_DEBUG_PAL_DS = VI_TVMODE(VI_DEBUG_PAL, VI_NON_INTERLACE),
 
-    // EU RGB60
-    VI_TVMODE_EURGB60_INT = VI_TVMODE(VI_EURGB60, VI_INTERLACE),
-    VI_TVMODE_EURGB60_DS = VI_TVMODE(VI_EURGB60, VI_NON_INTERLACE),
-
-    // GCA
     VI_TVMODE_GCA_INT = VI_TVMODE(VI_GCA, VI_INTERLACE),
     VI_TVMODE_GCA_DS = VI_TVMODE(VI_GCA, VI_NON_INTERLACE),
     VI_TVMODE_GCA_PROG = VI_TVMODE(VI_GCA, VI_PROGRESSIVE),
 } VITVMode;
 
 typedef enum VIXFBMode {
-    VI_XFBMODE_SF = 0,
-    VI_XFBMODE_DF = 1,
+    VI_XFBMODE_SF,
+    VI_XFBMODE_DF
 } VIXFBMode;
 
 // Structure to use with timing in vi.c (size 0x28).
@@ -113,8 +101,8 @@ typedef struct VIPositionInfo {
     u32 tfbb; // _34
     u32 bfbb; // _38
     u8 xof; // _3C
-    BOOL isBlack; // _40
-    BOOL is3D; // _44
+    bool isBlack; // _40
+    bool is3D; // _44
     u32 rbufAddr; // _48
     u32 rtfbb; // _4C
     u32 rbfbb; // _50

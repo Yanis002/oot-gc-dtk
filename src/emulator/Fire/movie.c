@@ -1,7 +1,8 @@
 #include "dolphin.h"
-#include "simGCN.h"
-#include "system.h"
-#include "xlCoreGCN.h"
+#include "emulator/THPPlayer.h"
+#include "emulator/simGCN.h"
+#include "emulator/system.h"
+#include "emulator/xlCoreGCN.h"
 
 void* gBufferP;
 
@@ -9,16 +10,12 @@ void MovieInit(void) {
     char* szText;
     u32 size;
 
-    THPPlayerInit(0);
+    THPPlayerInit(false);
 
     if (!simulatorGetArgument(SAT_MOVIE, &szText)) {
-#if VERSION == 3 // PZLP01
-        THPPlayerOpen("pal_zelda_w_snd.thp", 0);
-#else
-        THPPlayerOpen("final_zelda_credits_sound.thp", 0);
-#endif
+        THPPlayerOpen(VERSION == CE_P ? "pal_zelda_w_snd.thp" : "final_zelda_credits_sound.thp", false);
     } else {
-        THPPlayerOpen(szText, 0);
+        THPPlayerOpen(szText, false);
     }
 
     size = THPPlayerCalcNeedMemory();

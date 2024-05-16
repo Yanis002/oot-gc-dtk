@@ -1,0 +1,25 @@
+{
+    "[c]": {
+        "files.encoding": "utf8",
+        "editor.defaultFormatter": "xaver.clang-format"
+    },
+    "[cpp]": {
+        "files.encoding": "utf8",
+        "editor.defaultFormatter": "xaver.clang-format"
+    },
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    },
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
+    "files.associations": {
+        "*.c": "c",
+        "*.h": "c",
+        "*.inc": "c",
+    },
+    "search.useIgnoreFiles": false,
+    "search.exclude": {
+        ".ninja_*": true,
+        ".mypy_cache": true
+    }
+}

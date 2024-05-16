@@ -1,26 +1,8 @@
-<!-- [![Build Status]][actions] ![Progress] ![DOL Progress] ![RELs Progress] [![Discord Badge]][discord] -->
-![Progress] ![DOL Progress] [![Discord Badge]][discord]
+[![Discord Badge]][discord]
 =============
 
-<!-- [Build Status]: https://github.com/yanis42/oot-gc-dtk/actions/workflows/build.yml/badge.svg
-[actions]: https://github.com/yanis42/oot-gc-dtk/actions/workflows/build.yml -->
-<!---
-Code progress URL:
-https://progress.decomp.club/data/[project]/[version]/all/?mode=shield&measure=code
-URL encoded then appended to: https://img.shields.io/endpoint?label=Code&url=
--->
-[Progress]: https://img.shields.io/endpoint?label=Code&url=https%3A%2F%2Fprogress.decomp.club%2Fdata%2Ftww%2FGZLE01%2Fall%2F%3Fmode%3Dshield%26measure%3Dcode
-<!---
-DOL progress URL:
-https://progress.decomp.club/data/[project]/[version]/dol/?mode=shield&measure=code
-URL encoded then appended to: https://img.shields.io/endpoint?label=DOL&url=
--->
-[DOL Progress]: https://img.shields.io/endpoint?label=DOL&url=https%3A%2F%2Fprogress.decomp.club%2Fdata%2Ftww%2FGZLE01%2Fdol%2F%3Fmode%3Dshield%26measure%3Dcode
-<!--
-Replace with your Discord server's ID and invite URL.
--->
-[Discord Badge]: https://img.shields.io/discord/727908905392275526?color=%237289DA&logo=discord&logoColor=%23FFFFFF
-[discord]: https://discord.zelda64.dev/
+[Discord Badge]: https://img.shields.io/discord/688807550715560050?color=%237289DA&logo=discord&logoColor=%23FFFFFF
+[discord]: https://discord.zelda64.dev
 
 A work-in-progress decompilation of the N64 emulator intended for use with the GameCube releases of The Legend of Zelda: Ocarina of Time.
 
@@ -28,8 +10,8 @@ This repository does **not** contain any game assets or assembly whatsoever. An 
 
 Supported versions:
 
-- `D43J01`: Master Quest - JP
-- `PZLJ01`: Collector's Edition - JP
+- `MQ-J`: Master Quest - JP
+- `CE-J`: Collector's Edition - JP
 
 The progress of this project will be synced with the main repo: [zeldaret/oot-gc](https://github.com/zeldaret/oot-gc).
 
@@ -45,7 +27,7 @@ Dependencies
 Windows
 --------
 
-On Windows, it's **highly recommended** to use native tooling. WSL or msys2 are **not** required.  
+On Windows, it's **highly recommended** to use native tooling. WSL or MSYS2 are **not** required.  
 When running under WSL, [objdiff](#diffing) is unable to get filesystem notifications for automatic rebuilds.
 
 - Install [Python](https://www.python.org/downloads/) and add it to `%PATH%`.
@@ -94,7 +76,7 @@ Building
   git clone https://github.com/yanis42/oot-gc-dtk.git
   ```
 
-- Using [Dolphin Emulator](https://dolphin-emu.org), extract the content of the TGC file you extracted earlier to ``orig/[GAMEID]``.
+- Using [Dolphin Emulator](https://dolphin-emu.org), extract the content of the TGC file you extracted earlier to ``orig/[GAMEID]``. Note: you don't need to extract the whole disc, you can use "Extract System Data".
 
 ![](assets/dolphin-extract.png)
 
@@ -106,7 +88,7 @@ Building
   python configure.py
   ```
 
-  To use a version other than `D43J01` (MQ-J), specify it with `--version` (example: ``python configure.py --version PZLJ01``).
+  To use a version other than `MQ-J`, specify it with `--version` (or `-v`) (example: ``python configure.py -v ce-j``).
 - Build:
 
   ```sh

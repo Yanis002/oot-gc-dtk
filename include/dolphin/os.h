@@ -3,6 +3,7 @@
 
 #include "dolphin/gx.h"
 #include "dolphin/types.h"
+#include "macros.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -16,11 +17,6 @@ extern "C" {
 #define OS_BASE_CACHED (OS_CACHED_REGION_PREFIX << 16)
 #define OS_BASE_UNCACHED (OS_UNCACHED_REGION_PREFIX << 16)
 
-#ifdef __MWERKS__
-#define AT_ADDRESS(xyz) : (xyz)
-#else
-#define AT_ADDRESS(xyz)
-#endif
 typedef s64 OSTime;
 typedef u32 OSTick;
 u32 __OSBusClock AT_ADDRESS(OS_BASE_CACHED | 0x00F8); // sync with OSLoMem.h
@@ -32,8 +28,8 @@ u32 __OSCoreClock AT_ADDRESS(OS_BASE_CACHED | 0x00FC); // sync with OSLoMem.h
 #ifndef _DEBUG
 #define OSPhysicalToCached(paddr) ((void*)((u32)(paddr) + OS_BASE_CACHED))
 #define OSPhysicalToUncached(paddr) ((void*)((u32)(paddr) + OS_BASE_UNCACHED))
-#define OSCachedToPhysical(caddr) ((u32)((u8*)(caddr)-OS_BASE_CACHED))
-#define OSUncachedToPhysical(ucaddr) ((u32)((u8*)(ucaddr)-OS_BASE_UNCACHED))
+#define OSCachedToPhysical(caddr) ((u32)((u8*)(caddr) - OS_BASE_CACHED))
+#define OSUncachedToPhysical(ucaddr) ((u32)((u8*)(ucaddr) - OS_BASE_UNCACHED))
 #define OSCachedToUncached(caddr) ((void*)((u8*)(caddr) + (OS_BASE_UNCACHED - OS_BASE_CACHED)))
 #define OSUncachedToCached(ucaddr) ((void*)((u8*)(ucaddr) - (OS_BASE_UNCACHED - OS_BASE_CACHED)))
 #else
@@ -48,9 +44,9 @@ u32 OSUncachedToCached(void* ucaddr);
 #define OSTicksToCycles(ticks) (((ticks) * ((OS_CORE_CLOCK * 2) / OS_TIMER_CLOCK)) / 2)
 #define OSTicksToSeconds(ticks) ((ticks) / OS_TIMER_CLOCK)
 #define OSTicksToMilliseconds(ticks) ((ticks) / (OS_TIMER_CLOCK / 1000))
-#define OSTicksToMicroseconds(ticks) (((ticks)*8) / (OS_TIMER_CLOCK / 125000))
-#define OSTicksToNanoseconds(ticks) (((ticks)*8000) / (OS_TIMER_CLOCK / 125000))
-#define OSSecondsToTicks(sec) ((sec)*OS_TIMER_CLOCK)
+#define OSTicksToMicroseconds(ticks) (((ticks) * 8) / (OS_TIMER_CLOCK / 125000))
+#define OSTicksToNanoseconds(ticks) (((ticks) * 8000) / (OS_TIMER_CLOCK / 125000))
+#define OSSecondsToTicks(sec) ((sec) * OS_TIMER_CLOCK)
 #define OSMillisecondsToTicks(msec) ((msec) * (OS_TIMER_CLOCK / 1000))
 #define OSMicrosecondsToTicks(usec) (((usec) * (OS_TIMER_CLOCK / 125000)) / 8)
 #define OSNanosecondsToTicks(nsec) (((nsec) * (OS_TIMER_CLOCK / 125000)) / 8000)
@@ -68,10 +64,10 @@ void OSSetArenaLo(void* newLo);
 void* OSAllocFromArenaLo(u32 size, u32 align);
 void* OSAllocFromArenaHi(u32 size, u32 align);
 
-void OSInit();
+void OSInit(void);
 
-OSTime OSGetTime();
-OSTick OSGetTick();
+OSTime OSGetTime(void);
+OSTick OSGetTick(void);
 
 typedef struct OSCalendarTime {
     int sec; // seconds after the minute [0, 61]
@@ -112,7 +108,7 @@ void OSTicksToCalendarTime(OSTime ticks, OSCalendarTime* td);
 #define OS_CONSOLE_PC_EMULATOR 0x10000001
 #define OS_CONSOLE_EMULATOR 0x10000000
 
-u32 OSGetConsoleType();
+u32 OSGetConsoleType(void);
 
 #define OS_SOUND_MODE_MONO 0u
 #define OS_SOUND_MODE_STEREO 1u
@@ -144,9 +140,9 @@ void OSSetEuRgb60Mode(u32 on);
 
 void OSRegisterVersion(const char* id);
 
-BOOL OSDisableInterrupts(void);
-BOOL OSEnableInterrupts(void);
-BOOL OSRestoreInterrupts(BOOL level);
+bool OSDisableInterrupts(void);
+bool OSEnableInterrupts(void);
+bool OSRestoreInterrupts(bool level);
 
 #define OSHalt(msg) OSPanic(__FILE__, __LINE__, msg)
 
@@ -229,7 +225,6 @@ void OSFatal(GXColor fg, GXColor bg, const char* msg);
 #include "dolphin/os/OSContext.h"
 #include "dolphin/os/OSError.h"
 #include "dolphin/os/OSException.h"
-#include "dolphin/os/OSExpansion.h"
 #include "dolphin/os/OSFastCast.h"
 #include "dolphin/os/OSFont.h"
 #include "dolphin/os/OSInterrupt.h"
@@ -242,6 +237,6 @@ void OSFatal(GXColor fg, GXColor bg, const char* msg);
 #include "dolphin/os/OSSerial.h"
 #include "dolphin/os/OSThread.h"
 
-extern BOOL __OSInIPL;
+extern bool __OSInIPL;
 
 #endif

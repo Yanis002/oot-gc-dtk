@@ -2,10 +2,11 @@
 #include "dolphin/DVDPriv.h"
 #include "dolphin/db.h"
 #include "dolphin/os/OSBootInfo.h"
+#include "macros.h"
 
 extern OSTime __OSGetSystemTime();
 
-#if DOLPHIN_REV == 58
+#if DOLPHIN_REV == 2002
 static const char* __OSVersion = "<< Dolphin SDK - OS\trelease build: Sep  5 2002 05:32:39 (0x2301) >>";
 #else
 static const char* __OSVersion = "<< Dolphin SDK - OS\trelease build: Jul 23 2003 11:27:16 (0x2301) >>";
@@ -21,20 +22,20 @@ extern char _db_stack_end[];
 
 extern char* __OSResetSWInterruptHandler[];
 
-vu16 __OSDeviceCode : (OS_BASE_CACHED | 0x30E6);
+vu16 __OSDeviceCode AT_ADDRESS(OS_BASE_CACHED | 0x30E6);
 static DVDDriveInfo DriveInfo ATTRIBUTE_ALIGN(32);
 static DVDCommandBlock DriveBlock;
 
 static OSBootInfo* BootInfo;
 static u32* BI2DebugFlag;
 static u32* BI2DebugFlagHolder;
-__declspec(weak) BOOL __OSIsGcam = FALSE;
+WEAK bool __OSIsGcam = false;
 static f64 ZeroF;
 static f32 ZeroPS[2];
-static BOOL AreWeInitialized = FALSE;
+static bool AreWeInitialized = false;
 static __OSExceptionHandler* OSExceptionTable;
 OSTime __OSStartTime;
-BOOL __OSInIPL;
+bool __OSInIPL;
 
 extern u8 __ArenaHi[];
 extern u8 __ArenaLo[];
@@ -56,12 +57,11 @@ extern u32 __PADSpec;
 #define MSR_RI_BIT 0x1E
 
 void OSDefaultExceptionHandler(__OSException exception, OSContext* context);
-extern BOOL __DBIsExceptionMarked(__OSException);
+extern bool __DBIsExceptionMarked(__OSException);
 static void OSExceptionInit(void);
 
-/* clang-format off */
-asm void __OSFPRInit(void)
-{
+ASM void __OSFPRInit(void) {
+#ifdef __MWERKS__ // clang-format off
     nofralloc
 
     mfmsr   r3
@@ -144,8 +144,8 @@ SkipPairedSingles:
     mtfsf   0xFF, fp0
 
     blr
+#endif // clang-format on
 }
-/* clang-format on */
 
 u32 OSGetConsoleType() {
     if (BootInfo == NULL || BootInfo->consoleType == 0) {
@@ -157,11 +157,11 @@ u32 OSGetConsoleType() {
 void* __OSSavedRegionStart;
 void* __OSSavedRegionEnd;
 
-extern u32 BOOT_REGION_START : 0x812FDFF0; //(*(u32 *)0x812fdff0)
-extern u32 BOOT_REGION_END : 0x812FDFEC; //(*(u32 *)0x812fdfec)
+extern u32 BOOT_REGION_START AT_ADDRESS(0x812FDFF0);
+extern u32 BOOT_REGION_END AT_ADDRESS(0x812FDFEC);
 
 void ClearArena(void) {
-    if ((u32)(OSGetResetCode() + 0x80000000) != 0U) {
+    if ((u32)(OSGetResetCode()) != 0x80000000) {
         __OSSavedRegionStart = 0U;
         __OSSavedRegionEnd = 0U;
         memset(OSGetArenaLo(), 0U, (u32)OSGetArenaHi() - (u32)OSGetArenaLo());
@@ -197,6 +197,14 @@ static void InquiryCallback(s32 result, DVDCommandBlock* block) {
     }
 }
 
+#if DOLPHIN_REV == 2002
+#define HI_MASK 0xFFFF0000
+#define LO_MASK 0x0000FFFF
+#else
+#define HI_MASK 0xF0000000
+#define LO_MASK 0x0FFFFFFF
+#endif
+
 void OSInit(void) {
     /*
     Initializes the Dolphin operating system.
@@ -211,15 +219,15 @@ void OSInit(void) {
     u32 tdev;
 
     // check if we've already done all this or not
-    if ((BOOL)AreWeInitialized == FALSE) { // fantastic name
-        AreWeInitialized = TRUE; // flag to make sure we don't have to do this again
+    if ((bool)AreWeInitialized == false) { // fantastic name
+        AreWeInitialized = true; // flag to make sure we don't have to do this again
 
         // SYSTEM //
         __OSStartTime = __OSGetSystemTime();
         OSDisableInterrupts();
 
 // set some PPC things
-#if DOLPHIN_REV > 58
+#if DOLPHIN_REV == 2003
         PPCMtmmcr0(0);
         PPCMtmmcr1(0);
         PPCMtpmc1(0);
@@ -263,7 +271,7 @@ void OSInit(void) {
         // if the input arenaLo is null, and debug flag location exists (and flag is < 2),
         //     set arenaLo to just past the end of the db stack
         if ((BootInfo->arenaLo == NULL) && (BI2DebugFlag != 0) && (*BI2DebugFlag < 2)) {
-#if DOLPHIN_REV == 58
+#if DOLPHIN_REV == 2002
             debugArenaLo = (char*)(((u32)_db_stack_end + 0x1f) & ~0x1f);
 #else
             debugArenaLo = (char*)(((u32)_stack_addr + 0x1f) & ~0x1f);
@@ -291,12 +299,12 @@ void OSInit(void) {
         __OSThreadInit();
         __OSInitAudioSystem();
         PPCMthid2(PPCMfhid2() & 0xBFFFFFFF);
-        if ((BOOL)__OSInIPL == FALSE) {
+        if ((bool)__OSInIPL == false) {
             __OSInitMemoryProtection();
         }
 
 // begin OS reporting
-#if DOLPHIN_REV == 58
+#if DOLPHIN_REV == 2002
         OSReport("\nDolphin OS $Revision: 58 $.\n");
         OSReport("Kernel built : %s %s\n", "Sep  5 2002", "05:32:39");
 #else
@@ -316,26 +324,19 @@ void OSInit(void) {
             inputConsoleType = BootInfo->consoleType;
         }
 
-// work out what console type this corresponds to and report it
-// consoleTypeSwitchHi = inputConsoleType & 0xF0000000;
-#if DOLPHIN_REV == 58
-        switch (inputConsoleType & 0xffff0000)
-#else
-        switch (inputConsoleType & 0xf0000000)
-#endif
-        { // check "first" byte
+        // work out what console type this corresponds to and report it
+        // consoleTypeSwitchHi = inputConsoleType & 0xF0000000;
+        switch (inputConsoleType & HI_MASK) { // check "first" byte
             case OS_CONSOLE_RETAIL:
                 OSReport("Retail %d\n", inputConsoleType);
                 break;
-#if DOLPHIN_REV == 58
+#if DOLPHIN_REV == 2002
             default:
-                switch (inputConsoleType & 0x0000ffff)
 #else
             case OS_CONSOLE_DEVELOPMENT:
             case OS_CONSOLE_TDEV:
-                switch (inputConsoleType & 0x0fffffff)
 #endif
-                { // if "first" byte is 2, check "the rest"
+                switch (inputConsoleType & LO_MASK) { // if "first" byte is 2, check "the rest"
                     case OS_CONSOLE_EMULATOR:
                         OSReport("Mac Emulator\n");
                         break;
@@ -349,16 +350,12 @@ void OSInit(void) {
                         OSReport("EPPC Minnow\n");
                         break;
                     default:
-#if DOLPHIN_REV == 58
-                        tdev = ((u32)inputConsoleType & 0x0000ffff);
-#else
-                        tdev = ((u32)inputConsoleType & 0x0fffffff);
-#endif
+                        tdev = ((u32)inputConsoleType & LO_MASK);
                         OSReport("Development HW%d (%08x)\n", tdev - 3, inputConsoleType);
                         break;
                 }
                 break;
-#if DOLPHIN_REV > 58
+#if DOLPHIN_REV == 2003
             default: // if none of the above, just report the info we have
                 OSReport("%08x\n", inputConsoleType);
                 break;
@@ -382,9 +379,9 @@ void OSInit(void) {
         OSEnableInterrupts();
 
         // check if we can load OS from IPL; if not, grab it from DVD (?)
-        if ((BOOL)__OSInIPL == FALSE) {
+        if ((bool)__OSInIPL == false) {
             DVDInit();
-            if ((BOOL)__OSIsGcam) {
+            if ((bool)__OSIsGcam) {
                 __OSDeviceCode = 0x9000;
                 return;
             }
@@ -414,11 +411,6 @@ void __OSDBJUMPEND(void);
 
 __OSExceptionHandler __OSSetExceptionHandler(__OSException exception, __OSExceptionHandler handler);
 
-/*
- * --INFO--
- * Address:	800EB654
- * Size:	000280
- */
 static void OSExceptionInit(void) {
     __OSException exception;
     void* destAddr;
@@ -498,8 +490,8 @@ static void OSExceptionInit(void) {
     DBPrintf("Exceptions initialized...\n");
 }
 
-static asm void __OSDBIntegrator(void) {
-    /* clang-format off */
+static ASM void __OSDBIntegrator(void) {
+#ifdef __MWERKS__ // clang-format off
     nofralloc
 entry __OSDBINTSTART
     li      r5, OS_DBINTERFACE_ADDR
@@ -512,18 +504,16 @@ entry __OSDBINTSTART
     mtmsr   r3
     blr
 entry __OSDBINTEND
-    /* clang-format on */
+#endif // clang-format on
 }
 
-static asm void __OSDBJump(void){
-    /* clang-format off */
-
+static ASM void __OSDBJump(void){
+#ifdef __MWERKS__ // clang-format off
     nofralloc
 entry __OSDBJUMPSTART
     bla     OS_DBJUMPPOINT_ADDR
 entry __OSDBJUMPEND
-    /* clang-format on */
-
+#endif // clang-format on
 }
 
 __OSExceptionHandler __OSSetExceptionHandler(__OSException exception, __OSExceptionHandler handler) {
@@ -535,8 +525,8 @@ __OSExceptionHandler __OSSetExceptionHandler(__OSException exception, __OSExcept
 
 __OSExceptionHandler __OSGetExceptionHandler(__OSException exception) { return OSExceptionTable[exception]; }
 
-static asm void OSExceptionVector(void) {
-    /* clang-format off */
+static ASM void OSExceptionVector(void) {
+#ifdef __MWERKS__ // clang-format off
     nofralloc
 
 entry __OSEVStart
@@ -616,12 +606,12 @@ recoverable:
 
 entry __OSEVEnd
     nop
-    /* clang-format on */
+#endif // clang-format on
 }
 
 void __OSUnhandledException(__OSException exception, OSContext* context, u32 dsisr, u32 dar);
-asm void OSDefaultExceptionHandler(register __OSException exception, register OSContext* context) {
-    /* clang-format off */
+ASM void OSDefaultExceptionHandler(register __OSException exception, register OSContext* context) {
+#ifdef __MWERKS__ // clang-format off
     nofralloc
     OS_EXCEPTION_SAVE_GPRS(context)
     mfdsisr r5
@@ -629,7 +619,7 @@ asm void OSDefaultExceptionHandler(register __OSException exception, register OS
 
     stwu    r1,-8(r1)
     b       __OSUnhandledException
-    /* clang-foramt on */
+#endif // clang-foramt on
 }
 
 void __OSPSInit(void)
@@ -637,12 +627,12 @@ void __OSPSInit(void)
   PPCMthid2(PPCMfhid2() | 0xA0000000);
   ICFlashInvalidate();
   __sync();
-  // clang-format off
-    asm
-    {
+
+    ASM {
+#ifdef __MWERKS__ // clang-format off
         li      r3, 0
         mtspr   GQR0, r3
-    #if DOLPHIN_REV > 58
+    #if DOLPHIN_REV == 2003
         mtspr   GQR1, r3
         mtspr   GQR2, r3
         mtspr   GQR3, r3
@@ -651,8 +641,8 @@ void __OSPSInit(void)
         mtspr   GQR6, r3
         mtspr   GQR7, r3
     #endif
+#endif // clang-format on
     }
-    // clang-format on
 }
 
 #define DI_CONFIG_IDX 0x9

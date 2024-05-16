@@ -1,10 +1,10 @@
-#include "audio.h"
+#include "emulator/audio.h"
 #include "dolphin.h"
-#include "ram.h"
-#include "rsp.h"
-#include "soundGCN.h"
-#include "system.h"
-#include "xlPostGCN.h"
+#include "emulator/ram.h"
+#include "emulator/rsp.h"
+#include "emulator/soundGCN.h"
+#include "emulator/system.h"
+#include "emulator/xlPostGCN.h"
 
 _XL_OBJECTTYPE gClassAudio = {
     "AUDIO",
@@ -13,18 +13,18 @@ _XL_OBJECTTYPE gClassAudio = {
     (EventFunc)audioEvent,
 };
 
-s32 audioPut8(Audio* pAudio, u32 nAddress, s8* pData) { return 0; }
+bool audioPut8(Audio* pAudio, u32 nAddress, s8* pData) { return false; }
 
-s32 audioPut16(Audio* pAudio, u32 nAddress, s16* pData) { return 0; }
+bool audioPut16(Audio* pAudio, u32 nAddress, s16* pData) { return false; }
 
-s32 audioPut32(Audio* pAudio, u32 nAddress, s32* pData) {
+bool audioPut32(Audio* pAudio, u32 nAddress, s32* pData) {
     void* pBuffer;
 
     switch (nAddress & 0x1F) {
         case 0x0:
-            if (pAudio->nAddress = (*pData & 0xFFFFFF)) {
+            if ((pAudio->nAddress = (*pData & 0xFFFFFF)) != 0) {
                 if (!ramGetBuffer(SYSTEM_RAM(pAudio->pHost), &pBuffer, pAudio->nAddress, NULL)) {
-                    return 0;
+                    return false;
                 }
                 if (pAudio->bEnable) {
                     soundSetAddress(SYSTEM_SOUND(pAudio->pHost), pBuffer);
@@ -54,26 +54,26 @@ s32 audioPut32(Audio* pAudio, u32 nAddress, s32* pData) {
             pAudio->nRateBit = *pData & 0xF;
             break;
         default:
-            return 0;
+            return false;
     }
 
-    return 1;
+    return true;
 }
 
-s32 audioPut64(Audio* pAudio, u32 nAddress, s64* pData) { return 0; }
+bool audioPut64(Audio* pAudio, u32 nAddress, s64* pData) { return false; }
 
-s32 audioGet8(Audio* pAudio, u32 nAddress, s8* pData) { return 0; }
+bool audioGet8(Audio* pAudio, u32 nAddress, s8* pData) { return false; }
 
-s32 audioGet16(Audio* pAudio, u32 nAddress, s16* pData) { return 0; }
+bool audioGet16(Audio* pAudio, u32 nAddress, s16* pData) { return false; }
 
-s32 audioGet32(Audio* pAudio, u32 nAddress, s32* pData) {
+bool audioGet32(Audio* pAudio, u32 nAddress, s32* pData) {
     switch (nAddress & 0x1F) {
         case 0:
             *pData = pAudio->nAddress;
             xlPostText("Get: DRAM Address: WRITE-ONLY?", "audio.c", 0xDA);
             break;
         case 4:
-            if (!soundGetDMABuffer(SYSTEM_SOUND(pAudio->pHost), pData)) {
+            if (!soundGetDMABuffer(SYSTEM_SOUND(pAudio->pHost), (u32*)pData)) {
                 *pData = pAudio->nSize;
             }
             break;
@@ -91,27 +91,27 @@ s32 audioGet32(Audio* pAudio, u32 nAddress, s32* pData) {
             *pData = pAudio->nRateBit;
             break;
         default:
-            return 0;
+            return false;
     }
 
-    return 1;
+    return true;
 }
 
-s32 audioGet64(Audio* pAudio, u32 nAddress, s64* pData) { return 0; }
+bool audioGet64(Audio* pAudio, u32 nAddress, s64* pData) { return false; }
 
-#if VERSION > 0 // D43J01
-s32 audioEnable(Audio* pAudio, s32 bEnable) {
-    pAudio->bEnable = bEnable ? 1 : 0;
+#if VERSION >= MQ_U
+bool audioEnable(Audio* pAudio, bool bEnable) {
+    pAudio->bEnable = bEnable ? true : false;
 
     if (!rspEnableABI(SYSTEM_RSP(pAudio->pHost), pAudio->bEnable)) {
-        return 0;
+        return false;
     }
 
-    return 1;
+    return true;
 }
 #endif
 
-s32 audioEvent(Audio* pAudio, s32 nEvent, void* pArgument) {
+bool audioEvent(Audio* pAudio, s32 nEvent, void* pArgument) {
     switch (nEvent) {
         case 2:
             pAudio->nSize = 0;
@@ -120,28 +120,28 @@ s32 audioEvent(Audio* pAudio, s32 nEvent, void* pArgument) {
             pAudio->nRateBit = 0;
             pAudio->nRateDAC = 0;
             pAudio->pHost = pArgument;
-            pAudio->bEnable = 1;
+            pAudio->bEnable = true;
             break;
         case 0x1002:
             if (!cpuSetDevicePut(SYSTEM_CPU(pAudio->pHost), pArgument, (Put8Func)audioPut8, (Put16Func)audioPut16,
                                  (Put32Func)audioPut32, (Put64Func)audioPut64)) {
-                return 0;
+                return false;
             }
             if (!cpuSetDeviceGet(SYSTEM_CPU(pAudio->pHost), pArgument, (Put8Func)audioGet8, (Put16Func)audioGet16,
                                  (Put32Func)audioGet32, (Put64Func)audioGet64)) {
-                return 0;
+                return false;
             }
             break;
         case 0:
         case 1:
         case 3:
-#if VERSION > 0 // D43J01
+#if VERSION >= MQ_U
         case 0x1003:
 #endif
             break;
         default:
-            return 0;
+            return false;
     }
 
-    return 1;
+    return true;
 }

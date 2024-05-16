@@ -23,10 +23,10 @@ typedef struct SIPacket {
 void SIInit(void);
 u32 SIGetStatus(s32 chan);
 
-BOOL SIBusy(void);
-BOOL SIIsChanBusy(s32 chan);
+bool SIBusy(void);
+bool SIIsChanBusy(s32 chan);
 
-BOOL SITransfer(s32 chan, void* output, u32 outputBytes, void* input, u32 inputBytes, SICallback callback,
+bool SITransfer(s32 chan, void* output, u32 outputBytes, void* input, u32 inputBytes, SICallback callback,
                 OSTime delay);
 u32 SISync(void);
 
@@ -36,10 +36,10 @@ void SITransferCommands(void);
 u32 SISetXY(u32 x, u32 y);
 u32 SIEnablePolling(u32 poll);
 u32 SIDisablePolling(u32 poll);
-BOOL SIGetResponse(s32 chan, void* data);
+bool SIGetResponse(s32 chan, void* data);
 
-BOOL SIRegisterPollingHandler(__OSInterruptHandler handler);
-BOOL SIUnregisterPollingHandler(__OSInterruptHandler handler);
+bool SIRegisterPollingHandler(__OSInterruptHandler handler);
+bool SIUnregisterPollingHandler(__OSInterruptHandler handler);
 
 u32 SIGetType(s32 chan);
 u32 SIGetTypeAsync(s32 chan, SITypeAndStatusCallback callback);

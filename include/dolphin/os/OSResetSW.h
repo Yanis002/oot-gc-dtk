@@ -10,9 +10,9 @@ extern "C" {
 
 typedef void (*OSResetCallback)(void);
 
-BOOL OSGetResetButtonState(void);
+bool OSGetResetButtonState(void);
 
-BOOL OSGetResetSwitchState(void);
+bool OSGetResetSwitchState(void);
 OSResetCallback OSSetResetCallback(OSResetCallback callback);
 
 #ifdef __cplusplus

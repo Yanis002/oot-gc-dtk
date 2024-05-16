@@ -3,7 +3,7 @@
 
 #include "dolphin/gx/GXEnum.h"
 
-#define GX_WRITE_U8(val)  (GXWGFifo.u8 = val)
+#define GX_WRITE_U8(val) (GXWGFifo.u8 = val)
 #define GX_WRITE_U16(val) (GXWGFifo.u16 = val)
 #define GX_WRITE_U32(val) (GXWGFifo.u32 = (u32)val)
 #define GX_WRITE_F32(val) (GXWGFifo.f32 = (f32)val)
@@ -15,15 +15,15 @@ typedef struct {
 } GXFifoObj;
 
 typedef struct _GXFifoObjPriv {
-	void* base;        // _00
-	void* end;         // _04
-	u32 size;          // _08
-	u32 highWatermark; // _0C
-	u32 lowWatermark;  // _10
-	void* readPtr;     // _14
-	void* writePtr;    // _18
-	s32 rwDistance;    // _1C
-	u8 _20[0x60];      // _20
+    void* base; // _00
+    void* end; // _04
+    u32 size; // _08
+    u32 highWatermark; // _0C
+    u32 lowWatermark; // _10
+    void* readPtr; // _14
+    void* writePtr; // _18
+    s32 rwDistance; // _1C
+    u8 _20[0x60]; // _20
 } GXFifoObjPriv;
 
 void GXInitFifoBase(GXFifoObj* fifo, void* base, u32 size);

@@ -6,7 +6,7 @@ vu32 __SIRegs[64] : 0xCC006400;
 
 extern OSTime __OSGetSystemTime();
 
-#if DOLPHIN_REV == 58
+#if DOLPHIN_REV == 2002
 const char* __SIVersion = "<< Dolphin SDK - SI\trelease build: Sep  5 2002 05:33:08 (0x2301) >>";
 #else
 const char* __SIVersion = "<< Dolphin SDK - SI\trelease build: Apr 17 2003 12:33:19 (0x2301) >>";
@@ -61,18 +61,18 @@ static __OSInterruptHandler RDSTHandler[4];
 
 u32 __PADFixBits;
 
-static BOOL __SITransfer(s32 chan, void* output, u32 outputBytes, void* input, u32 inputBytes, SICallback callback);
+static bool __SITransfer(s32 chan, void* output, u32 outputBytes, void* input, u32 inputBytes, SICallback callback);
 
-static BOOL InputBufferValid[SI_MAX_CHAN];
+static bool InputBufferValid[SI_MAX_CHAN];
 static u32 InputBuffer[SI_MAX_CHAN][2];
 static vu32 InputBufferVcount[SI_MAX_CHAN];
 
-static BOOL SIGetResponseRaw(s32 chan);
+static bool SIGetResponseRaw(s32 chan);
 static void GetTypeCallback(s32 chan, u32 error, OSContext* context);
 
-BOOL SIBusy() { return Si.chan != -1 ? TRUE : FALSE; }
+bool SIBusy() { return Si.chan != -1 ? true : false; }
 
-BOOL SIIsChanBusy(s32 chan) { return (Packet[chan].chan != -1 || Si.chan == chan); }
+bool SIIsChanBusy(s32 chan) { return (Packet[chan].chan != -1 || Si.chan == chan); }
 
 static void SIClearTCInterrupt() {
     u32 reg;
@@ -218,15 +218,15 @@ static void SIInterruptHandler(__OSInterrupt interrupt, OSContext* context) {
     }
 }
 
-static BOOL SIEnablePollingInterrupt(BOOL enable) {
-    BOOL enabled;
-    BOOL rc;
+static bool SIEnablePollingInterrupt(bool enable) {
+    bool enabled;
+    bool rc;
     u32 reg;
     int i;
 
     enabled = OSDisableInterrupts();
     reg = __SIRegs[13];
-    rc = (reg & 0x08000000) ? TRUE : FALSE;
+    rc = (reg & 0x08000000) ? true : false;
     if (enable) {
         reg |= 0x08000000;
         for (i = 0; i < SI_MAX_CHAN; ++i) {
@@ -241,31 +241,31 @@ static BOOL SIEnablePollingInterrupt(BOOL enable) {
     return rc;
 }
 
-BOOL SIRegisterPollingHandler(__OSInterruptHandler handler) {
-    BOOL enabled;
+bool SIRegisterPollingHandler(__OSInterruptHandler handler) {
+    bool enabled;
     int i;
 
     enabled = OSDisableInterrupts();
     for (i = 0; i < 4; ++i) {
         if (RDSTHandler[i] == handler) {
             OSRestoreInterrupts(enabled);
-            return TRUE;
+            return true;
         }
     }
     for (i = 0; i < 4; ++i) {
         if (RDSTHandler[i] == 0) {
             RDSTHandler[i] = handler;
-            SIEnablePollingInterrupt(TRUE);
+            SIEnablePollingInterrupt(true);
             OSRestoreInterrupts(enabled);
-            return TRUE;
+            return true;
         }
     }
     OSRestoreInterrupts(enabled);
-    return FALSE;
+    return false;
 }
 
-BOOL SIUnregisterPollingHandler(__OSInterruptHandler handler) {
-    BOOL enabled;
+bool SIUnregisterPollingHandler(__OSInterruptHandler handler) {
+    bool enabled;
     int i;
 
     enabled = OSDisableInterrupts();
@@ -278,15 +278,15 @@ BOOL SIUnregisterPollingHandler(__OSInterruptHandler handler) {
                 }
             }
             if (i == 4) {
-                SIEnablePollingInterrupt(FALSE);
+                SIEnablePollingInterrupt(false);
             }
             OSRestoreInterrupts(enabled);
-            return TRUE;
+            return true;
             break;
         }
     }
     OSRestoreInterrupts(enabled);
-    return FALSE;
+    return false;
 }
 
 void SIInit(void) {
@@ -311,10 +311,10 @@ void SIInit(void) {
     SIGetType(3);
 }
 
-#define ROUND(n, a) (((u32)(n) + (a)-1) & ~((a)-1))
+#define ROUND(n, a) (((u32)(n) + (a) - 1) & ~((a) - 1))
 
-static BOOL __SITransfer(s32 chan, void* output, u32 outputBytes, void* input, u32 inputBytes, SICallback callback) {
-    BOOL enabled;
+static bool __SITransfer(s32 chan, void* output, u32 outputBytes, void* input, u32 inputBytes, SICallback callback) {
+    bool enabled;
     u32 rLen;
     u32 i;
     u32 sr;
@@ -323,7 +323,7 @@ static BOOL __SITransfer(s32 chan, void* output, u32 outputBytes, void* input, u
     enabled = OSDisableInterrupts();
     if (Si.chan != -1) {
         OSRestoreInterrupts(enabled);
-        return FALSE;
+        return false;
     }
 
     sr = __SIRegs[14];
@@ -351,11 +351,11 @@ static BOOL __SITransfer(s32 chan, void* output, u32 outputBytes, void* input, u
 
     OSRestoreInterrupts(enabled);
 
-    return TRUE;
+    return true;
 }
 
 u32 SISync(void) {
-    BOOL enabled;
+    bool enabled;
     u32 sr;
 
     while (__SIRegs[13] & 1)
@@ -372,7 +372,7 @@ u32 SISync(void) {
 }
 
 u32 SIGetStatus(s32 chan) {
-    BOOL enabled;
+    bool enabled;
     u32 sr;
     int chanShift;
 
@@ -397,7 +397,7 @@ void SITransferCommands(void) { __SIRegs[14] = 0x80000000; }
 
 u32 SISetXY(u32 x, u32 y) {
     u32 poll;
-    BOOL enabled;
+    bool enabled;
 
     poll = x << 16;
     poll |= y << 8;
@@ -412,7 +412,7 @@ u32 SISetXY(u32 x, u32 y) {
 }
 
 u32 SIEnablePolling(u32 poll) {
-    BOOL enabled;
+    bool enabled;
     u32 en;
 
     if (poll == 0) {
@@ -444,7 +444,7 @@ u32 SIEnablePolling(u32 poll) {
 }
 
 u32 SIDisablePolling(u32 poll) {
-    BOOL enabled;
+    bool enabled;
 
     if (poll == 0) {
         return Si.poll;
@@ -464,27 +464,27 @@ u32 SIDisablePolling(u32 poll) {
     return poll;
 }
 
-static BOOL SIGetResponseRaw(s32 chan) {
+static bool SIGetResponseRaw(s32 chan) {
     u32 sr;
 
     sr = SIGetStatus(chan);
     if (sr & SI_ERROR_RDST) {
         InputBuffer[chan][0] = __SIRegs[3 * chan + 1];
         InputBuffer[chan][1] = __SIRegs[3 * chan + 2];
-        InputBufferValid[chan] = TRUE;
-        return TRUE;
+        InputBufferValid[chan] = true;
+        return true;
     }
-    return FALSE;
+    return false;
 }
 
-BOOL SIGetResponse(s32 chan, void* data) {
-    BOOL rc;
-    BOOL enabled;
+bool SIGetResponse(s32 chan, void* data) {
+    bool rc;
+    bool enabled;
 
     enabled = OSDisableInterrupts();
     SIGetResponseRaw(chan);
     rc = InputBufferValid[chan];
-    InputBufferValid[chan] = FALSE;
+    InputBufferValid[chan] = false;
     if (rc) {
         ((u32*)data)[0] = InputBuffer[chan][0];
         ((u32*)data)[1] = InputBuffer[chan][1];
@@ -508,9 +508,9 @@ static void AlarmHandler(OSAlarm* alarm, OSContext* context) {
     }
 }
 
-BOOL SITransfer(s32 chan, void* output, u32 outputBytes, void* input, u32 inputBytes, SICallback callback,
+bool SITransfer(s32 chan, void* output, u32 outputBytes, void* input, u32 inputBytes, SICallback callback,
                 OSTime delay) {
-    BOOL enabled;
+    bool enabled;
     SIPacket* packet = &Packet[chan];
     OSTime now;
     OSTime fire;
@@ -518,7 +518,7 @@ BOOL SITransfer(s32 chan, void* output, u32 outputBytes, void* input, u32 inputB
     enabled = OSDisableInterrupts();
     if (packet->chan != -1 || Si.chan == chan) {
         OSRestoreInterrupts(enabled);
-        return FALSE;
+        return false;
     }
 
     now = __OSGetSystemTime();
@@ -532,7 +532,7 @@ BOOL SITransfer(s32 chan, void* output, u32 outputBytes, void* input, u32 inputB
         OSSetAlarm(&Alarm[chan], delay, AlarmHandler);
     } else if (__SITransfer(chan, output, outputBytes, input, inputBytes, callback)) {
         OSRestoreInterrupts(enabled);
-        return TRUE;
+        return true;
     }
 
     packet->chan = chan;
@@ -544,7 +544,7 @@ BOOL SITransfer(s32 chan, void* output, u32 outputBytes, void* input, u32 inputB
     packet->fire = fire;
 
     OSRestoreInterrupts(enabled);
-    return TRUE;
+    return true;
 }
 
 static void CallTypeAndStatusCallback(s32 chan, u32 type) {
@@ -564,7 +564,7 @@ static void GetTypeCallback(s32 chan, u32 error, OSContext* context) {
     static u32 cmdFixDevice[SI_MAX_CHAN];
     u32 type;
     u32 chanBit;
-    BOOL fix;
+    bool fix;
     u32 id;
 
     Type[chan] &= ~SI_ERROR_BUSY;
@@ -574,7 +574,7 @@ static void GetTypeCallback(s32 chan, u32 error, OSContext* context) {
     type = Type[chan];
 
     chanBit = SI_CHAN0_BIT >> chan;
-    fix = (BOOL)(__PADFixBits & chanBit);
+    fix = (bool)(__PADFixBits & chanBit);
     __PADFixBits &= ~chanBit;
 
     if ((error & (SI_ERROR_UNDER_RUN | SI_ERROR_OVER_RUN | SI_ERROR_NO_RESPONSE | SI_ERROR_COLLISION)) ||
@@ -625,7 +625,7 @@ static void GetTypeCallback(s32 chan, u32 error, OSContext* context) {
 
 u32 SIGetType(s32 chan) {
     static u32 cmdTypeAndStatus;
-    BOOL enabled;
+    bool enabled;
     u32 type;
     OSTime diff;
 
@@ -658,7 +658,7 @@ u32 SIGetType(s32 chan) {
 }
 
 u32 SIGetTypeAsync(s32 chan, SITypeAndStatusCallback callback) {
-    BOOL enabled;
+    bool enabled;
     u32 type;
 
     enabled = OSDisableInterrupts();

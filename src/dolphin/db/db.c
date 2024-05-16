@@ -11,7 +11,7 @@ extern void __DBExceptionSetNumber();
 void DBInit(void) {
     __DBInterface = (DBInterface*)OSPhysicalToCached(OS_DBINTERFACE_ADDR);
     __DBInterface->ExceptionDestination = (void (*)())OSCachedToPhysical(__DBExceptionDestination);
-    DBVerbose = TRUE;
+    DBVerbose = true;
 }
 
 void __DBExceptionDestinationAux(void) {
@@ -33,10 +33,10 @@ asm void __DBExceptionDestination(void) {
     b __DBExceptionDestinationAux
 } /* clang-format on */
 
-BOOL __DBIsExceptionMarked(__OSException exception) {
+bool __DBIsExceptionMarked(__OSException exception) {
     u32 mask = 1 << exception;
 
-    return (BOOL)(__DBInterface->exceptionMask & mask);
+    return (bool)(__DBInterface->exceptionMask & mask);
 }
 
 void DBPrintf(char* format, ...) {}

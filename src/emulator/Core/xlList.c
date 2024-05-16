@@ -1,34 +1,34 @@
-#include "xlList.h"
+#include "emulator/xlList.h"
 #include "dolphin.h"
+#include "emulator/xlHeap.h"
 #include "macros.h"
-#include "xlHeap.h"
 
 static tXL_LIST gListList;
 
-s32 xlListMake(tXL_LIST** ppList, s32 nItemSize) {
+bool xlListMake(tXL_LIST** ppList, s32 nItemSize) {
     nItemSize = (nItemSize + 3) & ~3;
 
     if (xlListMakeItem(&gListList, ppList)) {
         (*ppList)->nItemCount = 0;
         (*ppList)->nItemSize = nItemSize;
-        (*ppList)->pNodeNext = (void*)0;
-        (*ppList)->pNodeHead = (void*)0;
-        return 1;
+        (*ppList)->pNodeNext = NULL;
+        (*ppList)->pNodeHead = NULL;
+        return true;
     }
 
     PAD_STACK();
-    return 0;
+    return false;
 }
 
-static inline s32 xlListWipe(tXL_LIST* pList) {
-    tXL_NODE* pNode;
-    tXL_NODE* pNodeNext;
+static inline bool xlListWipe(tXL_LIST* pList) {
+    void* pNode;
+    void* pNodeNext;
 
     pNode = pList->pNodeHead;
     while (pNode != NULL) {
-        pNodeNext = pNode->next;
-        if (!xlHeapFree((void**)&pNode)) {
-            return 0;
+        pNodeNext = NODE_NEXT(pNode);
+        if (!xlHeapFree(&pNode)) {
+            return false;
         }
         pNode = pNodeNext;
     }
@@ -36,117 +36,117 @@ static inline s32 xlListWipe(tXL_LIST* pList) {
     pList->nItemCount = 0;
     pList->pNodeNext = NULL;
     pList->pNodeHead = NULL;
-    return 1;
+    return true;
 }
 
-s32 xlListFree(tXL_LIST** ppList) {
+bool xlListFree(tXL_LIST** ppList) {
     if (!xlListWipe(*ppList)) {
-        return 0;
+        return false;
     }
 
     if (!xlListFreeItem(&gListList, (void**)ppList)) {
-        return 0;
+        return false;
     }
 
-    return 1;
+    return true;
 }
 
-s32 xlListMakeItem(tXL_LIST* pList, void** ppItem) {
+bool xlListMakeItem(tXL_LIST* pList, void** ppItem) {
     s32 nSize;
-    tXL_NODE* pListNode;
-    tXL_NODE* pNode;
-    tXL_NODE* pNodeNext;
+    void* pListNode;
+    void* pNode;
+    void* pNodeNext;
 
     nSize = pList->nItemSize + 4;
-    if (!xlHeapTake((void**)&pListNode, nSize)) {
-        return 0;
+    if (!xlHeapTake(&pListNode, nSize)) {
+        return false;
     }
 
-    pListNode->next = NULL;
-    *ppItem = (void*)pListNode->data;
-    pNode = (tXL_NODE*)&pList->pNodeHead;
+    NODE_NEXT(pListNode) = NULL;
+    *ppItem = NODE_DATA(pListNode);
+    pNode = &pList->pNodeHead;
     while (pNode != NULL) {
-        pNodeNext = pNode->next;
+        pNodeNext = NODE_NEXT(pNode);
         if (pNodeNext == NULL) {
-            pNode->next = pListNode;
+            NODE_NEXT(pNode) = pListNode;
             pList->nItemCount++;
-            return 1;
+            return true;
         }
         pNode = pNodeNext;
     }
 
-    return 0;
+    return false;
 }
 
-s32 xlListFreeItem(tXL_LIST* pList, void** ppItem) {
-    tXL_NODE* pNode;
-    tXL_NODE* pNodeNext;
+bool xlListFreeItem(tXL_LIST* pList, void** ppItem) {
+    void* pNode;
+    void* pNodeNext;
 
     if (pList->pNodeHead == NULL) {
-        return 0;
+        return false;
     }
 
-    pNode = (tXL_NODE*)&pList->pNodeHead;
+    pNode = &pList->pNodeHead;
     while (pNode != NULL) {
-        pNodeNext = pNode->next;
-        if (*ppItem == (void*)pNodeNext->data) {
-            pNode->next = pNodeNext->next;
+        pNodeNext = NODE_NEXT(pNode);
+        if (*ppItem == NODE_DATA(pNodeNext)) {
+            NODE_NEXT(pNode) = NODE_NEXT(pNodeNext);
             *ppItem = NULL;
-            if (!xlHeapFree((void**)&pNodeNext)) {
-                return 0;
+            if (!xlHeapFree(&pNodeNext)) {
+                return false;
             }
             pList->nItemCount--;
-            return 1;
+            return true;
         }
         pNode = pNodeNext;
     }
 
     NO_INLINE();
-    return 0;
+    return false;
 }
 
-static inline s32 xlListTest(tXL_LIST* pList) {
-    tXL_NODE* pNode;
+static inline bool xlListTest(tXL_LIST* pList) {
+    void* pNode;
 
     if (pList == &gListList) {
-        return 1;
+        return true;
     }
 
     pNode = gListList.pNodeHead;
     while (pNode != NULL) {
-        if (pList == (tXL_LIST*)pNode->data) {
-            return 1;
+        if (pList == (tXL_LIST*)NODE_DATA(pNode)) {
+            return true;
         }
-        pNode = pNode->next;
+        pNode = NODE_NEXT(pNode);
     }
 
-    return 0;
+    return false;
 }
 
-s32 xlListTestItem(tXL_LIST* pList, void* pItem) {
-    tXL_NODE* pListNode;
+bool xlListTestItem(tXL_LIST* pList, void* pItem) {
+    void* pListNode;
 
     if (!xlListTest(pList) || pItem == NULL) {
-        return 0;
+        return false;
     }
 
     pListNode = pList->pNodeHead;
     while (pListNode != NULL) {
-        if (pItem == pListNode->data) {
-            return 1;
+        if (pItem == NODE_DATA(pListNode)) {
+            return true;
         }
-        pListNode = pListNode->next;
+        pListNode = NODE_NEXT(pListNode);
     }
 
-    return 0;
+    return false;
 }
 
-s32 xlListSetup(void) {
+bool xlListSetup(void) {
     gListList.nItemCount = 0;
     gListList.nItemSize = sizeof(tXL_LIST);
     gListList.pNodeNext = NULL;
     gListList.pNodeHead = NULL;
-    return 1;
+    return true;
 }
 
-s32 xlListReset(void) { return 1; }
+bool xlListReset(void) { return true; }

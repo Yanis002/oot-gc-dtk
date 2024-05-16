@@ -25,16 +25,23 @@ from tools.project import (
     is_windows,
 )
 
-# Game versions
-DEFAULT_VERSION = 0
+### Game versions
+
+# Note: update ``.vscode/c_cpp_properties.json``'s defines
+# when updating this list
+
 VERSIONS = [
-    "D43J01",  # 0, OoT MQ-JP (Master Quest)
-    # "D43E01",  # 1, OoT MQ-US (Master Quest)
-    # "D43P01",  # 2, OoT MQ-EU (Master Quest)
-    "PZLJ01",  # 3, Zelda: CE-JP (Collector's Edition)
-    "PZLE01",  # 4, Zelda: CE-US (Collector's Edition)
-    "PZLP01",  # 5, Zelda: CE-EU (Collector's Edition)
+    "MQ-J",  # 0
+    "MQ-U",  # 1
+    # "MQ-P",  # 2
+    "CE-J",  # 3
+    "CE-U",  # 4
+    "CE-P",  # 5
 ]
+
+DEFAULT_VERSION = VERSIONS.index("MQ-J")
+
+### Script's arguments
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -45,6 +52,7 @@ parser.add_argument(
     nargs="?",
 )
 parser.add_argument(
+    "-v",
     "--version",
     choices=VERSIONS,
     type=str.upper,
@@ -111,10 +119,13 @@ parser.add_argument(
     action="store_true",
     help="print verbose output",
 )
+
 args = parser.parse_args()
 
+### Create new project configuration
+
 config = ProjectConfig()
-config.version = args.version
+config.version = args.version.upper() # allows users to use lowercase when defining the version to use
 version_num = VERSIONS.index(config.version)
 
 # Apply arguments
@@ -125,61 +136,67 @@ config.compilers_path = args.compilers
 config.debug = args.debug
 config.generate_map = args.map
 config.sjiswrap_path = args.sjiswrap
+
 if not is_windows():
     config.wrapper = args.wrapper
+
 if args.no_asm:
     config.asm_dir = None
 
-# Tool versions
+### Tool versions
+
 config.binutils_tag = "2.42-1"
 config.compilers_tag = "20231018"
 config.dtk_tag = "v0.7.5"
 config.sjiswrap_tag = "v1.1.1"
 config.wibo_tag = "0.6.11"
 
-# Project
+### Project
+
 config.config_path = Path("config") / config.version / "config.yml"
 config.check_sha_path = Path("config") / config.version / "build.sha1"
+
+### Flags (same as zeldaret/oot-gc)
+
 config.asflags = [
     "-mgekko",
-    # "--strip-local-absolute",
     "-I include",
+    "-I libc",
     f"-I build/{config.version}/include",
-    f"--defsym version={version_num}",
 ]
+
 config.ldflags = [
     "-fp hardware",
     "-nodefaults",
-    "-warn off" # TODO: this is a temp solution until ``note.split`` is fixed
-    # "-listclosure", # Uncomment for Wii linkers
+    "-warn off"
 ]
 
-# Base flags, common to most GC/Wii games.
-# Generally leave untouched, with overrides added below.
+# ``-DMQ_J=0 -DMQ-U=2, ...``
+version_defines = " ".join(f"-D{version.replace('-', '_')}={i}" for i, version in enumerate(VERSIONS))
+
 cflags_base = [
-    "-nodefaults",
-    "-proc gekko",
-    # "-align powerpc",
-    "-enum int",
-    "-fp hardware", # -fp hard
     "-Cpp_exceptions off",
-    # # "-W all",
+    "-proc gekko",
+    "-fp hardware",
+    "-fp_contract on",
+    "-enum int",
+    "-align powerpc",
+    "-nosyspath",
+    "-RTTI off",
+    "-str reuse",
+    "-multibyte",
     "-O4,p",
     "-inline auto",
-    # '-pragma "cats off"',
-    # '-pragma "warn_notinlined off"',
-    # "-maxerrors 1",
-    # "-nosyspath",
-    # "-RTTI off",
-    "-fp_contract on",
-    # "-str reuse",
-    # "-multibyte",  # For Wii compilers, replace with `-enc SJIS`
+    "-nodefaults",
+    "-msgstyle gcc",
+
+    # includes and macros
     "-i include",
     "-i libc",
     f"-i build/{config.version}/include",
+    f"{version_defines}",
     f"-DVERSION={version_num}",
-    # NOTE: Update this when other versions are done, 99 means unknown (used for CE-J)
-    f"-DDOLPHIN_REV={58 if version_num == 0 else 99}",
+    f"-DDOLPHIN_REV={2002 if version_num == VERSIONS.index('MQ-J') else 2003}",
 ]
 
 # Debug flags
@@ -188,19 +205,18 @@ if config.debug:
 else:
     cflags_base.append("-DNDEBUG=1")
 
-cflags_dolphin = [
+# SIM flags
+cflags_sim = [
     *cflags_base,
-    "-align powerpc",
-    '-pragma "cats off"',
-    '-pragma "warn_notinlined off"',
-    "-maxerrors 1",
-    "-nosyspath",
-    "-RTTI off",
-    "-str reuse",
-    "-multibyte",  # For Wii compilers, replace with `-enc SJIS`
+    "-inline auto,deferred",
 ]
 
-# Metrowerks library flags
+# Dolphin SDK/Libraries flags
+cflags_dolphin = [
+    *cflags_base,
+]
+
+# Metrowerks library flags (TBD)
 cflags_runtime = [
     *cflags_base,
     "-msgstyle gcc",
@@ -211,17 +227,12 @@ cflags_runtime = [
     "-inline auto,deferred",
 ]
 
-# REL flags
-cflags_rel = [
-    *cflags_base,
-    "-sdata 0",
-    "-sdata2 0",
-]
-
+# Set linker version to use
 config.linker_version = "GC/1.1"
 
+### Helper functions
 
-# Helper function for SIM objects
+# for SIM objects (the emulator files)
 def SIM(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
     if lib_name == "Core" and version_num < 3:
         # CE-EU contains extra files
@@ -236,17 +247,15 @@ def SIM(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
         "objects": objects,
     }
 
-
-# Helper function for libraries sharing the same informations
-def GenericLib(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
+# Helper function for THP objects inside the emulator folders
+def THP(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
     return {
         "lib": lib_name,
-        "mw_version": "GC/1.3.2",
-        "cflags": cflags_runtime,
+        "mw_version": config.linker_version,
+        "cflags": cflags_dolphin,
         "host": False,
         "objects": objects,
     }
-
 
 # Helper function for Dolphin libraries
 def DolphinLib(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
@@ -258,23 +267,24 @@ def DolphinLib(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
         "objects": objects,
     }
 
-
-# Helper function for REL script objects
-def Rel(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
+# Helper function for libraries sharing the same informations
+def GenericLib(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
     return {
         "lib": lib_name,
         "mw_version": "GC/1.3.2",
-        "cflags": cflags_rel,
-        "host": True,
+        "cflags": cflags_runtime,
+        "host": False,
         "objects": objects,
     }
 
+### Link order
 
 Matching = True
 NonMatching = False
 
 config.warn_missing_config = True
 config.warn_missing_source = False
+
 config.libs = [
     SIM(
         "Core",
@@ -292,37 +302,45 @@ config.libs = [
     SIM(
         "Fire",
         [
-            Object(NonMatching, "emulator/Fire/simGCN.c"),
+            Object(Matching, "emulator/Fire/simGCN.c"),
             Object(Matching, "emulator/Fire/movie.c"),
-
+        ]
+    ),
+    THP(
+        "THP",
+        [
             # NOTE: these files should be in the THP lib
-            Object(NonMatching, "emulator/Fire/THPPlayer.c"),
-            Object(NonMatching, "emulator/Fire/THPAudioDecode.c"),
-            Object(NonMatching, "emulator/Fire/THPDraw.c"),
-            Object(NonMatching, "emulator/Fire/THPRead.c"),
-            Object(NonMatching, "emulator/Fire/THPVideoDecode.c"),
-
+            Object(Matching, "emulator/Fire/THPPlayer.c"),
+            Object(Matching, "emulator/Fire/THPAudioDecode.c"),
+            Object(Matching, "emulator/Fire/THPDraw.c"),
+            Object(Matching, "emulator/Fire/THPRead.c", cflags=[*cflags_dolphin, "-inline auto,deferred"]),
+            Object(Matching, "emulator/Fire/THPVideoDecode.c"),
+        ]
+    ),
+    SIM(
+        "Fire",
+        [
             Object(NonMatching, "emulator/Fire/mcardGCN.c"),
             Object(NonMatching, "emulator/Fire/codeGCN.c"),
             Object(NonMatching, "emulator/Fire/soundGCN.c"),
             Object(NonMatching, "emulator/Fire/frame.c"),
             Object(NonMatching, "emulator/Fire/system.c"),
             Object(NonMatching, "emulator/Fire/cpu.c"),
-            Object(NonMatching, "emulator/Fire/pif.c"),
-            Object(NonMatching, "emulator/Fire/ram.c"),
-            Object(NonMatching, "emulator/Fire/rom.c"),
-            Object(NonMatching, "emulator/Fire/rdp.c"),
-            Object(NonMatching, "emulator/Fire/rdb.c"),
+            Object(Matching, "emulator/Fire/pif.c"),
+            Object(Matching, "emulator/Fire/ram.c"),
+            Object(Matching, "emulator/Fire/rom.c"),
+            Object(Matching, "emulator/Fire/rdp.c"),
+            Object(Matching, "emulator/Fire/rdb.c"),
             Object(NonMatching, "emulator/Fire/rsp.c"),
-            Object(NonMatching, "emulator/Fire/mips.c"),
-            Object(NonMatching, "emulator/Fire/disk.c"),
-            Object(NonMatching, "emulator/Fire/flash.c"),
-            Object(NonMatching, "emulator/Fire/sram.c"),
-            Object(NonMatching, "emulator/Fire/audio.c"),
-            Object(NonMatching, "emulator/Fire/video.c"),
-            Object(NonMatching, "emulator/Fire/serial.c"),
-            Object(NonMatching, "emulator/Fire/library.c"),
-            Object(NonMatching, "emulator/Fire/peripheral.c"),
+            Object(Matching, "emulator/Fire/mips.c"),
+            Object(Matching, "emulator/Fire/disk.c"),
+            Object(Matching, "emulator/Fire/flash.c"),
+            Object(Matching, "emulator/Fire/sram.c"),
+            Object(Matching, "emulator/Fire/audio.c"),
+            Object(Matching, "emulator/Fire/video.c"),
+            Object(Matching, "emulator/Fire/serial.c"),
+            Object(Matching, "emulator/Fire/library.c"),
+            Object(Matching, "emulator/Fire/peripheral.c"),
             Object(NonMatching, "emulator/Fire/_frameGCNcc.c"),
             Object(NonMatching, "emulator/Fire/_buildtev.c"),
         ],
@@ -336,29 +354,29 @@ config.libs = [
     DolphinLib(
         "os",
         [
-            Object(NonMatching, "dolphin/os/OS.c"),
-            Object(NonMatching, "dolphin/os/OSAlarm.c"),
-            Object(NonMatching, "dolphin/os/OSAlloc.c"),
-            Object(NonMatching, "dolphin/os/OSArena.c"),
-            Object(NonMatching, "dolphin/os/OSAudioSystem.c"),
-            Object(NonMatching, "dolphin/os/OSCache.c"),
-            Object(NonMatching, "dolphin/os/OSContext.c"),
-            Object(NonMatching, "dolphin/os/OSError.c"),
-            Object(NonMatching, "dolphin/os/OSFont.c"),
-            Object(NonMatching, "dolphin/os/OSInterrupt.c"),
-            Object(NonMatching, "dolphin/os/OSLink.c"),
-            Object(NonMatching, "dolphin/os/OSMessage.c"),
-            Object(NonMatching, "dolphin/os/OSMemory.c"),
-            Object(NonMatching, "dolphin/os/OSMutex.c"),
-            Object(NonMatching, "dolphin/os/OSReboot.c"), # missing __OSReboot
-            Object(NonMatching, "dolphin/os/OSReset.c"),
-            Object(NonMatching, "dolphin/os/OSResetSW.c"),
-            Object(NonMatching, "dolphin/os/OSRtc.c"),
-            Object(NonMatching, "dolphin/os/OSSync.c"),
-            Object(NonMatching, "dolphin/os/OSThread.c"),
-            Object(NonMatching, "dolphin/os/OSTime.c"),
-            Object(NonMatching, "dolphin/os/__start.c"),
-            Object(NonMatching, "dolphin/os/__ppc_eabi_init.c"),
+            Object(Matching, "dolphin/os/OS.c"),
+            Object(Matching, "dolphin/os/OSAlarm.c"),
+            Object(Matching, "dolphin/os/OSAlloc.c"),
+            Object(Matching, "dolphin/os/OSArena.c"),
+            Object(Matching, "dolphin/os/OSAudioSystem.c"),
+            Object(Matching, "dolphin/os/OSCache.c"),
+            Object(Matching, "dolphin/os/OSContext.c"),
+            Object(Matching, "dolphin/os/OSError.c"),
+            Object(Matching, "dolphin/os/OSFont.c"),
+            Object(Matching, "dolphin/os/OSInterrupt.c"),
+            Object(Matching, "dolphin/os/OSLink.c"),
+            Object(Matching, "dolphin/os/OSMessage.c"),
+            Object(Matching, "dolphin/os/OSMemory.c"),
+            Object(Matching, "dolphin/os/OSMutex.c"),
+            Object(Matching if version_num > VERSIONS.index("MQ-J") else NonMatching, "dolphin/os/OSReboot.c"),
+            Object(Matching, "dolphin/os/OSReset.c"),
+            Object(Matching, "dolphin/os/OSResetSW.c"),
+            Object(Matching, "dolphin/os/OSRtc.c"),
+            Object(Matching, "dolphin/os/OSSync.c"),
+            Object(Matching, "dolphin/os/OSThread.c"),
+            Object(Matching, "dolphin/os/OSTime.c"),
+            Object(Matching, "dolphin/os/__start.c"),
+            Object(Matching, "dolphin/os/__ppc_eabi_init.c"),
         ],
     ),
     DolphinLib(
@@ -485,7 +503,7 @@ config.libs = [
         ],
     ),
     DolphinLib(
-        "thp",
+        "THP",
         [
             Object(NonMatching, "dolphin/thp/THPDec.c"),
             Object(NonMatching, "dolphin/thp/THPAudio.c"),
@@ -584,6 +602,8 @@ config.libs = [
         ]
     ),
 ]
+
+### Execute mode
 
 if args.mode == "configure":
     # Write build.ninja and objdiff.json

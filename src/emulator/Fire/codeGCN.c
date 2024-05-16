@@ -1,4 +1,4 @@
-#include "codeGCN.h"
+#include "emulator/codeGCN.h"
 
 _XL_OBJECTTYPE gClassCode = {
     "Code",
@@ -10,7 +10,7 @@ _XL_OBJECTTYPE gClassCode = {
 static void* gpBufferFunction;
 static u32* ganDataCode;
 
-s32 codeEvent(Code* pCode, s32 nEvent, void* pArgument) {
+bool codeEvent(Code* pCode, s32 nEvent, void* pArgument) {
     switch (nEvent) {
         case 2:
             gpBufferFunction = NULL;
@@ -23,8 +23,8 @@ s32 codeEvent(Code* pCode, s32 nEvent, void* pArgument) {
         case 6:
             break;
         default:
-            return 0;
+            return false;
     }
 
-    return 1;
+    return true;
 }

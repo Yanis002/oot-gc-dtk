@@ -36,15 +36,18 @@ typedef struct OSSramEx {
     u8 _padding1[4];
 } OSSramEx;
 
-void __OSInitSram(void);
-OSSram* __OSLockSram(void);
-OSSramEx* __OSLockSramEx(void);
-s32 __OSUnlockSram(s32 commit);
-s32 __OSUnlockSramEx(s32 commit);
-s32 __OSSyncSram(void);
-u32 OSGetSoundMode(void);
+bool WriteSram(void* buffer, u32 offset, u32 size);
+void __OSInitSram();
+OSSram* __OSLockSram();
+OSSramEx* __OSLockSramEx();
+bool __OSUnlockSram(bool commit);
+bool __OSUnlockSramEx(bool commit);
+bool __OSSyncSram();
+u32 OSGetSoundMode();
 void OSSetSoundMode(u32 mode);
-u32 OSGetWirelessID(u32 chan);
-void OSSetWirelessID(u32 chan, u16 id);
+u16 OSGetWirelessID(s32 channel);
+void OSSetWirelessID(s32 channel, u16 id);
+u16 OSGetGbsMode();
+void OSSetGbsMode(u16 mode);
 
 #endif

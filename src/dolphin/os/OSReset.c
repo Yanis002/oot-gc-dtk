@@ -2,6 +2,7 @@
 #include "dolphin/hw_regs.h"
 #include "dolphin/os.h"
 #include "dolphin/vi.h"
+#include "macros.h"
 
 typedef struct OSResetQueue {
     OSResetFunctionInfo* first;
@@ -10,7 +11,7 @@ typedef struct OSResetQueue {
 
 static OSResetQueue ResetFunctionQueue;
 
-#if DOLPHIN_REV > 58
+#if DOLPHIN_REV == 2003
 static u32 bootThisDol;
 #endif
 
@@ -45,14 +46,14 @@ void OSRegisterResetFunction(OSResetFunctionInfo* func) {
     tmp->next = func;
 }
 
-inline BOOL __OSCallResetFunctions(u32 arg0) {
+inline bool __OSCallResetFunctions(u32 arg0) {
     OSResetFunctionInfo* iter;
     s32 retCode = 0;
 
-#if DOLPHIN_REV == 58
+#if DOLPHIN_REV == 2002
     for (iter = ResetFunctionQueue.first; iter != NULL; iter = iter->next)
 #else
-    for (iter = ResetFunctionQueue.first; iter != NULL && retCode == FALSE; iter = iter->next)
+    for (iter = ResetFunctionQueue.first; iter != NULL && retCode == false; iter = iter->next)
 #endif
     {
         retCode |= !iter->func(arg0);
@@ -64,17 +65,17 @@ inline BOOL __OSCallResetFunctions(u32 arg0) {
     return 1;
 }
 
-asm void Reset(register s32 resetCode) {
-    // clang-format off
+ASM void Reset(register s32 resetCode) {
+#ifdef __MWERKS__ // clang-format off
     nofralloc
     b lbl_8038315C
 lbl_80383140:
     mfspr r8, HID0
     ori r8, r8, 8
     mtspr HID0, r8
-    isync 
+    isync
     sync
-    nop 
+    nop
     b lbl_80383160
 lbl_8038315C:
     b lbl_8038317C
@@ -85,7 +86,7 @@ lbl_80383164:
     subf r7, r5, r6
     cmplwi r7, 0x1124
     blt lbl_80383164
-    nop 
+    nop
     b lbl_80383180
 lbl_8038317C:
     b lbl_8038319C
@@ -95,19 +96,19 @@ lbl_80383180:
     li r4, 3
     stw r4, 0x24(r8)
     stw r3, 0x24(r8)
-    nop 
+    nop
     b lbl_803831A0
 lbl_8038319C:
     b lbl_803831A8
 lbl_803831A0:
-    nop 
+    nop
     b lbl_803831A0
 lbl_803831A8:
     b lbl_80383140
-    // clang-format on
+#endif // clang-format on
 }
 
-OSThreadQueue __OSActiveThreadQueue : (OS_BASE_CACHED | 0x00DC);
+OSThreadQueue __OSActiveThreadQueue AT_ADDRESS(OS_BASE_CACHED | 0x00DC);
 
 inline void KillThreads(void) {
     OSThread* thread;
@@ -133,23 +134,23 @@ void __OSDoHotReset(s32 arg0) {
     Reset(arg0 * 8);
 }
 
-void OSResetSystem(int reset, u32 resetCode, BOOL forceMenu) {
-    BOOL rc;
-    BOOL disableRecalibration;
+void OSResetSystem(int reset, u32 resetCode, bool forceMenu) {
+    bool rc;
+    bool disableRecalibration;
     u32 unk[3];
     OSDisableScheduler();
     __OSStopAudioSystem();
 
-#if DOLPHIN_REV == 58
+#if DOLPHIN_REV == 2002
     if (reset == OS_RESET_SHUTDOWN)
 #else
     if (reset == OS_RESET_SHUTDOWN || (reset == OS_RESET_RESTART && bootThisDol != 0))
 #endif
     {
-        disableRecalibration = __PADDisableRecalibration(TRUE);
+        disableRecalibration = __PADDisableRecalibration(true);
     }
 
-    while (!__OSCallResetFunctions(FALSE))
+    while (!__OSCallResetFunctions(false))
         ;
 
     if (reset == OS_RESET_HOTRESET && forceMenu) {
@@ -157,20 +158,20 @@ void OSResetSystem(int reset, u32 resetCode, BOOL forceMenu) {
 
         sram = __OSLockSram();
         sram->flags |= 0x40;
-        __OSUnlockSram(TRUE);
+        __OSUnlockSram(true);
 
         while (!__OSSyncSram())
             ;
     }
 
     OSDisableInterrupts();
-    __OSCallResetFunctions(TRUE);
+    __OSCallResetFunctions(true);
     LCDisable();
 
     if (reset == OS_RESET_HOTRESET) {
         __OSDoHotReset(resetCode);
     } else if (reset == OS_RESET_RESTART) {
-#if DOLPHIN_REV > 58
+#if DOLPHIN_REV == 2003
         if ((*(u32*)OSPhysicalToCached(0x30EC) = bootThisDol) != 0) {
             __PADDisableRecalibration(disableRecalibration);
         }

@@ -12,19 +12,19 @@
 #define ONES(x) ((1 << (x)) - 1)
 #define VI_BITMASK(index) (1ull << (63 - (index)))
 
-#if DOLPHIN_REV == 58
+#if DOLPHIN_REV == 2002
 const char* __VIVersion = "<< Dolphin SDK - VI\trelease build: Sep  5 2002 05:33:13 (0x2301) >>";
 #else
 const char* __VIVersion = "<< Dolphin SDK - VI\trelease build: Apr 17 2003 12:33:22 (0x2301) >>";
 #endif
 
-static BOOL IsInitialized;
+static bool IsInitialized;
 static vu32 retraceCount;
 static u32 flushFlag;
 static OSThreadQueue retraceQueue;
 static VIRetraceCallback PreCB;
 static VIRetraceCallback PostCB;
-#if DOLPHIN_REV > 58
+#if DOLPHIN_REV > 2002
 static VIPositionCallback PositionCallback;
 #endif
 static u32 encoderType;
@@ -110,7 +110,7 @@ static int cntlzd(u64 bit) {
     return (32 + __cntlzw(lo));
 }
 
-static BOOL VISetRegs(void) {
+static bool VISetRegs(void) {
     int regIndex;
 
     if (!((shdwChangeMode == 1) && (getCurrentFieldEvenOdd() == 0))) {
@@ -125,9 +125,9 @@ static BOOL VISetRegs(void) {
         CurrTvMode = HorVer.tv;
         CurrBufAddr = NextBufAddr;
 
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    return false;
 }
 
 static void __VIRetraceHandler(__OSInterrupt interrupt, OSContext* context) {
@@ -160,7 +160,7 @@ static void __VIRetraceHandler(__OSInterrupt interrupt, OSContext* context) {
     }
 
     if ((inter & 4) || (inter & 8)) {
-#if DOLPHIN_REV > 58
+#if DOLPHIN_REV > 2002
         OSClearContext(&exceptionContext);
         OSSetCurrentContext(&exceptionContext);
         if (PositionCallback) {
@@ -352,7 +352,7 @@ static void AdjustPosition(u16 acv) {
 static void ImportAdjustingValues(void) {
     displayOffsetH = __OSLockSram()->displayOffsetH;
     displayOffsetV = 0;
-    __OSUnlockSram(FALSE);
+    __OSUnlockSram(false);
 }
 
 void VIInit(void) {
@@ -364,7 +364,7 @@ void VIInit(void) {
     }
 
     OSRegisterVersion(__VIVersion);
-    IsInitialized = TRUE;
+    IsInitialized = true;
     encoderType = 1;
 
     if (!(__VIRegs[VI_DISP_CONFIG] & 1)) {
@@ -430,8 +430,8 @@ void VIInit(void) {
     HorVer.std = 40;
     HorVer.wpl = 40;
     HorVer.xof = 0;
-    HorVer.isBlack = TRUE;
-    HorVer.is3D = FALSE;
+    HorVer.isBlack = true;
+    HorVer.is3D = false;
 
     OSInitThreadQueue(&retraceQueue);
 
@@ -510,7 +510,7 @@ static void setBBIntervalRegs(VITimingInfo* tm) {
     changed |= VI_BITMASK(VI_BBI_EVEN);
 }
 
-static void setScalingRegs(u16 panSizeX, u16 dispSizeX, BOOL is3D) {
+static void setScalingRegs(u16 panSizeX, u16 dispSizeX, bool is3D) {
     u32 scale;
 
     panSizeX = (u16)(is3D ? panSizeX * 2 : panSizeX);
@@ -620,7 +620,7 @@ static void setHorizontalRegs(VITimingInfo* tm, u16 dispPosX, u16 dispSizeX) {
 }
 
 static void setVerticalRegs(u16 dispPosY, u16 dispSizeY, u8 equ, u16 acv, u16 prbOdd, u16 prbEven, u16 psbOdd,
-                            u16 psbEven, BOOL black) {
+                            u16 psbEven, bool black) {
     u16 actualPrbOdd, actualPrbEven, actualPsbOdd, actualPsbEven, actualAcv, c, d;
 
     if (regs[VI_CLOCK_SEL] & 1) {
@@ -687,7 +687,7 @@ static void PrintDebugPalCaution(void) {
 void VIConfigure(GXRenderModeObj* rm) {
     VITimingInfo* tm;
     u32 regDspCfg;
-    BOOL enabled;
+    bool enabled;
     u32 newNonInter, tvInBootrom, tvInGame;
 
     enabled = OSDisableInterrupts();
@@ -721,7 +721,7 @@ void VIConfigure(GXRenderModeObj* rm) {
         default:
         panic:
             OSPanic(__FILE__,
-#if DOLPHIN_REV == 58
+#if DOLPHIN_REV == 2002
                     1884,
 #else
                     1908,
@@ -760,7 +760,7 @@ void VIConfigure(GXRenderModeObj* rm) {
                              : (HorVer.xfbMode == VI_XFBMODE_SF) ? (u16)(2 * HorVer.panSizeY)
                                                                  : HorVer.panSizeY);
 
-    HorVer.is3D = (HorVer.nonInter == VI_3D) ? TRUE : FALSE;
+    HorVer.is3D = (HorVer.nonInter == VI_3D) ? true : false;
 
     tm = getTiming((VITVMode)VI_TVMODE(HorVer.tv, HorVer.nonInter));
     HorVer.timing = tm;
@@ -822,7 +822,7 @@ void VIConfigurePan(u16 panPosX, u16 panPosY, u16 panSizeX, u16 panSizeY) {
 }
 
 void VIFlush(void) {
-    BOOL enabled;
+    bool enabled;
     s32 regIndex;
     u32 val; // for stack.
 
@@ -843,7 +843,7 @@ void VIFlush(void) {
 }
 
 void VISetNextFrameBuffer(void* fb) {
-    BOOL enabled = OSDisableInterrupts();
+    bool enabled = OSDisableInterrupts();
     HorVer.bufAddr = (u32)fb;
     FBSet = 1;
     setFbbRegs(&HorVer, &HorVer.tfbb, &HorVer.bfbb, &HorVer.rtfbb, &HorVer.rbfbb);
@@ -860,7 +860,7 @@ void VISetNextRightFrameBuffer(void* fb) {
     // UNUSED FUNCTION
 }
 
-void VISetBlack(BOOL isBlack) {
+void VISetBlack(bool isBlack) {
     int interrupt;
     VITimingInfo* tm;
 
@@ -894,12 +894,12 @@ static void GetCurrentDisplayPosition(u32* hct, u32* vct) {
 
 static u32 getCurrentHalfLine(void) {
     u32 hcount;
-#if DOLPHIN_REV == 58
+#if DOLPHIN_REV == 2002
     u32 vcount0;
 #endif
     u32 vcount;
 
-#if DOLPHIN_REV == 58
+#if DOLPHIN_REV == 2002
     vcount = __VIRegs[22] & 0x7FF;
     do {
         vcount0 = vcount;
@@ -913,7 +913,7 @@ static u32 getCurrentHalfLine(void) {
 }
 
 static u32 getCurrentFieldEvenOdd(void) {
-#if DOLPHIN_REV == 58
+#if DOLPHIN_REV == 2002
     if (getCurrentHalfLine() < CurrTiming->numHalfLines) {
         return 1;
     }
@@ -925,7 +925,7 @@ static u32 getCurrentFieldEvenOdd(void) {
 
 u32 VIGetNextField(void) {
     s32 nextField;
-    BOOL enabled;
+    bool enabled;
     u8 unused[4];
 
     enabled = OSDisableInterrupts();

@@ -1,8 +1,8 @@
-#include "sram.h"
-#include "cpu.h"
-#include "ram.h"
-#include "simGCN.h"
-#include "system.h"
+#include "emulator/sram.h"
+#include "emulator/cpu.h"
+#include "emulator/ram.h"
+#include "emulator/simGCN.h"
+#include "emulator/system.h"
 
 _XL_OBJECTTYPE gClassSram = {
     "SRAM",
@@ -11,71 +11,71 @@ _XL_OBJECTTYPE gClassSram = {
     (EventFunc)sramEvent,
 };
 
-s32 sramCopySRAM(Sram* pSRAM, u32 nOffsetRAM, u32 nOffsetSRAM, u32 nSize) {
+bool sramCopySRAM(Sram* pSRAM, s32 nOffsetRAM, s32 nOffsetSRAM, s32 nSize) {
     void* pTarget;
 
-    if (!ramGetBuffer(SYSTEM_RAM(pSRAM->pHost), &pTarget, nOffsetRAM, &nSize)) {
+    if (!ramGetBuffer(SYSTEM_RAM(pSRAM->pHost), &pTarget, nOffsetRAM, (u32*)&nSize)) {
         return 0;
     }
     if (!simulatorReadSRAM(nOffsetSRAM & 0x7FFF, (u8*)pTarget, nSize)) {
-        return 0;
+        return false;
     }
-    return 1;
+    return true;
 }
 
-s32 sramTransferSRAM(Sram* pSRAM, u32 nOffsetRAM, u32 nOffsetSRAM, u32 nSize) {
+bool sramTransferSRAM(Sram* pSRAM, s32 nOffsetRAM, s32 nOffsetSRAM, s32 nSize) {
     void* pTarget;
 
-    if (!ramGetBuffer(SYSTEM_RAM(pSRAM->pHost), &pTarget, nOffsetRAM, &nSize)) {
+    if (!ramGetBuffer(SYSTEM_RAM(pSRAM->pHost), &pTarget, nOffsetRAM, (u32*)&nSize)) {
         return 0;
     }
     if (!simulatorWriteSRAM(nOffsetSRAM & 0x7FFF, (u8*)pTarget, nSize)) {
-        return 0;
+        return false;
     }
-    return 1;
+    return true;
 }
 
-static s32 sramPut8(Sram* pObject, u32 nAddress, s8* pData) {
+static bool sramPut8(Sram* pObject, u32 nAddress, s8* pData) {
     simulatorWriteSRAM(nAddress & 0x7FFF, (u8*)pData, sizeof(s8));
-    return 1;
+    return true;
 }
 
-static s32 sramPut16(Sram* pObject, u32 nAddress, s16* pData) {
+static bool sramPut16(Sram* pObject, u32 nAddress, s16* pData) {
     simulatorWriteSRAM(nAddress & 0x7FFF, (u8*)pData, sizeof(s16));
-    return 1;
+    return true;
 }
 
-static s32 sramPut32(Sram* pObject, u32 nAddress, s32* pData) {
+static bool sramPut32(Sram* pObject, u32 nAddress, s32* pData) {
     simulatorWriteSRAM(nAddress & 0x7FFF, (u8*)pData, sizeof(s32));
-    return 1;
+    return true;
 }
 
-static s32 sramPut64(Sram* pObject, u32 nAddress, s64* pData) {
+static bool sramPut64(Sram* pObject, u32 nAddress, s64* pData) {
     simulatorWriteSRAM(nAddress & 0x7FFF, (u8*)pData, sizeof(s64));
-    return 1;
+    return true;
 }
 
-static s32 sramGet8(Sram* pObject, u32 nAddress, s8* pData) {
+static bool sramGet8(Sram* pObject, u32 nAddress, s8* pData) {
     simulatorReadSRAM(nAddress & 0x7FFF, (u8*)pData, sizeof(s8));
-    return 1;
+    return true;
 }
 
-static s32 sramGet16(Sram* pObject, u32 nAddress, s16* pData) {
+static bool sramGet16(Sram* pObject, u32 nAddress, s16* pData) {
     simulatorReadSRAM(nAddress & 0x7FFF, (u8*)pData, sizeof(s16));
-    return 1;
+    return true;
 }
 
-static s32 sramGet32(Sram* pObject, u32 nAddress, s32* pData) {
+static bool sramGet32(Sram* pObject, u32 nAddress, s32* pData) {
     simulatorReadSRAM(nAddress & 0x7FFF, (u8*)pData, sizeof(s32));
-    return 1;
+    return true;
 }
 
-static s32 sramGet64(Sram* pObject, u32 nAddress, s64* pData) {
+static bool sramGet64(Sram* pObject, u32 nAddress, s64* pData) {
     simulatorReadSRAM(nAddress & 0x7FFF, (u8*)pData, sizeof(s64));
-    return 1;
+    return true;
 }
 
-s32 sramEvent(Sram* pObject, s32 nEvent, void* pArgument) {
+bool sramEvent(Sram* pObject, s32 nEvent, void* pArgument) {
     Sram* pSram = (Sram*)pObject;
 
     switch (nEvent) {
@@ -89,20 +89,20 @@ s32 sramEvent(Sram* pObject, s32 nEvent, void* pArgument) {
         case 0x1002:
             if (!cpuSetDevicePut(SYSTEM_CPU(pSram->pHost), pArgument, (Put8Func)sramPut8, (Put16Func)sramPut16,
                                  (Put32Func)sramPut32, (Put64Func)sramPut64)) {
-                return 0;
+                return false;
             }
             if (!cpuSetDeviceGet(SYSTEM_CPU(pSram->pHost), pArgument, (Get8Func)sramGet8, (Get16Func)sramGet16,
                                  (Get32Func)sramGet32, (Get64Func)sramGet64)) {
-                return 0;
+                return false;
             }
             break;
-#if VERSION > 0 // D43J01
+#if VERSION >= MQ_U
         case 0x1003:
             break;
 #endif
 
         default:
-            return 0;
+            return false;
     }
-    return 1;
+    return true;
 }

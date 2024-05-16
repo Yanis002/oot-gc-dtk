@@ -22,6 +22,7 @@ struct OSAlarm {
 };
 
 void OSInitAlarm(void);
+void OSCreateAlarm(OSAlarm* alarm);
 void OSSetAlarm(OSAlarm* alarm, OSTime tick, OSAlarmHandler handler);
 void OSSetAlarmTag(OSAlarm* alarm, u32 tag);
 void OSSetAbsAlarm(OSAlarm* alarm, OSTime time, OSAlarmHandler handler);
@@ -30,7 +31,7 @@ void OSCreateAlarm(OSAlarm* alarm);
 void OSCancelAlarm(OSAlarm* alarm);
 void OSCancelAlarms(u32 tag);
 
-BOOL OSCheckAlarmQueue(void);
+bool OSCheckAlarmQueue(void);
 
 #ifdef __cplusplus
 }

@@ -1,6 +1,7 @@
 #include "dolphin/base/PPCArch.h"
 #include "dolphin/os/OSPriv.h"
 #include "dolphin/os/OSReset.h"
+#include "macros.h"
 
 static struct OSAlarmQueue {
     OSAlarm* head;
@@ -8,9 +9,9 @@ static struct OSAlarmQueue {
 } AlarmQueue;
 
 static void DecrementerExceptionHandler(__OSException exception, OSContext* context);
-static BOOL OnReset(BOOL final);
+static bool OnReset(bool final);
 
-#if DOLPHIN_REV > 58
+#if DOLPHIN_REV == 2003
 static OSResetFunctionInfo ResetFunctionInfo = {OnReset, 0xFFFFFFFF};
 #endif
 
@@ -18,7 +19,7 @@ void OSInitAlarm(void) {
     if (__OSGetExceptionHandler(8) != DecrementerExceptionHandler) {
         AlarmQueue.head = AlarmQueue.tail = NULL;
         __OSSetExceptionHandler(8, DecrementerExceptionHandler);
-#if DOLPHIN_REV > 58
+#if DOLPHIN_REV == 2003
         OSRegisterResetFunction(&ResetFunctionInfo);
 #endif
     }
@@ -29,7 +30,7 @@ void OSCreateAlarm(OSAlarm* alarm) {
     alarm->tag = 0;
 }
 
-static void SetTimer(OSAlarm* alarm) {
+static inline void SetTimer(OSAlarm* alarm) {
     OSTime delta;
 
     delta = alarm->fire - __OSGetSystemTime();
@@ -88,25 +89,16 @@ static void InsertAlarm(OSAlarm* alarm, OSTime fire, OSAlarmHandler handler) {
 }
 
 void OSSetAlarm(OSAlarm* alarm, OSTime tick, OSAlarmHandler handler) {
-    BOOL enabled;
+    bool enabled;
     enabled = OSDisableInterrupts();
     alarm->period = 0;
     InsertAlarm(alarm, __OSGetSystemTime() + tick, handler);
     OSRestoreInterrupts(enabled);
 }
 
-void OSSetPeriodicAlarm(OSAlarm* alarm, OSTime start, OSTime period, OSAlarmHandler handler) {
-    BOOL enabled;
-    enabled = OSDisableInterrupts();
-    alarm->period = period;
-    alarm->start = __OSTimeToSystemTime(start);
-    InsertAlarm(alarm, 0, handler);
-    OSRestoreInterrupts(enabled);
-}
-
 void OSCancelAlarm(OSAlarm* alarm) {
     OSAlarm* next;
-    BOOL enabled;
+    bool enabled;
 
     enabled = OSDisableInterrupts();
 
@@ -180,17 +172,17 @@ static void DecrementerExceptionCallback(register __OSException exception, regis
     OSLoadContext(context);
 }
 
-static asm void DecrementerExceptionHandler(register __OSException exception, register OSContext* context) {
-    // clang-format off
-    nofralloc 
+static ASM void DecrementerExceptionHandler(register __OSException exception, register OSContext* context) {
+#ifdef __MWERKS__ // clang-format off
+    nofralloc
     OS_EXCEPTION_SAVE_GPRS(context)
     stwu r1, -8(r1)
     b DecrementerExceptionCallback
-    // clang-format on
+#endif // clang-format on
 }
 
-#if DOLPHIN_REV > 58
-static BOOL OnReset(BOOL final) {
+#if DOLPHIN_REV == 2003
+static bool OnReset(bool final) {
     OSAlarm* alarm;
     OSAlarm* next;
 
@@ -199,7 +191,7 @@ static BOOL OnReset(BOOL final) {
         next = (alarm) ? alarm->next : NULL;
 
         while (alarm != NULL) {
-            if (__DVDTestAlarm(alarm) == FALSE) {
+            if (__DVDTestAlarm(alarm) == false) {
                 OSCancelAlarm(alarm);
             }
 
@@ -208,6 +200,6 @@ static BOOL OnReset(BOOL final) {
         }
     }
 
-    return TRUE;
+    return true;
 }
 #endif
