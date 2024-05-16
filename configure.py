@@ -234,10 +234,10 @@ config.linker_version = "GC/1.1"
 
 # for SIM objects (the emulator files)
 def SIM(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
-    if lib_name == "Core" and version_num < 3:
-        # CE-EU contains extra files
+    if lib_name == "Core" and version_num != VERSIONS.index("CE-P"):
+        # CE PAL contains extra files
         objects.pop(3) # "emulator/Core/xlText.c"
-        objects.pop(6) # "emulator/Core/xlFile.c"
+        objects.pop(5) # "emulator/Core/xlFile.c"
 
     return {
         "lib": lib_name,
@@ -321,10 +321,10 @@ config.libs = [
         "Fire",
         [
             Object(NonMatching, "emulator/Fire/mcardGCN.c"),
-            Object(NonMatching, "emulator/Fire/codeGCN.c"),
+            Object(Matching, "emulator/Fire/codeGCN.c"),
             Object(NonMatching, "emulator/Fire/soundGCN.c"),
             Object(NonMatching, "emulator/Fire/frame.c"),
-            Object(NonMatching, "emulator/Fire/system.c"),
+            Object(Matching, "emulator/Fire/system.c"),
             Object(NonMatching, "emulator/Fire/cpu.c"),
             Object(Matching, "emulator/Fire/pif.c"),
             Object(Matching, "emulator/Fire/ram.c"),
