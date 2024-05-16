@@ -31,7 +31,6 @@
 #define MCARD_FILE_NAME "ZELDA"
 #define MCARD_FILE_SIZE (0xC000 * 2)
 #elif VERSION == MQ_U
-// "The Legend of Zelda: Ocarina of Time GC"
 #define ZELDA_GC_JP "Zelda: Ocarina of Time"
 #define MCARD_FILE_NAME "ZELDA"
 #define MCARD_FILE_SIZE (0xC000 * 2)
