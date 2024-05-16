@@ -70,6 +70,8 @@ typedef enum SimArgumentType {
     SAT_COUNT = 8
 } SimArgumentType;
 
+extern u8 gLanguage;
+
 extern bool gDVDResetToggle;
 extern bool gbDisplayedError;
 

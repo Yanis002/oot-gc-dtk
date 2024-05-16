@@ -302,7 +302,7 @@ config.libs = [
     SIM(
         "Fire",
         [
-            Object(Matching, "emulator/Fire/simGCN.c"),
+            Object(NonMatching if version_num == VERSIONS.index("CE-P") else Matching, "emulator/Fire/simGCN.c"),
             Object(Matching, "emulator/Fire/movie.c"),
         ]
     ),

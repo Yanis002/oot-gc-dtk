@@ -1,11 +1,11 @@
 #include "dolphin/types.h"
-#include "xlObject.h"
-#include "xlFile.h"
-#include "xlFileGCN.h"
-#include "xlHeap.h"
-#include "xlText.h"
+#include "emulator/xlObject.h"
+#include "emulator/xlFile.h"
+#include "emulator/xlFileGCN.h"
+#include "emulator/xlHeap.h"
+#include "emulator/xlText.h"
 
-#if VERSION == 3 // PZLP01
+#if VERSION == CE_P
 // this variable is inside xlFile.c on CE-EU
 _XL_OBJECTTYPE gTypeFile = {
     "FILE",
@@ -21,9 +21,9 @@ static char* gacValidLabel = "ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvw
 
 char* strchr(const char* str, int chr);
 
-#if VERSION == 3 // PZLP01
+#if VERSION == CE_P
 // this function is inside xlFileGCN.c on the other versions
-s32 xlFileGetSize(s32* pnSize, char* szFileName) {
+bool xlFileGetSize(s32* pnSize, char* szFileName) {
     tXL_FILE* pFile;
 
     if (xlFileOpen(&pFile, XLFT_BINARY, szFileName)) {
@@ -32,21 +32,21 @@ s32 xlFileGetSize(s32* pnSize, char* szFileName) {
         }
 
         if (!xlFileClose(&pFile)) {
-            return 0;
+            return false;
         }
 
-        return 1;
+        return true;
     }
 
-    return 0;
+    return false;
 }
 #endif
 
-s32 xlFileGetLine(tXL_FILE* pFile, char* acLine, s32 nSizeLine) {
+bool xlFileGetLine(tXL_FILE* pFile, char* acLine, s32 nSizeLine) {
     s32 iCharacter;
     char nCharacter;
 
-    while (TRUE) {
+    while (true) {
         iCharacter = 0;
 
         while (iCharacter < nSizeLine && xlFileGet(pFile, &nCharacter, 1)) {
@@ -56,7 +56,7 @@ s32 xlFileGetLine(tXL_FILE* pFile, char* acLine, s32 nSizeLine) {
             if (nCharacter == '\r') {
                 xlFileGet(pFile, &nCharacter, 1);
                 if ((nCharacter != '\n') && !xlFileSetPosition(pFile, pFile->nOffset - 1)) {
-                    return 0;
+                    return false;
                 }
                 break;
             }
@@ -71,7 +71,7 @@ s32 xlFileGetLine(tXL_FILE* pFile, char* acLine, s32 nSizeLine) {
     }
 }
 
-s32 xlTokenGetInteger(char* acToken, s32* pnValue) {
+bool xlTokenGetInteger(char* acToken, s32* pnValue) {
     s32 nValue;
     s32 nBase;
     s32 iToken;
@@ -101,7 +101,7 @@ s32 xlTokenGetInteger(char* acToken, s32* pnValue) {
         } else if ((acToken[iToken] >= '0') && (acToken[iToken] <= '9')) {
             nValue += acToken[iToken] - '0';
         } else {
-            return 0;
+            return false;
         }
         iToken++;
     }
@@ -114,15 +114,15 @@ s32 xlTokenGetInteger(char* acToken, s32* pnValue) {
         *pnValue = nValue;
     }
 
-    return 1;
+    return true;
 }
 
-s32 xlFileSkipLine(tXL_FILE* pFile) {
+bool xlFileSkipLine(tXL_FILE* pFile) {
     pFile->iLine = -1;
-    return 1;
+    return true;
 }
 
-s32 xlFileGetToken(tXL_FILE* pFile, XlFileTokenType* peType, char* acToken, s32 nSizeToken) {
+bool xlFileGetToken(tXL_FILE* pFile, XlFileTokenType* peType, char* acToken, s32 nSizeToken) {
     char* acLine;
     s32 iLine;
     s32 iToken;
@@ -135,7 +135,7 @@ s32 xlFileGetToken(tXL_FILE* pFile, XlFileTokenType* peType, char* acToken, s32 
         pFile->iLine = -1;
         pFile->nLineNumber = 0;
         if (!xlHeapTake(&pFile->acLine, 0x101)) {
-            return 0;
+            return false;
         }
     }
 
@@ -148,7 +148,7 @@ s32 xlFileGetToken(tXL_FILE* pFile, XlFileTokenType* peType, char* acToken, s32 
                 iLine = 0;
             } else {
                 pFile->iLine = -1;
-                return 0;
+                return false;
             }
         }
 
@@ -196,7 +196,7 @@ s32 xlFileGetToken(tXL_FILE* pFile, XlFileTokenType* peType, char* acToken, s32 
             } else {
                 if (strchr(gacValidSymbol, acLine[iLine]) == NULL) {
                     pFile->iLine = iLine;
-                    return 0;
+                    return false;
                 }
                 eType = XLFTT_SYMBOL;
                 acToken[iToken++] = acLine[iLine++];
@@ -209,10 +209,10 @@ s32 xlFileGetToken(tXL_FILE* pFile, XlFileTokenType* peType, char* acToken, s32 
     if (peType != NULL) {
         *peType = eType;
     }
-    return 1;
+    return true;
 }
 
-s32 xlFileMatchToken(tXL_FILE* pFile, XlFileTokenType eType, char* acToken, s32 nSizeToken, char* szText) {
+bool xlFileMatchToken(tXL_FILE* pFile, XlFileTokenType eType, char* acToken, s32 nSizeToken, char* szText) {
     XlFileTokenType eTypeToken;
     char acTokenLocal[65];
 
@@ -223,21 +223,21 @@ s32 xlFileMatchToken(tXL_FILE* pFile, XlFileTokenType eType, char* acToken, s32 
                 acTokenLocal[nSizeToken] = '\0';
             }
             if (!xlTextCopy(acToken, acTokenLocal)) {
-                return 0;
+                return false;
             }
         }
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
-s32 xlFileGetLineSave(tXL_FILE* pFile, tXL_SAVE* pSave) {
+bool xlFileGetLineSave(tXL_FILE* pFile, tXL_SAVE* pSave) {
     if (pSave != NULL) {
         pSave->nLineNumber = pFile->nLineNumber;
         if (!xlFileGetPosition()) {
-            return 0;
+            return false;
         }
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }

@@ -37,7 +37,7 @@ static void xlCoreInitRenderMode(GXRenderModeObj* mode) {
         return;
     }
 
-#if VERSION == 3 // PZLP01
+#if VERSION == CE_P
     rmode = &GXEurgb60Hz480IntDf;
     rmode->viXOrigin -= 0x20;
     rmode->viWidth += 0x40;

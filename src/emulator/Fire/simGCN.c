@@ -17,6 +17,54 @@
 #include "string.h"
 
 // clang-format off
+#if VERSION == CE_P
+#include "gcoverOpen.inc"
+#include "gnoDisk.inc"
+#include "gretryErr.inc"
+#include "gfatalErr.inc"
+#include "gwrongDisk.inc"
+#include "greadingDisk.inc"
+#include "gyes.inc"
+#include "gno.inc"
+#include "gmesgOK.inc"
+#include "gfrench_coverOpen.inc"
+#include "gfrench_noDisk.inc"
+#include "gfrench_retryErr.inc"
+#include "gfrench_fatalErr.inc"
+#include "gfrench_wrongDisk.inc"
+#include "gfrench_readingDisk.inc"
+#include "gfrench_yes.inc"
+#include "gfrench_no.inc"
+#include "gfrench_mesgOK.inc"
+#include "ggerman_coverOpen.inc"
+#include "ggerman_noDisk.inc"
+#include "ggerman_retryErr.inc"
+#include "ggerman_fatalErr.inc"
+#include "ggerman_wrongDisk.inc"
+#include "ggerman_readingDisk.inc"
+#include "ggerman_yes.inc"
+#include "ggerman_no.inc"
+#include "ggerman_mesgOK.inc"
+#include "gspanish_coverOpen.inc"
+#include "gspanish_noDisk.inc"
+#include "gspanish_retryErr.inc"
+#include "gspanish_fatalErr.inc"
+#include "gspanish_wrongDisk.inc"
+#include "gspanish_readingDisk.inc"
+#include "gspanish_yes.inc"
+#include "gspanish_no.inc"
+#include "gspanish_mesgOK.inc"
+#include "gitalian_coverOpen.inc"
+#include "gitalian_noDisk.inc"
+#include "gitalian_retryErr.inc"
+#include "gitalian_fatalErr.inc"
+#include "gitalian_wrongDisk.inc"
+#include "gitalian_readingDisk.inc"
+#include "gitalian_yes.inc"
+#include "gitalian_no.inc"
+#include "gitalian_mesgOK.inc"
+#include "gbar.inc"
+#else
 #include "gcoverOpen.inc"
 #include "gnoDisk.inc"
 #include "gretryErr.inc"
@@ -27,7 +75,10 @@
 #include "gyes.inc"
 #include "gno.inc"
 #include "gmesgOK.inc"
+#endif
 // clang-format on
+
+u8 gLanguage;
 
 s16 Vert_s16[12] ALIGNAS(32) = {
     0x0000, 0x0000, 0xFFFF, 0x00C8, 0x0000, 0xFFFF, 0x00C8, 0x00C8, 0xFFFF, 0x0000, 0x00C8, 0xFFFF,
