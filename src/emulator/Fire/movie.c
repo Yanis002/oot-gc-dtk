@@ -4,6 +4,14 @@
 #include "emulator/system.h"
 #include "emulator/xlCoreGCN.h"
 
+#if VERSION == CE_U
+#define MOVIE_FILENAME "us_final_zelda_credits_sound.thp"
+#elif VERSION == CE_P
+#define MOVIE_FILENAME "pal_zelda_w_snd.thp"
+#else
+#define MOVIE_FILENAME "final_zelda_credits_sound.thp"
+#endif
+
 void* gBufferP;
 
 void MovieInit(void) {
@@ -13,7 +21,7 @@ void MovieInit(void) {
     THPPlayerInit(false);
 
     if (!simulatorGetArgument(SAT_MOVIE, &szText)) {
-        THPPlayerOpen(VERSION == CE_P ? "pal_zelda_w_snd.thp" : "final_zelda_credits_sound.thp", false);
+        THPPlayerOpen(MOVIE_FILENAME, false);
     } else {
         THPPlayerOpen(szText, false);
     }

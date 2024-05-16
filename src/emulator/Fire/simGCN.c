@@ -2391,7 +2391,12 @@ bool xlMain(void) {
     if (simulatorGetArgument(SAT_NAME, &szNameROM)) {
         strcpy(acNameROM, szNameROM);
     } else {
-        strcpy(acNameROM, VERSION == MQ_J ? "urazlj_f.n64" : VERSION == MQ_U ? "urazle_f.n64" : "zlj_f.n64");
+        strcpy(acNameROM, 
+            VERSION == MQ_J ? "urazlj_f.n64" 
+            : VERSION == MQ_U ? "urazle_f.n64" 
+            : VERSION == CE_U ? "zle_f.n64"
+            : "zlj_f.n64"
+        );
     }
 
     iName = strlen(acNameROM) - 1;
