@@ -4,6 +4,6 @@
 #include "dolphin/types.h"
 
 s32 xlTextCopy(char* acTextTarget, char* szTextSource);
-s32 xlTextMatch(char* acText1, char* acText2);
+bool xlTextMatch(char* acText1, char* acText2);
 
 #endif

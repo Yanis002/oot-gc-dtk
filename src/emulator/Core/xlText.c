@@ -12,7 +12,7 @@ s32 xlTextCopy(char* acTextTarget, char* szTextSource) {
     return iCharacter;
 }
 
-s32 xlTextMatch(char* acText1, char* acText2) {
+bool xlTextMatch(char* acText1, char* acText2) {
     s32 iCharacter;
     s32 nCharacter1;
     s32 nCharacter2;
@@ -47,14 +47,14 @@ s32 xlTextMatch(char* acText1, char* acText2) {
             }
 
             if (upper1 != upper2) {
-                return 0;
+                return false;
             }
 
             *acText2++;
             *acText1++;
             iCharacter--;
         }
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
