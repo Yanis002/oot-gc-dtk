@@ -3799,7 +3799,7 @@ bool libraryEvent(Library* pLibrary, s32 nEvent, void* pArgument) {
         case 3:
         case 0x1002:
             break;
-#if VERSION > 0
+#if VERSION >= MQ_U
         case 0x1003:
             if (!libraryUpdate(pLibrary)) {
                 return false;

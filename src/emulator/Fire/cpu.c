@@ -3735,7 +3735,7 @@ static bool cpuExecuteIdle(Cpu* pCPU, s32 nCount, s32 nAddressN64, s32 nAddressG
 
     pROM = SYSTEM_ROM(pCPU->pHost);
 
-#if VERSION >= CE_J
+#if VERSION >= MQ_U
     if (!simulatorTestReset(false, false, false, true)) {
         return false;
     }
@@ -5412,7 +5412,7 @@ bool cpuEvent(Cpu* pCPU, s32 nEvent, void* pArgument) {
             break;
         case 0:
         case 1:
-#if VERSION >= CE_J
+#if VERSION >= MQ_U
         case 0x1003:
 #endif
             break;

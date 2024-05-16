@@ -286,12 +286,12 @@ bool gDVDResetToggle = false;
 bool simulatorDVDShowError(s32 nStatus, void* anData, s32 nSizeRead, u32 nOffset) {
     static s32 toggle;
 
-#if VERSION >= CE_J
+#if VERSION >= MQ_U
     s32 continueToggle;
 #endif
     __anon_0x61D7 nMessage = S_M_NONE;
 
-#if VERSION >= CE_J
+#if VERSION >= MQ_U
     do {
         if ((nStatus != 1) && (nStatus != 0) && (nStatus != 2) && (nStatus != 3) && (nStatus != 7) && (nStatus != 8) &&
             (nStatus != 10)) {
@@ -329,7 +329,7 @@ bool simulatorDVDShowError(s32 nStatus, void* anData, s32 nSizeRead, u32 nOffset
                 break;
             default:
                 nMessage = S_M_DISK_DEFAULT_ERROR;
-                xlPostText("ShowError: Unknown FileInfoStatus: %d", "simGCN.c", VERSION == 0 ? 750 : 763, nStatus);
+                xlPostText("ShowError: Unknown FileInfoStatus: %d", "simGCN.c", VERSION == MQ_J ? 750 : 763, nStatus);
                 break;
         }
 
@@ -374,7 +374,7 @@ bool simulatorDVDShowError(s32 nStatus, void* anData, s32 nSizeRead, u32 nOffset
             simulatorDrawErrorMessage(nMessage, 0, 0);
         }
 
-#if VERSION >= CE_J
+#if VERSION >= MQ_U
         nStatus = DVDGetDriveStatus();
     } while (continueToggle == true);
 #endif
@@ -1942,7 +1942,7 @@ bool simulatorTestReset(bool IPL, bool forceMenu, bool allowReset, bool usePrevi
     u32 bFlag;
     u32 nTick;
 
-#if VERSION >= CE_J
+#if VERSION >= MQ_U
     bool prevIPLSetting;
     bool prevForceMenuSetting;
     bool prevAllowResetSetting;
@@ -1951,7 +1951,7 @@ bool simulatorTestReset(bool IPL, bool forceMenu, bool allowReset, bool usePrevi
 
     nTick = OSGetTick();
 
-#if VERSION >= CE_J
+#if VERSION >= MQ_U
     prevAllowResetSetting = gPreviousAllowResetSetting;
     prevIPLSetting = gPreviousIPLSetting;
     prevForceMenuSetting = gPreviousForceMenuSetting;
@@ -2029,7 +2029,7 @@ bool simulatorTestReset(bool IPL, bool forceMenu, bool allowReset, bool usePrevi
 }
 
 bool simulatorDrawMCardText(void) {
-#if VERSION >= CE_J
+#if VERSION >= MQ_U
     if ((s32)(((TEXPalettePtr)gpErrorMessageBuffer)->versionNumber) == 0) {
         xlPostText("Invalid Message Image Data - Assuming SV09", "simGCN.c", 1623);
         simulatorPrepareMessage(S_M_CARD_SV09);
@@ -2052,7 +2052,7 @@ s32 simulatorMCardPollDrawBar(void) {
 
     rate = (rate < 0.0f) ? 0.0f : rate;
 
-#if VERSION >= CE_J
+#if VERSION >= MQ_U
     if ((s32)(((TEXPalettePtr)gpErrorMessageBuffer)->versionNumber) == 0) {
         xlPostText("Invalid Message Image Data - Assuming SV09", "simGCN.c", 1623);
         simulatorPrepareMessage(S_M_CARD_SV09);
@@ -2076,7 +2076,7 @@ s32 simulatorMCardPollDrawFormatBar(void) {
 
     rate = (rate < 0.0f) ? 0.0f : rate;
 
-#if VERSION >= CE_J
+#if VERSION >= MQ_U
     if ((s32)(((TEXPalettePtr)gpErrorMessageBuffer)->versionNumber) == 0) {
         xlPostText("Invalid Message Image Data - Assuming SV09", "simGCN.c", 1623);
         simulatorPrepareMessage(S_M_CARD_SV09);
@@ -2332,7 +2332,7 @@ bool xlMain(void) {
     }
 
     mCard.bufferCreated = 0;
-#if VERSION >= CE_J
+#if VERSION >= MQ_U
     mCard.isBroken = 0;
 #endif
     mcardInit(&mCard);
@@ -2340,7 +2340,7 @@ bool xlMain(void) {
     if (simulatorGetArgument(SAT_NAME, &szNameROM)) {
         strcpy(acNameROM, szNameROM);
     } else {
-        strcpy(acNameROM, VERSION == 0 ? "urazlj_f.n64" : "zlj_f.n64");
+        strcpy(acNameROM, VERSION == MQ_J ? "urazlj_f.n64" : VERSION == MQ_U ? "urazle_f.n64" : "zlj_f.n64");
     }
 
     iName = strlen(acNameROM) - 1;

@@ -115,7 +115,7 @@ bool diskEvent(Disk* pDisk, s32 nEvent, void* pArgument) {
         case 0:
         case 1:
         case 3:
-#if VERSION >= CE_J
+#if VERSION >= MQ_U
         case 0x1003:
 #endif
             break;

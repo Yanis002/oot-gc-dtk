@@ -96,7 +96,7 @@ bool sramEvent(Sram* pObject, s32 nEvent, void* pArgument) {
                 return false;
             }
             break;
-#if VERSION >= CE_J
+#if VERSION >= MQ_U
         case 0x1003:
             break;
 #endif

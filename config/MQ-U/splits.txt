@@ -14,8 +14,8 @@ emulator/Core/xlCoreGCN.c:
 	.text       start:0x80005500 end:0x80005D64
 	.data       start:0x800D2B80 end:0x800DAC40
 	.bss        start:0x800F4780 end:0x800F4840
-	.sdata      start:0x801354C0 end:0x801354C8
 	.sbss       start:0x80135D60 end:0x80135D80
+	.sdata2     start:0x801364A0 end:0x801364B8
 
 emulator/Core/xlPostGCN.c:
 	.text       start:0x80005D64 end:0x80005DC8
@@ -23,6 +23,7 @@ emulator/Core/xlPostGCN.c:
 emulator/Core/xlFileGCN.c:
 	.text       start:0x80005DC8 end:0x800061E0
 	.data       start:0x800DAC40 end:0x800DAC60
+	.sdata      start:0x801354C0 end:0x801354C8
 	.sbss       start:0x80135D80 end:0x80135D88
 
 emulator/Core/xlList.c:
@@ -142,13 +143,13 @@ emulator/Fire/ram.c:
 emulator/Fire/rom.c:
 	.text       start:0x8006D3FC end:0x8006FF10
 	.data       start:0x800EE2D0 end:0x800EE928
+	.sdata      start:0x80135A50 end:0x80135A88
 	.sbss       start:0x80135F40 end:0x80135F50
 	.sdata2     start:0x80136770 end:0x801367A8
 
 emulator/Fire/rdp.c:
 	.text       start:0x8006FF10 end:0x80071620
 	.data       start:0x800EE928 end:0x800EEB98
-	.sdata      start:0x80135A50 end:0x80135A88
 	.sdata      start:0x80135A88 end:0x80135A90
 	.sbss       start:0x80135F50 end:0x80135F68
 	.sdata2     start:0x801367A8 end:0x801367D8

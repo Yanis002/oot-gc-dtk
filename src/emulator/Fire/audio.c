@@ -99,7 +99,7 @@ bool audioGet32(Audio* pAudio, u32 nAddress, s32* pData) {
 
 bool audioGet64(Audio* pAudio, u32 nAddress, s64* pData) { return false; }
 
-#if VERSION >= CE_J
+#if VERSION >= MQ_U
 bool audioEnable(Audio* pAudio, bool bEnable) {
     pAudio->bEnable = bEnable ? true : false;
 
@@ -135,7 +135,7 @@ bool audioEvent(Audio* pAudio, s32 nEvent, void* pArgument) {
         case 0:
         case 1:
         case 3:
-#if VERSION >= CE_J
+#if VERSION >= MQ_U
         case 0x1003:
 #endif
             break;

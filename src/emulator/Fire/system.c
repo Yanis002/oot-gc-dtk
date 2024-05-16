@@ -30,6 +30,11 @@
 #define ZELDA_GC_JP "ゼルダの伝説　時のオカリナＧＣ"
 #define MCARD_FILE_NAME "ZELDA"
 #define MCARD_FILE_SIZE (0xC000 * 2)
+#elif VERSION == MQ_U
+// "The Legend of Zelda: Ocarina of Time GC"
+#define ZELDA_GC_JP "Zelda: Ocarina of Time"
+#define MCARD_FILE_NAME "ZELDA"
+#define MCARD_FILE_SIZE (0xC000 * 2)
 #else
 // "Zelda Collection"
 #define ZELDA_GC_JP "ゼルダコレクション"
@@ -200,6 +205,29 @@ static bool systemSetupGameRAM(System* pSystem) {
                 gnFlagZelda = 1;
                 bExpansion = 1;
                 break;
+#elif VERSION == MQ_U
+            case 0x5CAC1CF7:
+                gnFlagZelda = 2;
+                break;
+            case 0x184CED80:
+                gnFlagZelda = 3;
+                break;
+            case 0x5CAC1C27:
+                gnFlagZelda = 0;
+                break;
+            case 0x5CAC1C8F:
+                gnFlagZelda = romTestCode(pROM, "CZLE") ? 2 : 0;
+                break;
+            case 0x184CED18:
+                gnFlagZelda = 1;
+                break;
+            case 0x54A59B56:
+            case 0x421EB8E9:
+                gnFlagZelda = 4;
+                break;
+            case 0x7E8BEE60:
+                gnFlagZelda = 5;
+                break;
 #else
             case 0x5CAC1C8F:
                 gnFlagZelda = 2;
@@ -217,7 +245,7 @@ static bool systemSetupGameRAM(System* pSystem) {
 #endif
         }
 
-#if VERSION >= CE_J
+#if VERSION >= MQ_U
         if (gnFlagZelda & 1) {
             bExpansion = true;
         }
@@ -310,14 +338,14 @@ bool systemGetInitialConfiguration(System* pSystem, Rom* pROM, s32 index) {
     if (romTestCode(pROM, "NSME") || romTestCode(pROM, "NSMJ")) {
         // Super Mario 64
         systemSetControllerConfiguration(&gSystemRomConfigurationList[index], 0x01010101, false);
-#if VERSION >= CE_J
+#if VERSION >= MQ_U
         gSystemRomConfigurationList[index].storageDevice = SOT_RSP;
 #endif
     } else if (romTestCode(pROM, "CZLE") || romTestCode(pROM, "CZLJ")) {
         // Ocarina of Time
         gSystemRomConfigurationList[index].storageDevice = SOT_PIF;
 
-#if VERSION >= CE_J
+#if VERSION >= MQ_U
         if (!simulatorGetArgument(SAT_VIBRATION, &szText) || (*szText == '1')) {
             if (!simulatorGetArgument(SAT_CONTROLLER, &szText) || (*szText == '0')) {
                 systemSetControllerConfiguration(&gSystemRomConfigurationList[index], 0x82828282, true);
@@ -336,7 +364,7 @@ bool systemGetInitialConfiguration(System* pSystem, Rom* pROM, s32 index) {
         // Majora's Mask
         gSystemRomConfigurationList[index].storageDevice = SOT_RAM;
 
-#if VERSION >= CE_J
+#if VERSION >= MQ_U
         if (!simulatorGetArgument(SAT_VIBRATION, &szText) || (*szText == '1')) {
             if (!simulatorGetArgument(SAT_CONTROLLER, &szText) || (*szText == '0')) {
                 systemSetControllerConfiguration(&gSystemRomConfigurationList[index], 0x82828282, true);
@@ -923,7 +951,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
             } else if (romTestCode(pROM, "NK4E")) {
                 // Kirby 64
 
-#if VERSION >= CE_J
+#if VERSION >= MQ_U
                 if (!audioEnable(SYSTEM_AUDIO(pSystem), false)) {
                     return false;
                 }
@@ -1901,7 +1929,7 @@ bool systemEvent(System* pSystem, s32 nEvent, void* pArgument) {
         case 5:
         case 6:
         case 7:
-#if VERSION >= CE_J
+#if VERSION >= MQ_U
         case 0x1003:
 #endif
             break;
