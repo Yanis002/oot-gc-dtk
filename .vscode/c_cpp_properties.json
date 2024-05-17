@@ -22,11 +22,11 @@
                 // see ``VERSIONS``
                 "MQ_J=0",
                 "MQ_U=1",
-                // "MQ_P=0",
-                "CE_J=2",
-                "CE_U=3",
-                "CE_E=4",
-                "VERSION=CE_E",
+                "MQ_E=2",
+                "CE_J=3",
+                "CE_U=4",
+                "CE_E=5",
+                "VERSION=MQ_E",
                 "DOLPHIN_REV=2003"
             ]
         }

@@ -33,7 +33,7 @@ from tools.project import (
 VERSIONS = [
     "mq-j",  # 0
     "mq-u",  # 1
-    # "mq-e",  # 2
+    "mq-e",  # 2
     "ce-j",  # 3
     "ce-u",  # 4
     "ce-e",  # 5
@@ -289,7 +289,7 @@ config.libs = [
     SIM(
         "Core",
         [
-            Object(Matching, "emulator/Core/xlCoreGCN.c"),
+            Object(NonMatching if version_num == VERSIONS.index("ce-e") else Matching, "emulator/Core/xlCoreGCN.c"),
             Object(Matching, "emulator/Core/xlPostGCN.c"),
             Object(Matching, "emulator/Core/xlFileGCN.c"),
             Object(Matching, "emulator/Core/xlText.c"),
@@ -302,7 +302,7 @@ config.libs = [
     SIM(
         "Fire",
         [
-            Object(NonMatching if version_num == VERSIONS.index("ce-e") else Matching, "emulator/Fire/simGCN.c"),
+            Object(NonMatching if version_num == VERSIONS.index("ce-e") or version_num == VERSIONS.index("mq-e") else Matching, "emulator/Fire/simGCN.c"),
             Object(Matching, "emulator/Fire/movie.c"),
         ]
     ),
