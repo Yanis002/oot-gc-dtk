@@ -165,9 +165,17 @@ u32 gnFlagZelda;
 #define Z_BNR_FILENAME "z_bnr.tpl"
 #define Z_ICON_PATH buf1
 #define Z_BNR_PATH buf2
+#define MCARD_ICON mCard.saveIcon
+#define MCARD_BANNER mCard.saveBanner
+#define MCARD_ICON_SIZE gz_iconSize
+#define MCARD_BNR_SIZE gz_bnrSize
 #else
 #define Z_ICON_PATH "TPL/z_icon.tpl"
 #define Z_BNR_PATH "TPL/z_bnr.tpl"
+#define MCARD_ICON mCard.saveIcon
+#define MCARD_BANNER mCard.saveIcon
+#define MCARD_ICON_SIZE gz_iconSize
+#define MCARD_BNR_SIZE gz_iconSize
 #endif
 
 static bool systemSetupGameRAM(System* pSystem) {
@@ -735,7 +743,10 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                 mcardOpen(&mCard, MCARD_FILE_NAME, ZELDA_GC_JP, mCard.saveIcon, mCard.saveBanner, "ZELDA",
                           &gSystemRomConfigurationList[i].currentControllerConfig, MCARD_FILE_SIZE, 0x8000);
             }
-            mCard.file.game.offset = gLanguage; // ???
+
+#if VERSION == CE_P
+            mCard.file.game.buffer[2] = gLanguage;
+#endif
         } else {
             // debug rom?
 #if VERSION == CE_P
@@ -906,15 +917,15 @@ STATIC bool systemSetupGameALL(System* pSystem) {
         simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
 #if VERSION == CE_P
-        strcat(buf1, Z_ICON_FILENAME);
+        strcat(buf2, Z_BNR_FILENAME);
 #endif
-        if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
-            !simulatorDVDRead(&fileInfo, mCard.saveIcon, (gz_iconSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
+        if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
+            !simulatorDVDRead(&fileInfo, MCARD_BANNER, (MCARD_BNR_SIZE + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
             return false;
         }
 
         DVDClose(&fileInfo);
-        simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
+        simulatorUnpackTexPalette((TEXPalette*)MCARD_BANNER);
         mcardOpen(&mCard, "AF", "Animal Forest", mCard.saveIcon, mCard.saveBanner, "AF",
                   &gSystemRomConfigurationList[i].currentControllerConfig, 0x24000, 0x20000);
     } else if (romTestCode(pROM, "NBCE")) {
@@ -942,15 +953,15 @@ STATIC bool systemSetupGameALL(System* pSystem) {
             simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
 #if VERSION == CE_P
-            strcat(buf1, Z_ICON_FILENAME);
+            strcat(buf2, Z_BNR_FILENAME);
 #endif
-            if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
-                !simulatorDVDRead(&fileInfo, mCard.saveIcon, (gz_iconSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
+            if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
+                !simulatorDVDRead(&fileInfo, MCARD_BANNER, (MCARD_BNR_SIZE + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
                 return false;
             }
 
             DVDClose(&fileInfo);
-            simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
+            simulatorUnpackTexPalette((TEXPalette*)MCARD_BANNER);
             mcardOpen(&mCard, "CRUISE", "Cruise 'n USA", mCard.saveIcon, mCard.saveBanner, "CRUISE",
                       &gSystemRomConfigurationList[i].currentControllerConfig, 0x4000, 0x200);
 
@@ -1214,15 +1225,15 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                     simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
 #if VERSION == CE_P
-                    strcat(buf1, Z_ICON_FILENAME);
+                    strcat(buf2, Z_BNR_FILENAME);
 #endif
-                    if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
-                        !simulatorDVDRead(&fileInfo, mCard.saveIcon, (gz_iconSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
+                    if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
+                        !simulatorDVDRead(&fileInfo, MCARD_BANNER, (MCARD_BNR_SIZE + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
                         return false;
                     }
 
                     DVDClose(&fileInfo);
-                    simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
+                    simulatorUnpackTexPalette((TEXPalette*)MCARD_BANNER);
 
                     mcardOpen(&mCard, "PokemonStadium", "Pokemon Stadium", mCard.saveIcon, mCard.saveBanner,
                               "POKEMONSTADIUM", &gSystemRomConfigurationList[i].currentControllerConfig, 0x24000,

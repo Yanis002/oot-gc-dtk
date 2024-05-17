@@ -230,14 +230,10 @@ static bool romGetTagToken(Rom* pROM, tXL_FILE* pFile, RomTokenType* peToken, ch
                     *acData = 0;
                     return true;
                 }
-            } else if (acToken[0] == ',') {
-                if (pROM->tagFile.nMode & 0x200) {
-                    pROM->tagFile.nMode &= ~0x400;
-                }
-            } else if (acToken[0] == ';') {
-                if (pROM->tagFile.nMode & 0x200) {
-                    pROM->tagFile.nMode &= ~0x600;
-                }
+            } else if (acToken[0] == ',' && (pROM->tagFile.nMode & 0x200)) {
+                pROM->tagFile.nMode &= ~0x400;
+            } else if (acToken[0] == ';' && (pROM->tagFile.nMode & 0x200)) {
+                pROM->tagFile.nMode &= ~0x600;
             }
         } else if (eTypeToken == XLFTT_NUMBER) {
             if (pROM->tagFile.nMode & 0x400) {
@@ -261,19 +257,20 @@ static bool romGetTagToken(Rom* pROM, tXL_FILE* pFile, RomTokenType* peToken, ch
                             return false;
                         }
                         if (eTypeToken == XLFTT_LABEL) {
-                            if (romTestCode(pROM, acData)) {
+                            if (romTestCode(pROM, acToken)) {
                                 *peToken = RTT_CODE;
-                                return false;
                             }
-                            if (!xlFileGetToken(pFile, &eTypeToken, acToken, sizeof(acToken) - 1)) {
-                                return false;
-                            }
-                            if (acToken[0] != ',' && acToken[0] != ']') {
-                                return false;
-                            }
+                        } else {
+                            return false;
+                        }
+                        if (!xlFileGetToken(pFile, &eTypeToken, acToken, sizeof(acToken) - 1)) {
+                            return false;
+                        }
+                        if (acToken[0] != ',' && acToken[0] != ']') {
+                            return false;
                         }
                     } while (acToken[0] != ']');
-                    break;
+                    continue;
                 }
                 return false;
             }
@@ -293,39 +290,35 @@ static bool romGetTagToken(Rom* pROM, tXL_FILE* pFile, RomTokenType* peToken, ch
             }
             if (acToken[0] == '[') {
                 *peToken = RTT_NAME_INVALID;
+                
                 do {
                     if (!xlFileGetToken(pFile, &eTypeToken, acToken, sizeof(acToken) - 1)) {
                         return false;
                     }
-                    if (eTypeToken == XLFTT_LABEL) {
-                        if (!romTestCode(pROM, acData)) {
-                            goto block_122;
-                        }
-                        goto block_125;
+
+                    if (eTypeToken == XLFTT_LABEL && romTestCode(pROM, acToken) ||
+                        eTypeToken == XLFTT_NUMBER && xlTokenGetInteger(acToken, &nChecksum) && (nChecksum == pROM->nChecksum)) {
+                        *peToken = RTT_NAME;
                     }
-block_122:
-                    if (eTypeToken == XLFTT_NUMBER) {
-                        if (xlTokenGetInteger(acToken, &nChecksum) && (nChecksum == pROM->nChecksum)) {
-block_125:
-                            *peToken = RTT_NAME;
-                        }
-                        if (!xlFileGetToken(pFile, &eTypeToken, acToken, sizeof(acToken) - 1)) {
+                    
+                    if (!xlFileGetToken(pFile, &eTypeToken, acToken, sizeof(acToken) - 1)) {
+                        return false;
+                    }
+        
+                    if ((acToken[0] != ',') && (acToken[0] != ']')) {
+                        return false;
+                    }
+                    
+                    if (acToken[0] == ']') {
+                        if (!xlFileMatchToken(pFile, XLFTT_SYMBOL, NULL, 0, "=")) {
                             return false;
                         }
-            
-                        if ((acToken[0] != ',') && (acToken[0] != ']')) {
-                            return false;
-                        }
-                        if (acToken[0] == ']') {
-                            if (!xlFileMatchToken(pFile, XLFTT_SYMBOL, NULL, 0, "=")) {
-                                return false;
-                            }
-                            break;
-                        }
+                        break;
                     }
                 } while (true);
+            } else {
+                *peToken = RTT_NAME;
             }
-            *peToken = RTT_NAME;
             return true;
         } else {
             return false;
