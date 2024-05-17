@@ -4,6 +4,7 @@
 #include "dolphin.h"
 #include "emulator/xlFileGCN.h"
 
+#if VERSION == CE_P
 typedef enum XlFileTokenType {
     XLFTT_NONE = -1,
     XLFTT_LABEL = 0,
@@ -13,9 +14,7 @@ typedef enum XlFileTokenType {
     XLFTT_LAST_ = 4,
 } XlFileTokenType;
 
-#if VERSION == CE_P
 bool xlFileGetSize(s32* pnSize, char* szFileName);
-#endif
 
 bool xlFileGetLine(tXL_FILE* pFile, char* acLine, s32 nSizeLine);
 bool xlTokenGetInteger(char* acToken, u32* pnValue);
@@ -23,5 +22,6 @@ bool xlFileSkipLine(tXL_FILE* pFile);
 bool xlFileGetToken(tXL_FILE* pFile, XlFileTokenType* peType, char* acToken, s32 nSizeToken);
 bool xlFileMatchToken(tXL_FILE* pFile, XlFileTokenType eType, char* acToken, s32 nSizeToken, char* szText);
 bool xlFileGetLineSave(tXL_FILE* pFile, tXL_SAVE* pSave);
+#endif
 
 #endif

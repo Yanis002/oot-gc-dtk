@@ -46,9 +46,27 @@
 #endif
 
 #if VERSION == CE_P
+#define Z_ICON_FILENAME "z_icon.tpl"
+#define Z_BNR_FILENAME "z_bnr.tpl"
+#define Z_ICON_PATH buf1
+#define Z_BNR_PATH buf2
+#define DVDOPEN_BNR_PATH Z_BNR_PATH
+#define MCARD_ICON mCard.saveIcon
+#define MCARD_BANNER mCard.saveBanner
+#define MCARD_ICON_SIZE gz_iconSize
+#define MCARD_BNR_SIZE gz_bnrSize
 #define ROMTESTCODE_NZLP || romTestCode(pROM, "NZLP")
+#define CZLJ_ELSE else if (romTestCode(pROM, "CZLJ"))
 #else
+#define Z_ICON_PATH "TPL/z_icon.tpl"
+#define Z_BNR_PATH "TPL/z_bnr.tpl"
+#define DVDOPEN_BNR_PATH Z_ICON_PATH
+#define MCARD_ICON mCard.saveIcon
+#define MCARD_BANNER mCard.saveIcon
+#define MCARD_ICON_SIZE gz_iconSize
+#define MCARD_BNR_SIZE gz_iconSize
 #define ROMTESTCODE_NZLP
+#define CZLJ_ELSE else
 #endif
 
 _XL_OBJECTTYPE gClassSystem = {
@@ -159,24 +177,6 @@ SystemRomConfig gSystemRomConfigurationList[1];
 u32 nTickMultiplier = 2;
 f32 fTickScale = 1.0;
 u32 gnFlagZelda;
-
-#if VERSION == CE_P
-#define Z_ICON_FILENAME "z_icon.tpl"
-#define Z_BNR_FILENAME "z_bnr.tpl"
-#define Z_ICON_PATH buf1
-#define Z_BNR_PATH buf2
-#define MCARD_ICON mCard.saveIcon
-#define MCARD_BANNER mCard.saveBanner
-#define MCARD_ICON_SIZE gz_iconSize
-#define MCARD_BNR_SIZE gz_bnrSize
-#else
-#define Z_ICON_PATH "TPL/z_icon.tpl"
-#define Z_BNR_PATH "TPL/z_bnr.tpl"
-#define MCARD_ICON mCard.saveIcon
-#define MCARD_BANNER mCard.saveIcon
-#define MCARD_ICON_SIZE gz_iconSize
-#define MCARD_BNR_SIZE gz_iconSize
-#endif
 
 static bool systemSetupGameRAM(System* pSystem) {
     char* szExtra;
@@ -611,7 +611,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
         if (!cpuSetCodeHack(pCPU, 0x80317938, 0x5420FFFE, 0)) {
             return false;
         }
-    } else if (romTestCode(pROM, "CZLE") || romTestCode(pROM, "CZLJ") || romTestCode(pROM, "NZLP")) {
+    } else if (romTestCode(pROM, "CZLE") || romTestCode(pROM, "CZLJ") ROMTESTCODE_NZLP) {
         // Ocarina of Time
         pSystem->eTypeROM = SRT_ZELDA1;
         nSizeSound = 0x1000;
@@ -644,15 +644,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                 if (!cpuSetCodeHack(pCPU, 0x8006E468, 0x97040000, -1)) {
                     return false;
                 }
-            } else if (romTestCode(pROM, "CZLJ")) {
-                if (!cpuSetCodeHack(pCPU, 0x80062D64, 0x94639680, -1)) {
-                    return false;
-                }
-
-                if (!cpuSetCodeHack(pCPU, 0x8006E468, 0x97040000, -1)) {
-                    return false;
-                }
-            } else if (romTestCode(pROM, "NZLP")) {
+            } CZLJ_ELSE {
                 if (!cpuSetCodeHack(pCPU, 0x80062D64, 0x94639680, -1)) {
                     return false;
                 }
@@ -661,6 +653,17 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                     return false;
                 }
             }
+#if VERSION == CE_P
+            else if (romTestCode(pROM, "NZLP")) {
+                if (!cpuSetCodeHack(pCPU, 0x80062D64, 0x94639680, -1)) {
+                    return false;
+                }
+
+                if (!cpuSetCodeHack(pCPU, 0x8006E468, 0x97040000, -1)) {
+                    return false;
+                }
+            }
+#endif
         } else {
             if (romTestCode(pROM, "CZLE")) {
                 if (!cpuSetCodeHack(pCPU, 0x8005BB14, ((gnFlagZelda & 2) ? 0x9463D040 : 0x9463D000), -1)) {
@@ -670,7 +673,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                 if (!cpuSetCodeHack(pCPU, 0x80066638, 0x97040000, -1)) {
                     return false;
                 }
-            } else if (romTestCode(pROM, "CZLJ")) {
+            } CZLJ_ELSE {
                 if (!cpuSetCodeHack(pCPU, 0x8005BB34, 0x9463D040, -1)) {
                     return false;
                 }
@@ -678,7 +681,9 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                 if (!cpuSetCodeHack(pCPU, 0x80066658, 0x97040000, -1)) {
                     return false;
                 }
-            } else if (romTestCode(pROM, "NZLP")) {
+            } 
+#if VERSION == CE_P
+            else if (romTestCode(pROM, "NZLP")) {
                 if (!cpuSetCodeHack(pCPU, 0x8005BB3C, 0x9502000C, -1)) {
                     return false;
                 }
@@ -687,6 +692,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                     return false;
                 }
             }
+#endif
         }
 #endif
 
@@ -919,7 +925,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
 #if VERSION == CE_P
         strcat(buf2, Z_BNR_FILENAME);
 #endif
-        if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
+        if (DVDOpen(DVDOPEN_BNR_PATH, &fileInfo) == 1 &&
             !simulatorDVDRead(&fileInfo, MCARD_BANNER, (MCARD_BNR_SIZE + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
             return false;
         }
@@ -955,7 +961,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
 #if VERSION == CE_P
             strcat(buf2, Z_BNR_FILENAME);
 #endif
-            if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
+            if (DVDOpen(DVDOPEN_BNR_PATH, &fileInfo) == 1 &&
                 !simulatorDVDRead(&fileInfo, MCARD_BANNER, (MCARD_BNR_SIZE + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
                 return false;
             }
@@ -1227,7 +1233,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
 #if VERSION == CE_P
                     strcat(buf2, Z_BNR_FILENAME);
 #endif
-                    if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
+                    if (DVDOpen(DVDOPEN_BNR_PATH, &fileInfo) == 1 &&
                         !simulatorDVDRead(&fileInfo, MCARD_BANNER, (MCARD_BNR_SIZE + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
                         return false;
                     }
