@@ -236,8 +236,8 @@ config.linker_version = "GC/1.1"
 def SIM(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
     if lib_name == "Core" and version_num != VERSIONS.index("ce-e") and version_num != VERSIONS.index("mq-e"):
         # MQ/CE PAL contains extra files
-        objects.pop(3) # "emulator/Core/xlText.c"
-        objects.pop(5) # "emulator/Core/xlFile.c"
+        objects.pop(3) # "emulator/xlText.c"
+        objects.pop(5) # "emulator/xlFile.c"
 
     return {
         "lib": lib_name,
@@ -289,60 +289,60 @@ config.libs = [
     SIM(
         "Core",
         [
-            Object(NonMatching if version_num == VERSIONS.index("ce-e") else Matching, "emulator/Core/xlCoreGCN.c"),
-            Object(Matching, "emulator/Core/xlPostGCN.c"),
-            Object(Matching, "emulator/Core/xlFileGCN.c"),
-            Object(Matching, "emulator/Core/xlText.c"),
-            Object(Matching, "emulator/Core/xlList.c"),
-            Object(Matching, "emulator/Core/xlHeap.c"),
-            Object(Matching, "emulator/Core/xlFile.c"),
-            Object(Matching, "emulator/Core/xlObject.c"),
+            Object(Matching, "emulator/xlCoreGCN.c"),
+            Object(Matching, "emulator/xlPostGCN.c"),
+            Object(Matching, "emulator/xlFileGCN.c"),
+            Object(Matching, "emulator/xlText.c"),
+            Object(Matching, "emulator/xlList.c"),
+            Object(Matching, "emulator/xlHeap.c"),
+            Object(Matching, "emulator/xlFile.c"),
+            Object(Matching, "emulator/xlObject.c"),
         ]
     ),
     SIM(
         "Fire",
         [
-            Object(NonMatching if version_num == VERSIONS.index("ce-e") or version_num == VERSIONS.index("mq-e") else Matching, "emulator/Fire/simGCN.c"),
-            Object(Matching, "emulator/Fire/movie.c"),
+            Object(NonMatching if version_num == VERSIONS.index("ce-e") or version_num == VERSIONS.index("mq-e") else Matching, "emulator/simGCN.c"),
+            Object(Matching, "emulator/movie.c"),
         ]
     ),
     THP(
         "THP",
         [
             # NOTE: these files should be in the THP lib
-            Object(Matching, "emulator/Fire/THPPlayer.c"),
-            Object(Matching, "emulator/Fire/THPAudioDecode.c"),
-            Object(Matching, "emulator/Fire/THPDraw.c"),
-            Object(Matching, "emulator/Fire/THPRead.c", cflags=[*cflags_dolphin, "-inline auto,deferred"]),
-            Object(Matching, "emulator/Fire/THPVideoDecode.c"),
+            Object(Matching, "emulator/THPPlayer.c"),
+            Object(Matching, "emulator/THPAudioDecode.c"),
+            Object(Matching, "emulator/THPDraw.c"),
+            Object(Matching, "emulator/THPRead.c", cflags=[*cflags_dolphin, "-inline auto,deferred"]),
+            Object(Matching, "emulator/THPVideoDecode.c"),
         ]
     ),
     SIM(
         "Fire",
         [
-            Object(NonMatching, "emulator/Fire/mcardGCN.c"),
-            Object(Matching, "emulator/Fire/codeGCN.c"),
-            Object(NonMatching, "emulator/Fire/soundGCN.c"),
-            Object(NonMatching, "emulator/Fire/frame.c"),
-            Object(Matching, "emulator/Fire/system.c"),
-            Object(NonMatching, "emulator/Fire/cpu.c"),
-            Object(Matching, "emulator/Fire/pif.c"),
-            Object(Matching, "emulator/Fire/ram.c"),
-            Object(Matching, "emulator/Fire/rom.c"),
-            Object(Matching, "emulator/Fire/rdp.c"),
-            Object(Matching, "emulator/Fire/rdb.c"),
-            Object(NonMatching, "emulator/Fire/rsp.c"),
-            Object(Matching, "emulator/Fire/mips.c"),
-            Object(Matching, "emulator/Fire/disk.c"),
-            Object(Matching, "emulator/Fire/flash.c"),
-            Object(Matching, "emulator/Fire/sram.c"),
-            Object(Matching, "emulator/Fire/audio.c"),
-            Object(Matching, "emulator/Fire/video.c"),
-            Object(Matching, "emulator/Fire/serial.c"),
-            Object(Matching, "emulator/Fire/library.c"),
-            Object(Matching, "emulator/Fire/peripheral.c"),
-            Object(NonMatching, "emulator/Fire/_frameGCNcc.c"),
-            Object(NonMatching, "emulator/Fire/_buildtev.c"),
+            Object(NonMatching, "emulator/mcardGCN.c"),
+            Object(Matching, "emulator/codeGCN.c"),
+            Object(NonMatching, "emulator/soundGCN.c"),
+            Object(NonMatching, "emulator/frame.c"),
+            Object(Matching, "emulator/system.c"),
+            Object(NonMatching, "emulator/cpu.c"),
+            Object(Matching, "emulator/pif.c"),
+            Object(Matching, "emulator/ram.c"),
+            Object(Matching, "emulator/rom.c"),
+            Object(Matching, "emulator/rdp.c"),
+            Object(Matching, "emulator/rdb.c"),
+            Object(NonMatching, "emulator/rsp.c"),
+            Object(Matching, "emulator/mips.c"),
+            Object(Matching, "emulator/disk.c"),
+            Object(Matching, "emulator/flash.c"),
+            Object(Matching, "emulator/sram.c"),
+            Object(Matching, "emulator/audio.c"),
+            Object(Matching, "emulator/video.c"),
+            Object(Matching, "emulator/serial.c"),
+            Object(Matching, "emulator/library.c"),
+            Object(Matching, "emulator/peripheral.c"),
+            Object(NonMatching, "emulator/_frameGCNcc.c"),
+            Object(NonMatching, "emulator/_buildtev.c"),
         ],
     ),
     DolphinLib(
