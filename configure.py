@@ -234,8 +234,8 @@ config.linker_version = "GC/1.1"
 
 # for SIM objects (the emulator files)
 def SIM(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
-    if lib_name == "Core" and version_num != VERSIONS.index("ce-e"):
-        # CE PAL contains extra files
+    if lib_name == "Core" and version_num != VERSIONS.index("ce-e") and version_num != VERSIONS.index("mq-e"):
+        # MQ/CE PAL contains extra files
         objects.pop(3) # "emulator/Core/xlText.c"
         objects.pop(5) # "emulator/Core/xlFile.c"
 
