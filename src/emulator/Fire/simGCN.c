@@ -17,7 +17,7 @@
 #include "string.h"
 
 // clang-format off
-#if VERSION == CE_P
+#if VERSION == CE_E
 #include "gcoverOpen.inc"
 #include "gnoDisk.inc"
 #include "gretryErr.inc"

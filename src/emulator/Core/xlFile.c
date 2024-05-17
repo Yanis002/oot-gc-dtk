@@ -5,7 +5,7 @@
 #include "emulator/xlObject.h"
 #include "emulator/xlText.h"
 
-#if VERSION == CE_P
+#if VERSION == CE_E
 // this variable is inside xlFile.c on CE-EU
 _XL_OBJECTTYPE gTypeFile = {
     "FILE",
@@ -21,7 +21,7 @@ static char* gacValidLabel = "ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvw
 
 char* strchr(const char* str, int chr);
 
-#if VERSION == CE_P
+#if VERSION == CE_E
 // this function is inside xlFileGCN.c on the other versions
 bool xlFileGetSize(s32* pnSize, char* szFileName) {
     tXL_FILE* pFile;

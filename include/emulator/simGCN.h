@@ -70,7 +70,7 @@ typedef enum SimArgumentType {
     SAT_COUNT = 8
 } SimArgumentType;
 
-#if VERSION == CE_P
+#if VERSION == CE_E
 extern u8 gLanguage;
 
 extern u8 ggerman_coverOpen[];

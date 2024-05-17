@@ -37,7 +37,7 @@ static void xlCoreInitRenderMode(GXRenderModeObj* mode) {
         return;
     }
 
-#if VERSION == CE_P
+#if VERSION == CE_E
     rmode = &GXEurgb60Hz480IntDf;
     rmode->viXOrigin -= 0x20;
     rmode->viWidth += 0x40;
@@ -244,7 +244,7 @@ int main(int nCount, char** aszArgument) {
         return false;
     }
 
-    OSPanic("xlCoreGCN.c", VERSION == CE_P ? 593 : 577, "CORE DONE!");
+    OSPanic("xlCoreGCN.c", VERSION == CE_E ? 593 : 577, "CORE DONE!");
     return false;
 }
 

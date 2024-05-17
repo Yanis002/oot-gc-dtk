@@ -31,15 +31,15 @@ from tools.project import (
 # when updating this list
 
 VERSIONS = [
-    "MQ-J",  # 0
-    "MQ-U",  # 1
-    # "MQ-P",  # 2
-    "CE-J",  # 3
-    "CE-U",  # 4
-    "CE-P",  # 5
+    "mq-j",  # 0
+    "mq-u",  # 1
+    # "mq-e",  # 2
+    "ce-j",  # 3
+    "ce-u",  # 4
+    "ce-e",  # 5
 ]
 
-DEFAULT_VERSION = VERSIONS.index("MQ-J")
+DEFAULT_VERSION = VERSIONS.index("mq-j")
 
 ### Script's arguments
 
@@ -55,7 +55,7 @@ parser.add_argument(
     "-v",
     "--version",
     choices=VERSIONS,
-    type=str.upper,
+    type=str.lower,
     default=VERSIONS[DEFAULT_VERSION],
     help="version to build",
 )
@@ -125,7 +125,7 @@ args = parser.parse_args()
 ### Create new project configuration
 
 config = ProjectConfig()
-config.version = args.version.upper() # allows users to use lowercase when defining the version to use
+config.version = args.version.lower()
 version_num = VERSIONS.index(config.version)
 
 # Apply arguments
@@ -171,8 +171,8 @@ config.ldflags = [
     "-warn off"
 ]
 
-# ``-DMQ_J=0 -DMQ-U=2, ...``
-version_defines = " ".join(f"-D{version.replace('-', '_')}={i}" for i, version in enumerate(VERSIONS))
+# ``-DMQ_J=0 -DMQ_U=1, ...``
+version_defines = " ".join(f"-D{version.replace('-', '_').upper()}={i}" for i, version in enumerate(VERSIONS))
 
 cflags_base = [
     "-Cpp_exceptions off",
@@ -196,7 +196,7 @@ cflags_base = [
     f"-i build/{config.version}/include",
     f"{version_defines}",
     f"-DVERSION={version_num}",
-    f"-DDOLPHIN_REV={2002 if version_num == VERSIONS.index('MQ-J') else 2003}",
+    f"-DDOLPHIN_REV={2002 if version_num == VERSIONS.index('mq-j') else 2003}",
 ]
 
 # Debug flags
@@ -234,7 +234,7 @@ config.linker_version = "GC/1.1"
 
 # for SIM objects (the emulator files)
 def SIM(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
-    if lib_name == "Core" and version_num != VERSIONS.index("CE-P"):
+    if lib_name == "Core" and version_num != VERSIONS.index("ce-e"):
         # CE PAL contains extra files
         objects.pop(3) # "emulator/Core/xlText.c"
         objects.pop(5) # "emulator/Core/xlFile.c"
@@ -302,7 +302,7 @@ config.libs = [
     SIM(
         "Fire",
         [
-            Object(NonMatching if version_num == VERSIONS.index("CE-P") else Matching, "emulator/Fire/simGCN.c"),
+            Object(NonMatching if version_num == VERSIONS.index("ce-e") else Matching, "emulator/Fire/simGCN.c"),
             Object(Matching, "emulator/Fire/movie.c"),
         ]
     ),
@@ -368,7 +368,7 @@ config.libs = [
             Object(Matching, "dolphin/os/OSMessage.c"),
             Object(Matching, "dolphin/os/OSMemory.c"),
             Object(Matching, "dolphin/os/OSMutex.c"),
-            Object(Matching if version_num > VERSIONS.index("MQ-J") else NonMatching, "dolphin/os/OSReboot.c"),
+            Object(Matching if version_num > VERSIONS.index("mq-j") else NonMatching, "dolphin/os/OSReboot.c"),
             Object(Matching, "dolphin/os/OSReset.c"),
             Object(Matching, "dolphin/os/OSResetSW.c"),
             Object(Matching, "dolphin/os/OSRtc.c"),

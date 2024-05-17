@@ -4,7 +4,7 @@
 #include "dolphin.h"
 #include "emulator/xlFileGCN.h"
 
-#if VERSION == CE_P
+#if VERSION == CE_E
 typedef enum XlFileTokenType {
     XLFTT_NONE = -1,
     XLFTT_LABEL = 0,

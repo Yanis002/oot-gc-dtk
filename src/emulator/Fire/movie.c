@@ -6,7 +6,7 @@
 
 #if VERSION == CE_U
 #define MOVIE_FILENAME "us_final_zelda_credits_sound.thp"
-#elif VERSION == CE_P
+#elif VERSION == CE_E
 #define MOVIE_FILENAME "pal_zelda_w_snd.thp"
 #else
 #define MOVIE_FILENAME "final_zelda_credits_sound.thp"

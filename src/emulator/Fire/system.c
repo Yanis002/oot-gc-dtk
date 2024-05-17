@@ -34,7 +34,7 @@
 #define ZELDA_GC_JP "Zelda: Ocarina of Time"
 #define MCARD_FILE_NAME "ZELDA"
 #define MCARD_FILE_SIZE (0xC000 * 2)
-#elif VERSION == CE_U || VERSION == CE_P
+#elif VERSION == CE_U || VERSION == CE_E
 #define ZELDA_GC_JP "Zelda: Collector's Edition"
 #define MCARD_FILE_NAME "ZELDA1"
 #define MCARD_FILE_SIZE (0xC000)
@@ -45,7 +45,7 @@
 #define MCARD_FILE_SIZE (0xC000)
 #endif
 
-#if VERSION == CE_P
+#if VERSION == CE_E
 #define Z_ICON_FILENAME "z_icon.tpl"
 #define Z_BNR_FILENAME "z_bnr.tpl"
 #define Z_ICON_PATH buf1
@@ -243,11 +243,11 @@ static bool systemSetupGameRAM(System* pSystem) {
             case 0x7E8BEE60:
                 gnFlagZelda = 5;
                 break;
-#else // MQ_U, CE_U or CE_P
+#else // MQ_U, CE_U or CE_E
             case 0x5CAC1CF7:
                 gnFlagZelda = 2;
                 break;
-#if VERSION == CE_P
+#if VERSION == CE_E
             case 0x5CABE4F4:
                 gnFlagZelda = 2;
                 break;
@@ -259,13 +259,13 @@ static bool systemSetupGameRAM(System* pSystem) {
                 gnFlagZelda = 0;
                 break;
             case 0x5CAC1C8F:
-#if VERSION == CE_P
+#if VERSION == CE_E
                 gnFlagZelda = 0;
 #else
                 gnFlagZelda = romTestCode(pROM, "CZLE") ? 2 : 0;
 #endif
                 break;
-#if VERSION == CE_P
+#if VERSION == CE_E
             case 0x5CABE48C:
                 gnFlagZelda = 0;
                 break;
@@ -481,7 +481,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
     s32 i;
     u64 nTimeRetrace;
     char acCode[5];
-#if VERSION == CE_P
+#if VERSION == CE_E
     char buf1[30] = "TPL/";
     char buf2[30] = "TPL/";
 #endif
@@ -495,7 +495,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
     pROM = SYSTEM_ROM(pSystem);
     pPIF = SYSTEM_PIF(pSystem);
 
-#if VERSION == CE_P
+#if VERSION == CE_E
     if (gLanguage == 1) {
         strcpy(buf1, "TPL/GERMAN/");
         strcpy(buf2, "TPL/GERMAN/");
@@ -584,7 +584,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
         pSystem->eTypeROM = SRT_MARIO;
         nSizeSound = 0x1000;
 
-#if VERSION == CE_P
+#if VERSION == CE_E
         strcat(buf1, Z_ICON_FILENAME);
 #endif
         if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
@@ -595,7 +595,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
         DVDClose(&fileInfo);
         simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
-#if VERSION == CE_P
+#if VERSION == CE_E
         strcat(buf2, Z_BNR_FILENAME);
 #endif
         if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
@@ -653,7 +653,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                     return false;
                 }
             }
-#if VERSION == CE_P
+#if VERSION == CE_E
             else if (romTestCode(pROM, "NZLP")) {
                 if (!cpuSetCodeHack(pCPU, 0x80062D64, 0x94639680, -1)) {
                     return false;
@@ -682,7 +682,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                     return false;
                 }
             } 
-#if VERSION == CE_P
+#if VERSION == CE_E
             else if (romTestCode(pROM, "NZLP")) {
                 if (!cpuSetCodeHack(pCPU, 0x8005BB3C, 0x9502000C, -1)) {
                     return false;
@@ -700,7 +700,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
             if (!(gnFlagZelda & 2)) {
                 // CE-J/MQ-J?
 
-#if VERSION == CE_P
+#if VERSION == CE_E
                 strcat(buf1, Z_ICON_FILENAME);
 #endif
                 if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
@@ -711,7 +711,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                 DVDClose(&fileInfo);
                 simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
-#if VERSION == CE_P
+#if VERSION == CE_E
                 strcat(buf2, Z_BNR_FILENAME);
 #endif
                 if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
@@ -725,7 +725,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                           &gSystemRomConfigurationList[i].currentControllerConfig, MCARD_FILE_SIZE, 0x8000);
 
             } else {
-#if VERSION == CE_P
+#if VERSION == CE_E
                 strcat(buf1, Z_ICON_FILENAME);
 #endif
                 if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
@@ -736,7 +736,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                 DVDClose(&fileInfo);
                 simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
-#if VERSION == CE_P
+#if VERSION == CE_E
                 strcat(buf2, Z_BNR_FILENAME);
 #endif
                 if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
@@ -750,12 +750,12 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                           &gSystemRomConfigurationList[i].currentControllerConfig, MCARD_FILE_SIZE, 0x8000);
             }
 
-#if VERSION == CE_P
+#if VERSION == CE_E
             mCard.file.game.buffer[2] = gLanguage;
 #endif
         } else {
             // debug rom?
-#if VERSION == CE_P
+#if VERSION == CE_E
             strcat(buf1, Z_ICON_FILENAME);
 #endif
             if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
@@ -766,7 +766,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
             DVDClose(&fileInfo);
             simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
-#if VERSION == CE_P
+#if VERSION == CE_E
             strcat(buf2, Z_BNR_FILENAME);
 #endif
             if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
@@ -801,7 +801,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
 
         anMode[4] = 0x17D9;
 
-#if VERSION == CE_P
+#if VERSION == CE_E
         strcat(buf1, Z_ICON_FILENAME);
 #endif
         if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
@@ -812,7 +812,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
         DVDClose(&fileInfo);
         simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
-#if VERSION == CE_P
+#if VERSION == CE_E
         strcat(buf2, Z_BNR_FILENAME);
 #endif
         if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
@@ -886,7 +886,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
         pCPU->nCompileFlag |= 0x1010;
     } else if (romTestCode(pROM, "NPWE")) {
         // Pilotwings 64
-#if VERSION == CE_P
+#if VERSION == CE_E
         strcat(buf1, Z_ICON_FILENAME);
 #endif
         if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
@@ -897,7 +897,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
         DVDClose(&fileInfo);
         simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
-#if VERSION == CE_P
+#if VERSION == CE_E
         strcat(buf2, Z_BNR_FILENAME);
 #endif
         if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
@@ -911,7 +911,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                   &gSystemRomConfigurationList[i].currentControllerConfig, 0x4000, 0x200);
     } else if (romTestCode(pROM, "NAFJ")) {
         // Animal Forest
-#if VERSION == CE_P
+#if VERSION == CE_E
         strcat(buf1, Z_ICON_FILENAME);
 #endif
         if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
@@ -922,7 +922,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
         DVDClose(&fileInfo);
         simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
-#if VERSION == CE_P
+#if VERSION == CE_E
         strcat(buf2, Z_BNR_FILENAME);
 #endif
         if (DVDOpen(DVDOPEN_BNR_PATH, &fileInfo) == 1 &&
@@ -947,7 +947,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
             }
         } else if (romTestCode(pROM, "NCUE")) {
             // Cruis'n USA
-#if VERSION == CE_P
+#if VERSION == CE_E
             strcat(buf1, Z_ICON_FILENAME);
 #endif
             if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
@@ -958,7 +958,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
             DVDClose(&fileInfo);
             simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
-#if VERSION == CE_P
+#if VERSION == CE_E
             strcat(buf2, Z_BNR_FILENAME);
 #endif
             if (DVDOpen(DVDOPEN_BNR_PATH, &fileInfo) == 1 &&
@@ -1010,7 +1010,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                     }
                 }
 
-#if VERSION == CE_P
+#if VERSION == CE_E
                 strcat(buf1, Z_ICON_FILENAME);
 #endif
                 if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
@@ -1021,7 +1021,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                 DVDClose(&fileInfo);
                 simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
-#if VERSION == CE_P
+#if VERSION == CE_E
                 strcat(buf2, Z_BNR_FILENAME);
 #endif
                 if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
@@ -1072,7 +1072,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                 // Mario Kart 64
                 pSystem->eTypeROM = SRT_MARIOKART;
 
-#if VERSION == CE_P
+#if VERSION == CE_E
                 strcat(buf1, Z_ICON_FILENAME);
 #endif
                 if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
@@ -1083,7 +1083,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                 DVDClose(&fileInfo);
                 simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
-#if VERSION == CE_P
+#if VERSION == CE_E
                 strcat(buf2, Z_BNR_FILENAME);
 #endif
                 if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
@@ -1114,7 +1114,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                 // Mario Party 1
                 pSystem->eTypeROM = SRT_MARIOPARTY1;
 
-#if VERSION == CE_P
+#if VERSION == CE_E
                 strcat(buf1, Z_ICON_FILENAME);
 #endif
                 if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
@@ -1125,7 +1125,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                 DVDClose(&fileInfo);
                 simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
-#if VERSION == CE_P
+#if VERSION == CE_E
                 strcat(buf2, Z_BNR_FILENAME);
 #endif
                 if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
@@ -1141,7 +1141,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                 // Mario Party 2
                 pSystem->eTypeROM = SRT_MARIOPARTY2;
 
-#if VERSION == CE_P
+#if VERSION == CE_E
                 strcat(buf1, Z_ICON_FILENAME);
 #endif
                 if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
@@ -1152,7 +1152,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                 DVDClose(&fileInfo);
                 simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
-#if VERSION == CE_P
+#if VERSION == CE_E
                 strcat(buf2, Z_BNR_FILENAME);
 #endif
                 if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
@@ -1168,7 +1168,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                 // Mario Party 3
                 pSystem->eTypeROM = SRT_MARIOPARTY3;
 
-#if VERSION == CE_P
+#if VERSION == CE_E
                 strcat(buf1, Z_ICON_FILENAME);
 #endif
                 if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
@@ -1179,7 +1179,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                 DVDClose(&fileInfo);
                 simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
-#if VERSION == CE_P
+#if VERSION == CE_E
                 strcat(buf2, Z_BNR_FILENAME);
 #endif
                 if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
@@ -1194,7 +1194,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
             } else if (!romTestCode(pROM, "NM3E") && !romTestCode(pROM, "NRIE")) {
                 if (romTestCode(pROM, "NMQE")) {
                     // Paper Mario
-#if VERSION == CE_P
+#if VERSION == CE_E
                     strcat(buf1, Z_ICON_FILENAME);
 #endif
                     if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
@@ -1205,7 +1205,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                     DVDClose(&fileInfo);
                     simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
-#if VERSION == CE_P
+#if VERSION == CE_E
                     strcat(buf2, Z_BNR_FILENAME);
 #endif
                     if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
@@ -1219,7 +1219,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                     mcardOpen(&mCard, "PaperMario", "Paper Mario", mCard.saveIcon, mCard.saveBanner, "PAPERMARIO",
                               &gSystemRomConfigurationList[i].currentControllerConfig, 0x24000, 0x20000);
                 } else if (romTestCode(pROM, "NPOE")) {
-#if VERSION == CE_P
+#if VERSION == CE_E
                     strcat(buf1, Z_ICON_FILENAME);
 #endif
                     if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
@@ -1230,7 +1230,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                     DVDClose(&fileInfo);
                     simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
-#if VERSION == CE_P
+#if VERSION == CE_E
                     strcat(buf2, Z_BNR_FILENAME);
 #endif
                     if (DVDOpen(DVDOPEN_BNR_PATH, &fileInfo) == 1 &&
@@ -1264,7 +1264,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                     if (romTestCode(pROM, "NFXE") || romTestCode(pROM, "NFXJ")) {
                         pSystem->eTypeROM = SRT_STARFOX;
 
-#if VERSION == CE_P
+#if VERSION == CE_E
                         strcat(buf1, Z_ICON_FILENAME);
 #endif
                         if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
@@ -1275,7 +1275,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                         DVDClose(&fileInfo);
                         simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
-#if VERSION == CE_P
+#if VERSION == CE_E
                         strcat(buf2, Z_BNR_FILENAME);
 #endif
                         if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
@@ -1331,7 +1331,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                             return false;
                         }
 
-#if VERSION == CE_P
+#if VERSION == CE_E
                         strcat(buf1, Z_ICON_FILENAME);
 #endif
                         if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
@@ -1342,7 +1342,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                         DVDClose(&fileInfo);
                         simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
-#if VERSION == CE_P
+#if VERSION == CE_E
                         strcat(buf2, Z_BNR_FILENAME);
 #endif
                         if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
@@ -1365,7 +1365,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                                 return false;
                             }
 
-#if VERSION == CE_P
+#if VERSION == CE_E
                             strcat(buf1, Z_ICON_FILENAME);
 #endif
                             if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
@@ -1377,7 +1377,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                             DVDClose(&fileInfo);
                             simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
-#if VERSION == CE_P
+#if VERSION == CE_E
                             strcat(buf2, Z_BNR_FILENAME);
 #endif
                             if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
@@ -1409,7 +1409,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
 
                             pCPU->nCompileFlag |= 0x10;
                         } else if (romTestCode(pROM, "NYSE")) {
-#if VERSION == CE_P
+#if VERSION == CE_E
                             strcat(buf1, Z_ICON_FILENAME);
 #endif
                             if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
@@ -1421,7 +1421,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                             DVDClose(&fileInfo);
                             simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
-#if VERSION == CE_P
+#if VERSION == CE_E
                             strcat(buf2, Z_BNR_FILENAME);
 #endif
                             if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&

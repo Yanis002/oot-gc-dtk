@@ -36,7 +36,7 @@ _XL_OBJECTTYPE gClassROM = {
     (EventFunc)romEvent,
 };
 
-#if VERSION == CE_P
+#if VERSION == CE_E
 static u32 ganOffsetBlock_ZLP[198] = {
     0x0168E860, 0x016DCE6F, 0x016DCE70, 0x01734E7F, 0x01734E80, 0x017678BF, 0x017678C0, 0x017C7BEF, 0x017C7BF0,
     0x0183813F, 0x01838140, 0x018A3E5F, 0x018A3E60, 0x0192440F, 0x01924410, 0x0198DA6F, 0x0198DA70, 0x019D3CCF,
@@ -188,7 +188,7 @@ static u32 ganOffsetBlock_URAZLJ[198] = {
 };
 #endif
 
-#if VERSION == CE_P
+#if VERSION == CE_E
 #define OFFSET_BLOCK_ARRAY ganOffsetBlock_ZLP
 #define MQ_OFFSET_BLOCK_ARRAY ganOffsetBlock_URAZLP
 #else
@@ -200,7 +200,7 @@ static bool gbProgress;
 static void* gpImageBack;
 static s32 iImage;
 
-#if VERSION == CE_P
+#if VERSION == CE_E
 static bool romGetTagToken(Rom* pROM, tXL_FILE* pFile, RomTokenType* peToken, char* acData) {
     // Parameters
     // struct __anon_0x509F2* pROM; // r27
@@ -687,7 +687,7 @@ static bool romCacheGame_ZELDA(f32 rProgress) {
     return true;
 }
 
-#if VERSION == CE_P
+#if VERSION == CE_E
 bool romCacheGame(Rom* pROM) {
     // Parameters
     // struct __anon_0x509F2* pROM; // r31
@@ -1203,7 +1203,7 @@ bool romGetCode(Rom* pROM, char* acCode) {
     return true;
 }
 
-#if VERSION == CE_P
+#if VERSION == CE_E
 bool romTestCode(Rom* pROM, char* acCode) {
     s32 iCode;
     int nCode1;
@@ -1594,7 +1594,7 @@ static inline void romOpen(Rom* pROM, char* szNameFile) {
 }
 
 bool romSetImage(Rom* pROM, char* szNameFile) {
-#if VERSION == CE_P
+#if VERSION == CE_E
     tXL_FILE* pFile;
     RomTokenType eToken;
     s32 iCode;
@@ -1631,7 +1631,7 @@ bool romSetImage(Rom* pROM, char* szNameFile) {
         return false;
     }
 
-#if VERSION == CE_P
+#if VERSION == CE_E
     if (!xlFileSetPosition(pFile, pROM->offsetToRom + 0x1000)) {
         return false;
     }
@@ -1645,7 +1645,7 @@ bool romSetImage(Rom* pROM, char* szNameFile) {
         return false;
     }
 
-#if VERSION == CE_P
+#if VERSION == CE_E
     for (pROM->nChecksum = 0, iCode = 0; iCode < ARRAY_COUNT(anData); iCode++) {
         pROM->nChecksum += anData[iCode];
     }
@@ -1653,7 +1653,7 @@ bool romSetImage(Rom* pROM, char* szNameFile) {
 
     romOpen(pROM, szNameFile);
 
-#if VERSION == CE_P
+#if VERSION == CE_E
     pROM->tagFile.nMode = 0;
     if (xlFileOpen(&pFile, XLFT_TEXT, "ROMS.TAG")) {
         while (romGetTagToken(pROM, pFile, &eToken, acToken)) {
@@ -1713,7 +1713,7 @@ bool romEvent(Rom* pROM, s32 nEvent, void* pArgument) {
             pROM->load.nOffset1 = 0;
             pROM->load.nOffset0 = 0;
             pROM->load.bDone = false;
-#if VERSION == CE_P
+#if VERSION == CE_E
             pROM->tagFile.nMode = 0;
 #endif
             pROM->nSizeCacheRAM = 0;
