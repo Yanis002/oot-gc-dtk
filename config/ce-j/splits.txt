@@ -10,36 +10,36 @@ Sections:
 	.sbss       type:bss align:32
 	.sdata2     type:rodata align:32
 
-emulator/Core/xlCoreGCN.c:
+emulator/xlCoreGCN.c:
 	.text       start:0x800055A0 end:0x80005E04
 	.data       start:0x800D3720 end:0x800DB7E0
 	.bss        start:0x800F3EE0 end:0x800F3FA0
 	.sbss       start:0x80135580 end:0x801355A0
 	.sdata2     start:0x80135D00 end:0x80135D18
 
-emulator/Core/xlPostGCN.c:
+emulator/xlPostGCN.c:
 	.text       start:0x80005E04 end:0x80005E68
 
-emulator/Core/xlFileGCN.c:
+emulator/xlFileGCN.c:
 	.text       start:0x80005E68 end:0x80006280
 	.data       start:0x800DB7E0 end:0x800DB800
 	.sdata      start:0x80134CE0 end:0x80134CE8
 	.sbss       start:0x801355A0 end:0x801355A8
 
-emulator/Core/xlList.c:
+emulator/xlList.c:
 	.text       start:0x80006280 end:0x80006648
 	.bss        start:0x800F3FA0 end:0x800F3FB0
 
-emulator/Core/xlHeap.c:
+emulator/xlHeap.c:
 	.text       start:0x80006648 end:0x80007BC0
 	.bss        start:0x800F3FB0 end:0x800F4540
 	.sbss       start:0x801355A8 end:0x801355C8
 
-emulator/Core/xlObject.c:
+emulator/xlObject.c:
 	.text       start:0x80007BC0 end:0x80007F80
 	.sbss       start:0x801355C8 end:0x801355D0
 
-emulator/Fire/simGCN.c:
+emulator/simGCN.c:
 	.text       start:0x80007F80 end:0x8000F7CC
 	.rodata     start:0x800D2FE0 end:0x800D3130
 	.data       start:0x800DB800 end:0x800EA1C8
@@ -48,12 +48,12 @@ emulator/Fire/simGCN.c:
 	.sbss       start:0x801355D0 end:0x80135610
 	.sdata2     start:0x80135D18 end:0x80135D70
 
-emulator/Fire/movie.c:
+emulator/movie.c:
 	.text       start:0x8000F7CC end:0x8000F890
 	.data       start:0x800EA1C8 end:0x800EA1E8
 	.sbss       start:0x80135610 end:0x80135618
 
-emulator/Fire/THPPlayer.c:
+emulator/THPPlayer.c:
 	.text       start:0x8000F890 end:0x80010D9C
 	.data       start:0x800EA1E8 end:0x800EA488
 	.bss        start:0x800F96E0 end:0x800F9E50
@@ -61,17 +61,17 @@ emulator/Fire/THPPlayer.c:
 	.sbss       start:0x80135618 end:0x80135638
 	.sdata2     start:0x80135D70 end:0x80135D78
 
-emulator/Fire/THPAudioDecode.c:
+emulator/THPAudioDecode.c:
 	.text       start:0x80010D9C end:0x80011138
 	.data       start:0x800EA488 end:0x800EA4B0
 	.bss        start:0x800F9E50 end:0x800FB1C0
 	.sbss       start:0x80135638 end:0x80135640
 
-emulator/Fire/THPDraw.c:
+emulator/THPDraw.c:
 	.text       start:0x80011138 end:0x80011938
 	.sdata2     start:0x80135D78 end:0x80135DA0
 
-emulator/Fire/THPRead.c:
+emulator/THPRead.c:
 	.text       start:0x80011938 end:0x80012F20
 	.rodata     start:0x800D3130 end:0x800D31C0
 	.data       start:0x800EA4B0 end:0x800EA520
@@ -79,33 +79,33 @@ emulator/Fire/THPRead.c:
 	.sbss       start:0x80135640 end:0x80135658
 	.sdata2     start:0x80135DA0 end:0x80135DD8
 
-emulator/Fire/THPVideoDecode.c:
+emulator/THPVideoDecode.c:
 	.text       start:0x80012F20 end:0x80013440
 	.data       start:0x800EA520 end:0x800EA548
 	.bss        start:0x800FC5F0 end:0x800FD960
 	.sbss       start:0x80135658 end:0x80135660
 
-emulator/Fire/mcardGCN.c:
+emulator/mcardGCN.c:
 	.text       start:0x80013440 end:0x8001C444
 	.data       start:0x800EA548 end:0x800EA7C8
 	.bss        start:0x800FD960 end:0x80108180
 	.sdata      start:0x80134DB8 end:0x80134DC0
 	.sbss       start:0x80135660 end:0x80135680
 
-emulator/Fire/codeGCN.c:
+emulator/codeGCN.c:
 	.text       start:0x8001C444 end:0x8001C498
 	.data       start:0x800EA7C8 end:0x800EA7D8
 	.sdata      start:0x80134DC0 end:0x80134DC8
 	.sbss       start:0x80135680 end:0x80135688
 
-emulator/Fire/soundGCN.c:
+emulator/soundGCN.c:
 	.text       start:0x8001C498 end:0x8001D34C
 	.data       start:0x800EA7D8 end:0x800EA838
 	.bss        start:0x80108180 end:0x801085A0
 	.sdata      start:0x80134DC8 end:0x80134DD8
 	.sdata2     start:0x80135DD8 end:0x80135E00
 
-emulator/Fire/frame.c:
+emulator/frame.c:
 	.text       start:0x8001D34C end:0x8002CA14
 	.rodata     start:0x800D31C0 end:0x800D3200
 	.data       start:0x800EA838 end:0x800EB300
@@ -114,7 +114,7 @@ emulator/Fire/frame.c:
 	.sbss       start:0x80135688 end:0x801356D8
 	.sdata2     start:0x80135E00 end:0x80135F90
 
-emulator/Fire/system.c:
+emulator/system.c:
 	.text       start:0x8002CA14 end:0x80030E70
 	.data       start:0x800EB300 end:0x800EB658
 	.bss        start:0x801308E0 end:0x80130A58
@@ -122,7 +122,7 @@ emulator/Fire/system.c:
 	.sbss       start:0x801356D8 end:0x801356E0
 	.sdata2     start:0x80135F90 end:0x80135FA0
 
-emulator/Fire/cpu.c:
+emulator/cpu.c:
 	.text       start:0x80030E70 end:0x8006BE68
 	.data       start:0x800EB658 end:0x800ED6B8
 	.bss        start:0x80130A58 end:0x80130C50
@@ -130,93 +130,93 @@ emulator/Fire/cpu.c:
 	.sbss       start:0x801356E0 end:0x80135760
 	.sdata2     start:0x80135FA0 end:0x80135FD0
 
-emulator/Fire/pif.c:
+emulator/pif.c:
 	.text       start:0x8006BE68 end:0x8006CD98
 	.data       start:0x800ED6B8 end:0x800ED6C8
 	.sdata      start:0x80135268 end:0x80135270
 
-emulator/Fire/ram.c:
+emulator/ram.c:
 	.text       start:0x8006CD98 end:0x8006D3AC
 	.data       start:0x800ED6C8 end:0x800ED8E8
 	.sdata      start:0x80135270 end:0x80135278
 
-emulator/Fire/rom.c:
+emulator/rom.c:
 	.text       start:0x8006D3AC end:0x8006FEC0
 	.data       start:0x800ED8E8 end:0x800EDF40
 	.sdata      start:0x80135278 end:0x801352B0
 	.sbss       start:0x80135760 end:0x80135770
 	.sdata2     start:0x80135FD0 end:0x80136008
 
-emulator/Fire/rdp.c:
+emulator/rdp.c:
 	.text       start:0x8006FEC0 end:0x800715D0
 	.data       start:0x800EDF40 end:0x800EE1B0
 	.sdata      start:0x801352B0 end:0x801352B8
 	.sbss       start:0x80135770 end:0x80135788
 	.sdata2     start:0x80136008 end:0x80136038
 
-emulator/Fire/rdb.c:
+emulator/rdb.c:
 	.text       start:0x800715D0 end:0x80071BB8
 	.data       start:0x800EE1B0 end:0x800EE220
 	.sdata      start:0x801352B8 end:0x801352C0
 
-emulator/Fire/rsp.c:
+emulator/rsp.c:
 	.text       start:0x80071BB8 end:0x8008D248
 	.data       start:0x800EE220 end:0x800EE6D0
 	.sdata      start:0x801352C0 end:0x801352E8
 	.sbss       start:0x80135788 end:0x801357B0
 	.sdata2     start:0x80136038 end:0x80136078
 
-emulator/Fire/mips.c:
+emulator/mips.c:
 	.text       start:0x8008D248 end:0x8008D788
 	.data       start:0x800EE6D0 end:0x800EE748
 	.sdata      start:0x801352E8 end:0x801352F0
 
-emulator/Fire/disk.c:
+emulator/disk.c:
 	.text       start:0x8008D788 end:0x8008DA1C
 	.data       start:0x800EE748 end:0x800EE758
 	.sdata      start:0x801352F0 end:0x801352F8
 
-emulator/Fire/flash.c:
+emulator/flash.c:
 	.text       start:0x8008DA1C end:0x8008E138
 	.data       start:0x800EE758 end:0x800EE768
 	.sdata      start:0x801352F8 end:0x80135300
 
-emulator/Fire/sram.c:
+emulator/sram.c:
 	.text       start:0x8008E138 end:0x8008E4A8
 	.data       start:0x800EE768 end:0x800EE778
 	.sdata      start:0x80135300 end:0x80135308
 
-emulator/Fire/audio.c:
+emulator/audio.c:
 	.text       start:0x8008E4A8 end:0x8008E8A0
 	.data       start:0x800EE778 end:0x800EE870
 	.sdata      start:0x80135308 end:0x80135318
 
-emulator/Fire/video.c:
+emulator/video.c:
 	.text       start:0x8008E8A0 end:0x8008EE20
 	.data       start:0x800EE870 end:0x800EEA28
 	.sdata      start:0x80135318 end:0x80135320
 
-emulator/Fire/serial.c:
+emulator/serial.c:
 	.text       start:0x8008EE20 end:0x8008F0F4
 	.data       start:0x800EEA28 end:0x800EEB00
 	.sdata      start:0x80135320 end:0x80135328
 
-emulator/Fire/library.c:
+emulator/library.c:
 	.text       start:0x8008F0F4 end:0x8009779C
 	.data       start:0x800EEB00 end:0x800EFFB0
 	.sdata      start:0x80135328 end:0x80135370
 	.sdata2     start:0x80136078 end:0x801360D8
 
-emulator/Fire/peripheral.c:
+emulator/peripheral.c:
 	.text       start:0x8009779C end:0x80097D9C
 	.data       start:0x800EFFB0 end:0x800F0158
 
-emulator/Fire/_frameGCNcc.c:
+emulator/_frameGCNcc.c:
 	.text       start:0x80097D9C end:0x800986A4
 	.data       start:0x800F0158 end:0x800F0460
 	.sdata      start:0x80135370 end:0x80135400
 
-emulator/Fire/_buildtev.c:
+emulator/_buildtev.c:
 	.text       start:0x800986A4 end:0x8009BABC
 	.data       start:0x800F0460 end:0x800F0628
 	.bss        start:0x80130C50 end:0x80130F20
