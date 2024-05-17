@@ -25,8 +25,8 @@
                 // "MQ_P=0",
                 "CE_J=2",
                 "CE_U=3",
-                "CE_P=4",
-                "VERSION=CE_J",
+                "CE_E=4",
+                "VERSION=CE_E",
                 "DOLPHIN_REV=2003"
             ]
         }

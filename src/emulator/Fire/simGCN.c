@@ -78,6 +78,13 @@
 #endif
 // clang-format on
 
+#undef INLINE
+#if VERSION == CE_E
+#define INLINE
+#else
+#define INLINE inline
+#endif
+
 u8 gLanguage;
 
 s16 Vert_s16[12] ALIGNAS(32) = {
@@ -380,7 +387,11 @@ bool simulatorDVDShowError(s32 nStatus, void* anData, s32 nSizeRead, u32 nOffset
                 break;
             default:
                 nMessage = S_M_DISK_DEFAULT_ERROR;
-                xlPostText("ShowError: Unknown FileInfoStatus: %d", "simGCN.c", VERSION == MQ_J ? 750 : 763, nStatus);
+                xlPostText(
+                    "ShowError: Unknown FileInfoStatus: %d", "simGCN.c",
+                    VERSION == MQ_J ? 750 : VERSION == CE_E ? 865 : 763,
+                    nStatus
+                );
                 break;
         }
 
@@ -1332,7 +1343,7 @@ bool simulatorDrawYesNoMessage(__anon_0x61D7 simulatorMessage, s32* yes) {
     return false;
 }
 
-static inline bool simulatorDrawOKMessageLoop(TEXPalettePtr simulatorMessage) {
+static INLINE bool simulatorDrawOKMessageLoop(TEXPalettePtr simulatorMessage) {
     simulatorDrawOKImage(
         (TEXPalettePtr)gpErrorMessageBuffer,
         N64_FRAME_WIDTH / 2 - ((TEXPalettePtr)gpErrorMessageBuffer)->descriptorArray->textureHeader->width / 2,
@@ -1364,6 +1375,9 @@ static inline bool simulatorDrawOKMessageLoop(TEXPalettePtr simulatorMessage) {
     }
 
     PAD_STACK();
+#if VERSION == CE_E
+    NO_INLINE();
+#endif
     return false;
 }
 
@@ -2082,7 +2096,7 @@ bool simulatorTestReset(bool IPL, bool forceMenu, bool allowReset, bool usePrevi
 bool simulatorDrawMCardText(void) {
 #if VERSION >= MQ_U
     if ((s32)(((TEXPalettePtr)gpErrorMessageBuffer)->versionNumber) == 0) {
-        xlPostText("Invalid Message Image Data - Assuming SV09", "simGCN.c", 1623);
+        xlPostText("Invalid Message Image Data - Assuming SV09", "simGCN.c",  VERSION == CE_E ? 1924 : 1623);
         simulatorPrepareMessage(S_M_CARD_SV09);
     }
 #endif
@@ -2105,7 +2119,7 @@ s32 simulatorMCardPollDrawBar(void) {
 
 #if VERSION >= MQ_U
     if ((s32)(((TEXPalettePtr)gpErrorMessageBuffer)->versionNumber) == 0) {
-        xlPostText("Invalid Message Image Data - Assuming SV09", "simGCN.c", 1623);
+        xlPostText("Invalid Message Image Data - Assuming SV09", "simGCN.c",  VERSION == CE_E ? 1924 : 1623);
         simulatorPrepareMessage(S_M_CARD_SV09);
     }
 #endif
@@ -2129,7 +2143,7 @@ s32 simulatorMCardPollDrawFormatBar(void) {
 
 #if VERSION >= MQ_U
     if ((s32)(((TEXPalettePtr)gpErrorMessageBuffer)->versionNumber) == 0) {
-        xlPostText("Invalid Message Image Data - Assuming SV09", "simGCN.c", 1623);
+        xlPostText("Invalid Message Image Data - Assuming SV09", "simGCN.c", VERSION == CE_E ? 1924 : 1623);
         simulatorPrepareMessage(S_M_CARD_SV09);
     }
 #endif
@@ -2364,16 +2378,87 @@ bool xlMain(void) {
     VISetBlack(false);
     VIFlush();
 
-    simulatorUnpackTexPalette((TEXPalettePtr)gcoverOpen);
-    simulatorUnpackTexPalette((TEXPalettePtr)gnoDisk);
-    simulatorUnpackTexPalette((TEXPalettePtr)gretryErr);
-    simulatorUnpackTexPalette((TEXPalettePtr)gfatalErr);
-    simulatorUnpackTexPalette((TEXPalettePtr)gwrongDisk);
-    simulatorUnpackTexPalette((TEXPalettePtr)greadingDisk);
-    simulatorUnpackTexPalette((TEXPalettePtr)gbar);
-    simulatorUnpackTexPalette((TEXPalettePtr)gyes);
-    simulatorUnpackTexPalette((TEXPalettePtr)gno);
-    simulatorUnpackTexPalette((TEXPalettePtr)gmesgOK);
+#if VERSION == CE_E
+    gLanguage = OSGetLanguage();
+
+    switch (gLanguage) {
+        case 0:
+            simulatorUnpackTexPalette((TEXPalettePtr)gcoverOpen);
+            simulatorUnpackTexPalette((TEXPalettePtr)gnoDisk);
+            simulatorUnpackTexPalette((TEXPalettePtr)gretryErr);
+            simulatorUnpackTexPalette((TEXPalettePtr)gfatalErr);
+            simulatorUnpackTexPalette((TEXPalettePtr)gwrongDisk);
+            simulatorUnpackTexPalette((TEXPalettePtr)greadingDisk);
+            simulatorUnpackTexPalette((TEXPalettePtr)gbar);
+            simulatorUnpackTexPalette((TEXPalettePtr)gyes);
+            simulatorUnpackTexPalette((TEXPalettePtr)gno);
+            simulatorUnpackTexPalette((TEXPalettePtr)gmesgOK);
+            break;
+        case 1:
+            simulatorUnpackTexPalette((TEXPalettePtr)ggerman_coverOpen);
+            simulatorUnpackTexPalette((TEXPalettePtr)ggerman_noDisk);
+            simulatorUnpackTexPalette((TEXPalettePtr)ggerman_retryErr);
+            simulatorUnpackTexPalette((TEXPalettePtr)ggerman_fatalErr);
+            simulatorUnpackTexPalette((TEXPalettePtr)ggerman_wrongDisk);
+            simulatorUnpackTexPalette((TEXPalettePtr)ggerman_readingDisk);
+            simulatorUnpackTexPalette((TEXPalettePtr)ggerman_bar);
+            simulatorUnpackTexPalette((TEXPalettePtr)ggerman_yes);
+            simulatorUnpackTexPalette((TEXPalettePtr)ggerman_no);
+            simulatorUnpackTexPalette((TEXPalettePtr)ggerman_mesgOK);
+            break;
+        case 2:
+            simulatorUnpackTexPalette((TEXPalettePtr)gfrench_coverOpen);
+            simulatorUnpackTexPalette((TEXPalettePtr)gfrench_noDisk);
+            simulatorUnpackTexPalette((TEXPalettePtr)gfrench_retryErr);
+            simulatorUnpackTexPalette((TEXPalettePtr)gfrench_fatalErr);
+            simulatorUnpackTexPalette((TEXPalettePtr)gfrench_wrongDisk);
+            simulatorUnpackTexPalette((TEXPalettePtr)gfrench_readingDisk);
+            simulatorUnpackTexPalette((TEXPalettePtr)gfrench_bar);
+            simulatorUnpackTexPalette((TEXPalettePtr)gfrench_yes);
+            simulatorUnpackTexPalette((TEXPalettePtr)gfrench_no);
+            simulatorUnpackTexPalette((TEXPalettePtr)gfrench_mesgOK);
+            break;
+        case 3:
+            simulatorUnpackTexPalette((TEXPalettePtr)gspanish_coverOpen);
+            simulatorUnpackTexPalette((TEXPalettePtr)gspanish_noDisk);
+            simulatorUnpackTexPalette((TEXPalettePtr)gspanish_retryErr);
+            simulatorUnpackTexPalette((TEXPalettePtr)gspanish_fatalErr);
+            simulatorUnpackTexPalette((TEXPalettePtr)gspanish_wrongDisk);
+            simulatorUnpackTexPalette((TEXPalettePtr)gspanish_readingDisk);
+            simulatorUnpackTexPalette((TEXPalettePtr)gspanish_bar);
+            simulatorUnpackTexPalette((TEXPalettePtr)gspanish_yes);
+            simulatorUnpackTexPalette((TEXPalettePtr)gspanish_no);
+            simulatorUnpackTexPalette((TEXPalettePtr)gspanish_mesgOK);
+            break;
+        case 4:
+            simulatorUnpackTexPalette((TEXPalettePtr)gitalian_coverOpen);
+            simulatorUnpackTexPalette((TEXPalettePtr)gitalian_noDisk);
+            simulatorUnpackTexPalette((TEXPalettePtr)gitalian_retryErr);
+            simulatorUnpackTexPalette((TEXPalettePtr)gitalian_fatalErr);
+            simulatorUnpackTexPalette((TEXPalettePtr)gitalian_wrongDisk);
+            simulatorUnpackTexPalette((TEXPalettePtr)gitalian_readingDisk);
+            simulatorUnpackTexPalette((TEXPalettePtr)gitalian_bar);
+            simulatorUnpackTexPalette((TEXPalettePtr)gitalian_yes);
+            simulatorUnpackTexPalette((TEXPalettePtr)gitalian_no);
+            simulatorUnpackTexPalette((TEXPalettePtr)gitalian_mesgOK);
+            break;
+        default:
+#endif
+            simulatorUnpackTexPalette((TEXPalettePtr)gcoverOpen);
+            simulatorUnpackTexPalette((TEXPalettePtr)gnoDisk);
+            simulatorUnpackTexPalette((TEXPalettePtr)gretryErr);
+            simulatorUnpackTexPalette((TEXPalettePtr)gfatalErr);
+            simulatorUnpackTexPalette((TEXPalettePtr)gwrongDisk);
+            simulatorUnpackTexPalette((TEXPalettePtr)greadingDisk);
+            simulatorUnpackTexPalette((TEXPalettePtr)gbar);
+            simulatorUnpackTexPalette((TEXPalettePtr)gyes);
+            simulatorUnpackTexPalette((TEXPalettePtr)gno);
+            simulatorUnpackTexPalette((TEXPalettePtr)gmesgOK);
+#if VERSION == CE_E
+            break;
+    }
+#endif
+
 
     gbReset = false;
     gnTickReset = OSGetTick();
