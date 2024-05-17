@@ -37,13 +37,13 @@ bool xlTextMatch(char* acText1, char* acText2) {
             s32 nCharacter2 = *acText2;
 
             upper1 = nCharacter1;
-            if ((nCharacter1 >= 'a') && (upper1 <= 'z')) {
-                upper1 -= ' ';
+            if ((nCharacter1 >= 0x61) && (upper1 <= 0x7A)) {
+                upper1 -= 0x20;
             }
 
             upper2 = nCharacter2;
-            if ((nCharacter2 >= 'a') && (nCharacter2 <= 'z')) {
-                upper2 -= ' ';
+            if ((nCharacter2 >= 0x61) && (nCharacter2 <= 0x7A)) {
+                upper2 -= 0x20;
             }
 
             if (upper1 != upper2) {

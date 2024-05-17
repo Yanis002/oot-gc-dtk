@@ -1,8 +1,8 @@
-#include "dolphin/types.h"
-#include "emulator/xlObject.h"
 #include "emulator/xlFile.h"
+#include "dolphin/types.h"
 #include "emulator/xlFileGCN.h"
 #include "emulator/xlHeap.h"
+#include "emulator/xlObject.h"
 #include "emulator/xlText.h"
 
 #if VERSION == CE_P
@@ -71,7 +71,7 @@ bool xlFileGetLine(tXL_FILE* pFile, char* acLine, s32 nSizeLine) {
     }
 }
 
-bool xlTokenGetInteger(char* acToken, s32* pnValue) {
+bool xlTokenGetInteger(char* acToken, u32* pnValue) {
     s32 nValue;
     s32 nBase;
     s32 iToken;
@@ -92,7 +92,7 @@ bool xlTokenGetInteger(char* acToken, s32* pnValue) {
         nBase = 0xA;
     }
 
-    while  (acToken[iToken] != '\0') {
+    while (acToken[iToken] != '\0') {
         nValue *= nBase;
         if ((acToken[iToken] >= 'A') && (acToken[iToken] <= 'F')) {
             nValue += acToken[iToken] - '7';
@@ -157,8 +157,9 @@ bool xlFileGetToken(tXL_FILE* pFile, XlFileTokenType* peType, char* acToken, s32
         }
 
         if (acLine[iLine] != '\0') {
-            if ((acLine[iLine] >= '0' && acLine[iLine] <= '9')
-                || ((acLine[iLine] == '+' || acLine[iLine] == '-') && acLine[iLine + 1] >= '0' && acLine[iLine + 1] <= '9')) {
+            if ((acLine[iLine] >= '0' && acLine[iLine] <= '9') ||
+                ((acLine[iLine] == '+' || acLine[iLine] == '-') && acLine[iLine + 1] >= '0' &&
+                 acLine[iLine + 1] <= '9')) {
                 eType = XLFTT_NUMBER;
                 while (acLine[iLine] != '\0') {
                     if (iToken < nSizeToken) {
@@ -169,8 +170,8 @@ bool xlFileGetToken(tXL_FILE* pFile, XlFileTokenType* peType, char* acToken, s32
                         break;
                     }
                 }
-            } else if (((acLine[iLine] >= 'A') && (acLine[iLine] <= 'Z')) 
-                || (!(acLine[iLine] < 'a') && (acLine[iLine] <= 'z')) || (acLine[iLine] == '_')) {
+            } else if (((acLine[iLine] >= 'A') && (acLine[iLine] <= 'Z')) ||
+                       (!(acLine[iLine] < 'a') && (acLine[iLine] <= 'z')) || (acLine[iLine] == '_')) {
                 eType = XLFTT_LABEL;
                 while (acLine[iLine] != '\0') {
                     if (iToken < nSizeToken) {
@@ -216,8 +217,8 @@ bool xlFileMatchToken(tXL_FILE* pFile, XlFileTokenType eType, char* acToken, s32
     XlFileTokenType eTypeToken;
     char acTokenLocal[65];
 
-    if ((xlFileGetToken(pFile, &eTypeToken, acTokenLocal, 64) != 0) && (eType == eTypeToken) 
-        && ((szText == NULL) || (xlTextMatch(acTokenLocal, szText) != 0))) {
+    if ((xlFileGetToken(pFile, &eTypeToken, acTokenLocal, 64) != 0) && (eType == eTypeToken) &&
+        ((szText == NULL) || (xlTextMatch(acTokenLocal, szText) != 0))) {
         if (acToken != NULL) {
             if (nSizeToken < 64) {
                 acTokenLocal[nSizeToken] = '\0';

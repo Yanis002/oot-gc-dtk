@@ -18,7 +18,7 @@ bool xlFileGetSize(s32* pnSize, char* szFileName);
 #endif
 
 bool xlFileGetLine(tXL_FILE* pFile, char* acLine, s32 nSizeLine);
-bool xlTokenGetInteger(char* acToken, s32* pnValue);
+bool xlTokenGetInteger(char* acToken, u32* pnValue);
 bool xlFileSkipLine(tXL_FILE* pFile);
 bool xlFileGetToken(tXL_FILE* pFile, XlFileTokenType* peType, char* acToken, s32 nSizeToken);
 bool xlFileMatchToken(tXL_FILE* pFile, XlFileTokenType eType, char* acToken, s32 nSizeToken, char* szText);

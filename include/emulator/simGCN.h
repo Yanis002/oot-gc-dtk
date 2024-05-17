@@ -70,7 +70,37 @@ typedef enum SimArgumentType {
     SAT_COUNT = 8
 } SimArgumentType;
 
+#if VERSION == CE_P
 extern u8 gLanguage;
+
+extern u8 ggerman_coverOpen[];
+extern u8 ggerman_wrongDisk[];
+extern u8 ggerman_readingDisk[];
+extern u8 ggerman_retryErr[];
+extern u8 ggerman_fatalErr[];
+extern u8 ggerman_noDisk[];
+
+extern u8 gfrench_coverOpen[];
+extern u8 gfrench_wrongDisk[];
+extern u8 gfrench_readingDisk[];
+extern u8 gfrench_retryErr[];
+extern u8 gfrench_fatalErr[];
+extern u8 gfrench_noDisk[];
+
+extern u8 gspanish_coverOpen[];
+extern u8 gspanish_wrongDisk[];
+extern u8 gspanish_readingDisk[];
+extern u8 gspanish_retryErr[];
+extern u8 gspanish_fatalErr[];
+extern u8 gspanish_noDisk[];
+
+extern u8 gitalian_coverOpen[];
+extern u8 gitalian_wrongDisk[];
+extern u8 gitalian_readingDisk[];
+extern u8 gitalian_retryErr[];
+extern u8 gitalian_fatalErr[];
+extern u8 gitalian_noDisk[];
+#endif
 
 extern bool gDVDResetToggle;
 extern bool gbDisplayedError;

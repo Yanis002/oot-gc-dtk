@@ -7,6 +7,8 @@
 #include "emulator/system.h"
 #include "emulator/xlCoreGCN.h"
 #include "emulator/xlHeap.h"
+#include "emulator/xlFile.h"
+#include "emulator/xlText.h"
 #include "macros.h"
 
 #if VERSION == MQ_J
@@ -34,7 +36,57 @@ _XL_OBJECTTYPE gClassROM = {
     (EventFunc)romEvent,
 };
 
-#if VERSION == MQ_U || VERSION == CE_U
+#if VERSION == CE_P
+static u32 ganOffsetBlock_ZLP[198] = {
+    0x0168E860, 0x016DCE6F, 0x016DCE70, 0x01734E7F, 0x01734E80, 0x017678BF, 0x017678C0, 0x017C7BEF, 0x017C7BF0,
+    0x0183813F, 0x01838140, 0x018A3E5F, 0x018A3E60, 0x0192440F, 0x01924410, 0x0198DA6F, 0x0198DA70, 0x019D3CCF,
+    0x019D3CD0, 0x01A12B2F, 0x01A12B30, 0x01A7B4DF, 0x01A7B4E0, 0x01A9E7DF, 0x01A9E7E0, 0x01AB5E4F, 0x01AB5E50,
+    0x01AD041F, 0x01AD0420, 0x01AE3EAF, 0x01AE3EB0, 0x01B06CCF, 0x01B06CD0, 0x01B1889F, 0x01B188A0, 0x01B305FF,
+    0x01B30600, 0x01B40D5F, 0x01B40D60, 0x01B51D2F, 0x01B51D30, 0x01B60E3F, 0x01B60E40, 0x01B80BCF, 0x01B80BD0,
+    0x01B9925F, 0x01B99260, 0x01BB32BF, 0x01BB32C0, 0x01BC2BBF, 0x01BC2BC0, 0x01BD902F, 0x01BD9030, 0x01BF495F,
+    0x01BF4960, 0x01C0BA9F, 0x01C0BAA0, 0x01C3AD4F, 0x01C3AD50, 0x01C3D8EF, 0x01C3D8F0, 0x01C4038F, 0x01C40390,
+    0x01C4B2EF, 0x01C4B2F0, 0x01C5DCDF, 0x01C5DCE0, 0x01C65F4F, 0x01C65F50, 0x01C6E11F, 0x01C6E120, 0x01C76FEF,
+    0x01C76FF0, 0x01CB749F, 0x01CB74A0, 0x01CBEC8F, 0x01CBEC90, 0x01CCA8EF, 0x01CCA8F0, 0x01CD448F, 0x01CD4490,
+    0x01CD9DBF, 0x01CD9DC0, 0x01CE8D1F, 0x01CE8D20, 0x01CF85FF, 0x01CF8600, 0x01D09EEF, 0x01D09EF0, 0x01D176BF,
+    0x01D176C0, 0x01D18CDF, 0x01D18CE0, 0x01D1DF8F, 0x01D1DF90, 0x01D247DF, 0x01D247E0, 0x01D31DEF, 0x01D31DF0,
+    0x01D336CF, 0x01D336D0, 0x01D3F1FF, 0x01D3F200, 0x01D46C2F, 0x01D46C30, 0x01D4CD4F, 0x01D4CD50, 0x01D51EBF,
+    0x01D51EC0, 0x01D5B01F, 0x01D5B020, 0x01D6054F, 0x01D60550, 0x01D688DF, 0x01D688E0, 0x01D6D3CF, 0x01D6D3D0,
+    0x01D74BCF, 0x01D74BD0, 0x01D7C48F, 0x01D7C490, 0x01D8105F, 0x01D81060, 0x01D8650F, 0x01D86510, 0x01D8CB0F,
+    0x01D8CB10, 0x01D91B3F, 0x01D91B40, 0x01D973CF, 0x01D973D0, 0x01D9C34F, 0x01D9C350, 0x01DA3A6F, 0x01DA3A70,
+    0x01DAD0CF, 0x01DAD0D0, 0x01DBCBAF, 0x01DBCBB0, 0x01DC3B6F, 0x01DC3B70, 0x01DCEADF, 0x01DCEAE0, 0x01DD521F,
+    0x01DD5220, 0x01DDE92F, 0x01DDE930, 0x01E13B0F, 0x01E13B10, 0x01E253BF, 0x01E253C0, 0x01E32DBF, 0x01E32DC0,
+    0x01E3D06F, 0x01E3D070, 0x01E4F14F, 0x01E4F150, 0x01E55E2F, 0x01E55E30, 0x01E7C34F, 0x01E7C350, 0x01E8A63F,
+    0x01E8A640, 0x01E9A38F, 0x01E9A390, 0x01EA530F, 0x01EA5310, 0x01EB057F, 0x01EB0580, 0x01EBC79F, 0x01EBC7A0,
+    0x01ED44DF, 0x01ED44E0, 0x01EDBC7F, 0x01EDBC80, 0x01EE68CF, 0x01EE68D0, 0x01EF48AF, 0x01EF48B0, 0x01F0101F,
+    0x01F01020, 0x01F1383F, 0x01F13840, 0x01F1C2DF, 0x01F1C2E0, 0x01F25C8F, 0x01F25C90, 0x01F370BF, 0x01F370C0,
+    0x01F4D7AF, 0x01F4D7B0, 0x01F56FDF, 0x01F56FE0, 0x01F5F90F, 0x01F5F910, 0x01F6A2EF, 0x01F6A2F0, 0x01F7B76F,
+};
+
+static u32 ganOffsetBlock_URAZLP[198] = {
+    0x0168F9B0, 0x016DE33F, 0x016DE340, 0x0173678F, 0x01736790, 0x017697AF, 0x017697B0, 0x017C9C3F, 0x017C9C40,
+    0x0183A08F, 0x0183A090, 0x018A614F, 0x018A6150, 0x019269EF, 0x019269F0, 0x0199096F, 0x01990970, 0x019D6C7F,
+    0x019D6C80, 0x01A15A0F, 0x01A15A10, 0x01A7E4FF, 0x01A7E500, 0x01AA17FF, 0x01AA1800, 0x01AB8E6F, 0x01AB8E70,
+    0x01AD343F, 0x01AD3440, 0x01AE6ECF, 0x01AE6ED0, 0x01B09CEF, 0x01B09CF0, 0x01B1B8BF, 0x01B1B8C0, 0x01B3361F,
+    0x01B33620, 0x01B43D7F, 0x01B43D80, 0x01B54D4F, 0x01B54D50, 0x01B63E5F, 0x01B63E60, 0x01B83BEF, 0x01B83BF0,
+    0x01B9C27F, 0x01B9C280, 0x01BB62DF, 0x01BB62E0, 0x01BC5BDF, 0x01BC5BE0, 0x01BDC04F, 0x01BDC050, 0x01BF797F,
+    0x01BF7980, 0x01C0EABF, 0x01C0EAC0, 0x01C3DD6F, 0x01C3DD70, 0x01C4090F, 0x01C40910, 0x01C433AF, 0x01C433B0,
+    0x01C4E30F, 0x01C4E310, 0x01C60CFF, 0x01C60D00, 0x01C68F6F, 0x01C68F70, 0x01C7113F, 0x01C71140, 0x01C7A00F,
+    0x01C7A010, 0x01CBA4BF, 0x01CBA4C0, 0x01CC1CAF, 0x01CC1CB0, 0x01CCD90F, 0x01CCD910, 0x01CD74AF, 0x01CD74B0,
+    0x01CDCDDF, 0x01CDCDE0, 0x01CEBD3F, 0x01CEBD40, 0x01CFB61F, 0x01CFB620, 0x01D0CF0F, 0x01D0CF10, 0x01D1A6DF,
+    0x01D1A6E0, 0x01D1BCFF, 0x01D1BD00, 0x01D20FAF, 0x01D20FB0, 0x01D277FF, 0x01D27800, 0x01D34E0F, 0x01D34E10,
+    0x01D366FF, 0x01D36700, 0x01D4222F, 0x01D42230, 0x01D49C5F, 0x01D49C60, 0x01D4FD7F, 0x01D4FD80, 0x01D54EEF,
+    0x01D54EF0, 0x01D5E04F, 0x01D5E050, 0x01D6357F, 0x01D63580, 0x01D6B90F, 0x01D6B910, 0x01D703FF, 0x01D70400,
+    0x01D77BFF, 0x01D77C00, 0x01D7F4BF, 0x01D7F4C0, 0x01D8408F, 0x01D84090, 0x01D8953F, 0x01D89540, 0x01D8FB3F,
+    0x01D8FB40, 0x01D94B6F, 0x01D94B70, 0x01D9A3FF, 0x01D9A400, 0x01D9F37F, 0x01D9F380, 0x01DA6A9F, 0x01DA6AA0,
+    0x01DB00FF, 0x01DB0100, 0x01DBFBDF, 0x01DBFBE0, 0x01DC6B9F, 0x01DC6BA0, 0x01DD1B0F, 0x01DD1B10, 0x01DD824F,
+    0x01DD8250, 0x01DE195F, 0x01DE1960, 0x01E16B3F, 0x01E16B40, 0x01E283EF, 0x01E283F0, 0x01E35DEF, 0x01E35DF0,
+    0x01E4009F, 0x01E400A0, 0x01E5217F, 0x01E52180, 0x01E58E5F, 0x01E58E60, 0x01E7F37F, 0x01E7F380, 0x01E8D66F,
+    0x01E8D670, 0x01E9D3BF, 0x01E9D3C0, 0x01EA833F, 0x01EA8340, 0x01EB35AF, 0x01EB35B0, 0x01EBF7CF, 0x01EBF7D0,
+    0x01ED750F, 0x01ED7510, 0x01EDECAF, 0x01EDECB0, 0x01EE98FF, 0x01EE9900, 0x01EF78DF, 0x01EF78E0, 0x01F0404F,
+    0x01F04050, 0x01F1686F, 0x01F16870, 0x01F1F30F, 0x01F1F310, 0x01F28CBF, 0x01F28CC0, 0x01F3A0EF, 0x01F3A0F0,
+    0x01F507DF, 0x01F507E0, 0x01F5A01F, 0x01F5A020, 0x01F6294F, 0x01F62950, 0x01F6D32F, 0x01F6D330, 0x01F7E7AF,
+};
+#elif VERSION == MQ_U || VERSION == CE_U
 static u32 ganOffsetBlock_ZLJ[198] = {
     0x01685440, 0x016D3A4F, 0x016D3A50, 0x0172BA5F, 0x0172BA60, 0x0175E48F, 0x0175E490, 0x017BE7AF, 0x017BE7B0,
     0x0182ECFF, 0x0182ED00, 0x0189AA1F, 0x0189AA20, 0x0191AFCF, 0x0191AFD0, 0x0198462F, 0x01984630, 0x019CA88F,
@@ -136,9 +188,153 @@ static u32 ganOffsetBlock_URAZLJ[198] = {
 };
 #endif
 
+#if VERSION == CE_P
+#define OFFSET_BLOCK_ARRAY ganOffsetBlock_ZLP
+#define MQ_OFFSET_BLOCK_ARRAY ganOffsetBlock_URAZLP
+#else
+#define OFFSET_BLOCK_ARRAY ganOffsetBlock_ZLJ
+#define MQ_OFFSET_BLOCK_ARRAY ganOffsetBlock_URAZLJ
+#endif
+
 static bool gbProgress;
 static void* gpImageBack;
 static s32 iImage;
+
+#if VERSION == CE_P
+static bool romGetTagToken(Rom* pROM, tXL_FILE* pFile, RomTokenType* peToken, char* acData) {
+    // Parameters
+    // struct __anon_0x509F2* pROM; // r27
+    // struct tXL_FILE* pFile; // r28
+    // enum __anon_0x51047* peToken; // r29
+    // char* acData; // r30
+
+    // Local variables
+    u32 nChecksum; // r1+0x60
+    XlFileTokenType eTypeToken; // r1+0x5C
+    char acToken[65]; // r1+0x18
+
+    while (xlFileGetToken(pFile, &eTypeToken, acToken, sizeof(acToken) - 1)) {
+        if (eTypeToken == XLFTT_SYMBOL) {
+            if (acToken[0] == '#') {
+                if (!xlFileSkipLine(pFile)) {
+                    return false;
+                }
+            } else if (acToken[0] == '{') {
+                pROM->tagFile.nMode++;
+            } else if (acToken[0] == '}') {
+                if ((pROM->tagFile.nMode & 0xFF) > 0) {
+                    pROM->tagFile.nMode--;
+                }
+                if ((pROM->tagFile.nMode & 0xFF) == 0) {
+                    *peToken = RTT_DONE;
+                    *acData = 0;
+                    return true;
+                }
+            } else if (acToken[0] == ',') {
+                if (pROM->tagFile.nMode & 0x200) {
+                    pROM->tagFile.nMode &= ~0x400;
+                }
+            } else if (acToken[0] == ';') {
+                if (pROM->tagFile.nMode & 0x200) {
+                    pROM->tagFile.nMode &= ~0x600;
+                }
+            }
+        } else if (eTypeToken == XLFTT_NUMBER) {
+            if (pROM->tagFile.nMode & 0x400) {
+                return false;
+            }
+            pROM->tagFile.nMode |= 0x400;
+            if (pROM->tagFile.nMode & 0x200) {
+                *peToken = RTT_DATA_NUMBER;
+                xlTextCopy(acData, acToken);
+                return true;
+            }
+        } else if (eTypeToken == XLFTT_LABEL || eTypeToken == XLFTT_STRING) {
+            if ((pROM->tagFile.nMode & 0xFF) == 0) {
+                if (xlTextMatch("ROM", acToken) != 0) {
+                    if (!xlFileMatchToken(pFile, XLFTT_SYMBOL, NULL, 0, "[")) {
+                        return false;
+                    }
+                    *peToken = RTT_CODE_INVALID;
+                    do {
+                        if (!xlFileGetToken(pFile, &eTypeToken, acToken, sizeof(acToken) - 1)) {
+                            return false;
+                        }
+                        if (eTypeToken == XLFTT_LABEL) {
+                            if (romTestCode(pROM, acData)) {
+                                *peToken = RTT_CODE;
+                                return false;
+                            }
+                            if (!xlFileGetToken(pFile, &eTypeToken, acToken, sizeof(acToken) - 1)) {
+                                return false;
+                            }
+                            if (acToken[0] != ',' && acToken[0] != ']') {
+                                return false;
+                            }
+                        }
+                    } while (acToken[0] != ']');
+                    break;
+                }
+                return false;
+            }
+            if (pROM->tagFile.nMode & 0x200) {
+                if (pROM->tagFile.nMode & 0x400) {
+                    return false;
+                }
+                pROM->tagFile.nMode |= 0x400;
+                *peToken = RTT_DATA_STRING;
+                xlTextCopy(acData, acToken);
+                return true;
+            }
+            pROM->tagFile.nMode |= 0x200;
+            xlTextCopy(acData, acToken);
+            if (!xlFileGetToken(pFile, &eTypeToken, acToken, sizeof(acToken) - 1)) {
+                return false;
+            }
+            if (acToken[0] == '[') {
+                *peToken = RTT_NAME_INVALID;
+                do {
+                    if (!xlFileGetToken(pFile, &eTypeToken, acToken, sizeof(acToken) - 1)) {
+                        return false;
+                    }
+                    if (eTypeToken == XLFTT_LABEL) {
+                        if (!romTestCode(pROM, acData)) {
+                            goto block_122;
+                        }
+                        goto block_125;
+                    }
+block_122:
+                    if (eTypeToken == XLFTT_NUMBER) {
+                        if (xlTokenGetInteger(acToken, &nChecksum) && (nChecksum == pROM->nChecksum)) {
+block_125:
+                            *peToken = RTT_NAME;
+                        }
+                        if (!xlFileGetToken(pFile, &eTypeToken, acToken, sizeof(acToken) - 1)) {
+                            return false;
+                        }
+            
+                        if ((acToken[0] != ',') && (acToken[0] != ']')) {
+                            return false;
+                        }
+                        if (acToken[0] == ']') {
+                            if (!xlFileMatchToken(pFile, XLFTT_SYMBOL, NULL, 0, "=")) {
+                                return false;
+                            }
+                            break;
+                        }
+                    }
+                } while (true);
+            }
+            *peToken = RTT_NAME;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    return false;
+}
+#endif
 
 static bool romFindFreeCache(Rom* pROM, s32* piCache, RomCacheType eType) {
     s32 iBlock;
@@ -498,6 +694,127 @@ static bool romCacheGame_ZELDA(f32 rProgress) {
     return true;
 }
 
+#if VERSION == CE_P
+bool romCacheGame(Rom* pROM) {
+    // Parameters
+    // struct __anon_0x509F2* pROM; // r31
+
+    // Local variables
+    s32 blockCount; // r1+0x14
+    bool bIsCZLJ;
+    bool bZeldaE; // r8
+    bool bZeldaF; // r6
+    bool bZeldaG; // r7
+    bool bZeldaI; // r9
+    bool bZeldaS; // r10
+    s32 nSize; // r30
+    char* szName; // r5
+    tXL_FILE* pFile; // r1+0xC
+
+    // References
+    // -> s32 gDVDResetToggle;
+    // -> u32 gnFlagZelda;
+    // -> s32 gbDisplayedError;
+    // -> static s32 gbProgress;
+    // -> static void* gpImageBack;
+    // -> static u32 ganOffsetBlock_URAZLP[198];
+    // -> static u32 ganOffsetBlock_ZLP[198];
+    // -> u8 gLanguage;
+
+    blockCount = 0;
+    gDVDResetToggle = true;
+
+    bZeldaE = romTestCode(pROM, "CZLE");
+    bIsCZLJ = romTestCode(pROM, "CZLJ");
+
+    bZeldaS = false;
+    bZeldaI = false;
+    bZeldaG = false;
+    bZeldaF = false;
+
+    if (gLanguage == 1) {
+        bZeldaG = true;
+    } else if (gLanguage == 2) {
+        bZeldaF = true;
+    } else if (gLanguage == 3) {
+        bZeldaS = true;
+    } else if (gLanguage == 4) {
+        bZeldaI = true;
+    } else {
+        bZeldaE = true;
+    }
+
+    if (bZeldaE || bIsCZLJ || bZeldaF || bZeldaG || bZeldaI || bZeldaS) {
+        if (gnFlagZelda & 2) {
+            if (!bZeldaE && !bIsCZLJ && (bZeldaE ||bZeldaF || bZeldaG || bZeldaI || bZeldaS)) {
+                pROM->anOffsetBlock = OFFSET_BLOCK_ARRAY;
+                pROM->nCountOffsetBlocks = 0xC6;
+            }
+        } else if (!bZeldaE && !bIsCZLJ && (bZeldaE ||bZeldaF || bZeldaG || bZeldaI || bZeldaS)) {
+            pROM->anOffsetBlock = MQ_OFFSET_BLOCK_ARRAY;
+            pROM->nCountOffsetBlocks = 0xC6;
+        }
+        if (bZeldaE) {
+            szName = gnFlagZelda & 2 ? "zle.tpl" : "urazle.tpl";
+        } else if (bZeldaF) {
+            szName = gnFlagZelda & 2 ? "zlf.tpl" : "urazlf.tpl";
+        } else if (bZeldaG) {
+            szName = gnFlagZelda & 2 ? "zlg.tpl" : "urazlg.tpl";
+        } else if (bIsCZLJ) {
+            szName = gnFlagZelda & 2 ? "zlj.tpl" : "urazlj.tpl";
+        } else if (bZeldaI) {
+            szName = gnFlagZelda & 2 ? "zli.tpl" : "urazli.tpl";
+        } else if (bZeldaS) {
+            szName = gnFlagZelda & 2 ? "zls.tpl" : "urazls.tpl";
+        } else {
+            szName = "";
+        }
+    
+        if (xlFileOpen(&pFile, 1, szName)) {
+            nSize = pFile->nSize;
+            gpImageBack = (u8*)SYSTEM_RAM(pROM->pHost)->pBuffer + 0x300000;
+            if (!xlFileGet(pFile, gpImageBack, nSize)) {
+                return false;
+            }
+            if (!xlFileClose(&pFile)) {
+                return false;
+            }
+            simulatorUnpackTexPalette(gpImageBack);
+            DCStoreRange(gpImageBack, nSize);
+            gbProgress = false;
+            gbDisplayedError = true;
+        }
+        if (gnFlagZelda & 2) {
+            if (!romLoadRange(pROM, 0, 0xA6251F, &blockCount, 1, &romCacheGame_ZELDA)) {
+                return false;
+            }
+            if (!romLoadRange(pROM, 0xAFDAA0, 0x0168515F, &blockCount, 1, &romCacheGame_ZELDA)) {
+                return false;
+            }
+        } else {
+            if (!romLoadRange(pROM, 0, 0xA6251F, &blockCount, 1, &romCacheGame_ZELDA)) {
+                return false;
+            }
+            if (!romLoadRange(pROM, 0xAFDB00, 0x01684BCF, &blockCount, 1, &romCacheGame_ZELDA)) {
+                return false;
+            }
+        }
+    } else if (romTestCode(pROM, "NZSJ") || romTestCode(pROM, "NZSE")) {
+        if (!romLoadRange(pROM, 0, 0xEFAB5F, &blockCount, 1, NULL)) {
+            return false;
+        }
+        if (!romLoadRange(pROM, 0x0167CE40, 0x016B4E8F, &blockCount, 1, NULL)) {
+            return false;
+        }
+        if (!romLoadRange(pROM, 0x01F82960, pROM->nSize - 1, &blockCount, 1, NULL)) {
+            return false;
+        }
+    }
+
+    gDVDResetToggle = false;
+    return true;
+}
+#else
 static bool romCacheGame(Rom* pROM) {
     s32 blockCount;
 #if VERSION >= MQ_U
@@ -522,17 +839,17 @@ static bool romCacheGame(Rom* pROM) {
     if (ROMCACHEGAME_CHECK_OOT_VERSION) {
         if (gnFlagZelda & 2) {
 #if VERSION == MQ_J
-            pROM->anOffsetBlock = ganOffsetBlock_ZLJ;
+            pROM->anOffsetBlock = OFFSET_BLOCK_ARRAY;
             pROM->nCountOffsetBlocks = 0xC6;
 #else
             ROMCACHEGAME_IF {
-                pROM->anOffsetBlock = ganOffsetBlock_ZLJ;
+                pROM->anOffsetBlock = OFFSET_BLOCK_ARRAY;
                 pROM->nCountOffsetBlocks = 0xC6;
             }
 #endif
         }
         ROMCACHEGAME_ELSE {
-            pROM->anOffsetBlock = ganOffsetBlock_URAZLJ;
+            pROM->anOffsetBlock = MQ_OFFSET_BLOCK_ARRAY;
             pROM->nCountOffsetBlocks = 0xC6;
         }
 
@@ -591,6 +908,7 @@ static bool romCacheGame(Rom* pROM) {
     gDVDResetToggle = false;
     return true;
 }
+#endif
 
 bool __romLoadUpdate_Complete(void) {
     Rom* pROM = SYSTEM_ROM(gpSystem);
@@ -892,6 +1210,31 @@ bool romGetCode(Rom* pROM, char* acCode) {
     return true;
 }
 
+#if VERSION == CE_P
+bool romTestCode(Rom* pROM, char* acCode) {
+    s32 iCode;
+    int nCode1;
+    int nCode2;
+
+    for (iCode = 0; iCode < 4; iCode++) {
+        nCode1 = pROM->acHeader[iCode + 0x3B];
+        if (nCode1 >= 0x61 && nCode1 <= 0x7A) {
+            nCode1 -= 0x20;
+        }
+
+        nCode2 = acCode[iCode];
+        if (nCode2 >= 0x61 && nCode2 <= 0x7A) {
+            nCode2 -= 0x20;
+        }
+
+        if (nCode1 != nCode2) {
+            return false;
+        }
+    }
+
+    return true;
+}
+#else
 bool romTestCode(Rom* pROM, char* acCode) {
     s32 iCode;
     char acCodeCurrent[5];
@@ -906,6 +1249,7 @@ bool romTestCode(Rom* pROM, char* acCode) {
 
     return true;
 }
+#endif
 
 static bool romPut8(Rom* pROM, u32 nAddress, s8* pData) { return true; }
 static bool romPut16(Rom* pROM, u32 nAddress, s16* pData) { return true; }
@@ -1257,9 +1601,19 @@ static inline void romOpen(Rom* pROM, char* szNameFile) {
 }
 
 bool romSetImage(Rom* pROM, char* szNameFile) {
+#if VERSION == CE_P
+    tXL_FILE* pFile;
+    RomTokenType eToken;
+    s32 iCode;
+    s32 iName;
+    s32 nSize;
+    char acToken[65];
+    u32 anData[256];
+#else
     tXL_FILE* pFile;
     s32 iName;
     s32 nSize;
+#endif
 
     for (iName = 0; (szNameFile[iName] != '\0') && (iName < 0x200); iName++) {
         pROM->acNameFile[iName] = szNameFile[iName];
@@ -1284,11 +1638,49 @@ bool romSetImage(Rom* pROM, char* szNameFile) {
         return false;
     }
 
+#if VERSION == CE_P
+    if (!xlFileSetPosition(pFile, pROM->offsetToRom + 0x1000)) {
+        return false;
+    }
+
+    if (!xlFileGet(pFile, anData, sizeof(anData))) {
+        return false;
+    }
+#endif
+
     if (!xlFileClose(&pFile)) {
         return false;
     }
 
+#if VERSION == CE_P
+    for (pROM->nChecksum = 0, iCode = 0; iCode < ARRAY_COUNT(anData); iCode++) {
+        pROM->nChecksum += anData[iCode];
+    }
+#endif
+
     romOpen(pROM, szNameFile);
+
+#if VERSION == CE_P
+    pROM->tagFile.nMode = 0;
+    if (xlFileOpen(&pFile, XLFT_TEXT, "ROMS.TAG")) {
+        while (romGetTagToken(pROM, pFile, &eToken, acToken)) {
+            if (eToken == RTT_CODE) {
+                s32 nMode = pROM->tagFile.nMode | 0x100;
+                pROM->tagFile.nMode = nMode;
+                pROM->tagFile.nModeSave = nMode;
+                if (!xlFileGetLineSave(pFile, &pROM->tagFile.save)) {
+                    return false;
+                }
+                break;
+            }
+        }
+
+        if (!xlFileClose(&pFile)) {
+            return false;
+        }
+    }
+#endif
+
     return true;
 }
 
@@ -1328,6 +1720,9 @@ bool romEvent(Rom* pROM, s32 nEvent, void* pArgument) {
             pROM->load.nOffset1 = 0;
             pROM->load.nOffset0 = 0;
             pROM->load.bDone = false;
+#if VERSION == CE_P
+            pROM->tagFile.nMode = 0;
+#endif
             pROM->nSizeCacheRAM = 0;
             pROM->nCountBlockRAM = 0;
             pROM->pCacheRAM = NULL;

@@ -34,7 +34,7 @@
 #define ZELDA_GC_JP "Zelda: Ocarina of Time"
 #define MCARD_FILE_NAME "ZELDA"
 #define MCARD_FILE_SIZE (0xC000 * 2)
-#elif VERSION == CE_U
+#elif VERSION == CE_U || VERSION == CE_P
 #define ZELDA_GC_JP "Zelda: Collector's Edition"
 #define MCARD_FILE_NAME "ZELDA1"
 #define MCARD_FILE_SIZE (0xC000)
@@ -43,6 +43,12 @@
 #define ZELDA_GC_JP "ゼルダコレクション"
 #define MCARD_FILE_NAME "ZELDA1"
 #define MCARD_FILE_SIZE (0xC000)
+#endif
+
+#if VERSION == CE_P
+#define ROMTESTCODE_NZLP || romTestCode(pROM, "NZLP")
+#else
+#define ROMTESTCODE_NZLP
 #endif
 
 _XL_OBJECTTYPE gClassSystem = {
@@ -154,8 +160,15 @@ u32 nTickMultiplier = 2;
 f32 fTickScale = 1.0;
 u32 gnFlagZelda;
 
+#if VERSION == CE_P
+#define Z_ICON_FILENAME "z_icon.tpl"
+#define Z_BNR_FILENAME "z_bnr.tpl"
+#define Z_ICON_PATH buf1
+#define Z_BNR_PATH buf2
+#else
 #define Z_ICON_PATH "TPL/z_icon.tpl"
 #define Z_BNR_PATH "TPL/z_bnr.tpl"
+#endif
 
 static bool systemSetupGameRAM(System* pSystem) {
     char* szExtra;
@@ -186,7 +199,7 @@ static bool systemSetupGameRAM(System* pSystem) {
     }
 
     // Ocarina of Time or Majora's Mask
-    if (romTestCode(pROM, "CZLJ") || romTestCode(pROM, "CZLE") || romTestCode(pROM, "NZSJ") ||
+    if (romTestCode(pROM, "CZLJ") || romTestCode(pROM, "CZLE") ROMTESTCODE_NZLP || romTestCode(pROM, "NZSJ") ||
         romTestCode(pROM, "NZSE")) {
         switch (nCode) {
 #if VERSION == MQ_J
@@ -208,21 +221,12 @@ static bool systemSetupGameRAM(System* pSystem) {
                 gnFlagZelda = 1;
                 bExpansion = 1;
                 break;
-#elif VERSION == MQ_U || VERSION == CE_U
-            case 0x5CAC1CF7:
+#elif VERSION == CE_J
+            case 0x5CAC1C8F:
                 gnFlagZelda = 2;
                 break;
             case 0x184CED80:
                 gnFlagZelda = 3;
-                break;
-            case 0x5CAC1C27:
-                gnFlagZelda = 0;
-                break;
-            case 0x5CAC1C8F:
-                gnFlagZelda = romTestCode(pROM, "CZLE") ? 2 : 0;
-                break;
-            case 0x184CED18:
-                gnFlagZelda = 1;
                 break;
             case 0x54A59B56:
             case 0x421EB8E9:
@@ -231,12 +235,35 @@ static bool systemSetupGameRAM(System* pSystem) {
             case 0x7E8BEE60:
                 gnFlagZelda = 5;
                 break;
-#else
-            case 0x5CAC1C8F:
+#else // MQ_U, CE_U or CE_P
+            case 0x5CAC1CF7:
                 gnFlagZelda = 2;
                 break;
+#if VERSION == CE_P
+            case 0x5CABE4F4:
+                gnFlagZelda = 2;
+                break;
+#endif
             case 0x184CED80:
                 gnFlagZelda = 3;
+                break;
+            case 0x5CAC1C27:
+                gnFlagZelda = 0;
+                break;
+            case 0x5CAC1C8F:
+#if VERSION == CE_P
+                gnFlagZelda = 0;
+#else
+                gnFlagZelda = romTestCode(pROM, "CZLE") ? 2 : 0;
+#endif
+                break;
+#if VERSION == CE_P
+            case 0x5CABE48C:
+                gnFlagZelda = 0;
+                break;
+#endif
+            case 0x184CED18:
+                gnFlagZelda = 1;
                 break;
             case 0x54A59B56:
             case 0x421EB8E9:
@@ -344,7 +371,7 @@ bool systemGetInitialConfiguration(System* pSystem, Rom* pROM, s32 index) {
 #if VERSION >= MQ_U
         gSystemRomConfigurationList[index].storageDevice = SOT_RSP;
 #endif
-    } else if (romTestCode(pROM, "CZLE") || romTestCode(pROM, "CZLJ")) {
+    } else if (romTestCode(pROM, "CZLE") || romTestCode(pROM, "CZLJ") ROMTESTCODE_NZLP) {
         // Ocarina of Time
         gSystemRomConfigurationList[index].storageDevice = SOT_PIF;
 
@@ -446,6 +473,10 @@ STATIC bool systemSetupGameALL(System* pSystem) {
     s32 i;
     u64 nTimeRetrace;
     char acCode[5];
+#if VERSION == CE_P
+    char buf1[30] = "TPL/";
+    char buf2[30] = "TPL/";
+#endif
     DVDFileInfo fileInfo;
     Cpu* pCPU;
     Rom* pROM;
@@ -455,6 +486,25 @@ STATIC bool systemSetupGameALL(System* pSystem) {
     pCPU = SYSTEM_CPU(pSystem);
     pROM = SYSTEM_ROM(pSystem);
     pPIF = SYSTEM_PIF(pSystem);
+
+#if VERSION == CE_P
+    if (gLanguage == 1) {
+        strcpy(buf1, "TPL/GERMAN/");
+        strcpy(buf2, "TPL/GERMAN/");
+    } else if (gLanguage == 2) {
+        strcpy(buf1, "TPL/FRENCH/");
+        strcpy(buf2, "TPL/FRENCH/");
+    } else if (gLanguage == 3) {
+        strcpy(buf1, "TPL/SPANISH/");
+        strcpy(buf2, "TPL/SPANISH/");
+    } else if (gLanguage == 4) {
+        strcpy(buf1, "TPL/ITALIAN/");
+        strcpy(buf2, "TPL/ITALIAN/");
+    } else {
+        strcpy(buf1, "TPL/ENGLISH/");
+        strcpy(buf2, "TPL/ENGLISH/");
+    }
+#endif
 
     if (!xlHeapTake(&mCard.saveIcon, gz_iconSize | 0x30000000)) {
         return false;
@@ -526,28 +576,34 @@ STATIC bool systemSetupGameALL(System* pSystem) {
         pSystem->eTypeROM = SRT_MARIO;
         nSizeSound = 0x1000;
 
+#if VERSION == CE_P
+        strcat(buf1, Z_ICON_FILENAME);
+#endif
         if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
             !simulatorDVDRead(&fileInfo, mCard.saveIcon, (gz_iconSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
             return false;
         }
 
         DVDClose(&fileInfo);
-        simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveIcon);
+        simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
+#if VERSION == CE_P
+        strcat(buf2, Z_BNR_FILENAME);
+#endif
         if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
             !simulatorDVDRead(&fileInfo, mCard.saveBanner, (gz_bnrSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
             return false;
         }
 
         DVDClose(&fileInfo);
-        simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveBanner);
+        simulatorUnpackTexPalette((TEXPalette*)mCard.saveBanner);
         mcardOpen(&mCard, "MARIO", "Mario 64", mCard.saveIcon, mCard.saveBanner, "MARIO",
                   &gSystemRomConfigurationList[i].currentControllerConfig, 0x4000, 0x200);
 
         if (!cpuSetCodeHack(pCPU, 0x80317938, 0x5420FFFE, 0)) {
             return false;
         }
-    } else if (romTestCode(pROM, "CZLE") || romTestCode(pROM, "CZLJ")) {
+    } else if (romTestCode(pROM, "CZLE") || romTestCode(pROM, "CZLJ") || romTestCode(pROM, "NZLP")) {
         // Ocarina of Time
         pSystem->eTypeROM = SRT_ZELDA1;
         nSizeSound = 0x1000;
@@ -580,7 +636,15 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                 if (!cpuSetCodeHack(pCPU, 0x8006E468, 0x97040000, -1)) {
                     return false;
                 }
-            } else {
+            } else if (romTestCode(pROM, "CZLJ")) {
+                if (!cpuSetCodeHack(pCPU, 0x80062D64, 0x94639680, -1)) {
+                    return false;
+                }
+
+                if (!cpuSetCodeHack(pCPU, 0x8006E468, 0x97040000, -1)) {
+                    return false;
+                }
+            } else if (romTestCode(pROM, "NZLP")) {
                 if (!cpuSetCodeHack(pCPU, 0x80062D64, 0x94639680, -1)) {
                     return false;
                 }
@@ -598,12 +662,20 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                 if (!cpuSetCodeHack(pCPU, 0x80066638, 0x97040000, -1)) {
                     return false;
                 }
-            } else {
+            } else if (romTestCode(pROM, "CZLJ")) {
                 if (!cpuSetCodeHack(pCPU, 0x8005BB34, 0x9463D040, -1)) {
                     return false;
                 }
 
                 if (!cpuSetCodeHack(pCPU, 0x80066658, 0x97040000, -1)) {
+                    return false;
+                }
+            } else if (romTestCode(pROM, "NZLP")) {
+                if (!cpuSetCodeHack(pCPU, 0x8005BB3C, 0x9502000C, -1)) {
+                    return false;
+                }
+
+                if (!cpuSetCodeHack(pCPU, 0x800665E8, 0x97040000, -1)) {
                     return false;
                 }
             }
@@ -613,60 +685,80 @@ STATIC bool systemSetupGameALL(System* pSystem) {
         if (!(gnFlagZelda & 1)) {
             if (!(gnFlagZelda & 2)) {
                 // CE-J/MQ-J?
+
+#if VERSION == CE_P
+                strcat(buf1, Z_ICON_FILENAME);
+#endif
                 if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
                     !simulatorDVDRead(&fileInfo, mCard.saveIcon, (gz_iconSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
                     return false;
                 }
 
                 DVDClose(&fileInfo);
-                simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveIcon);
+                simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
+#if VERSION == CE_P
+                strcat(buf2, Z_BNR_FILENAME);
+#endif
                 if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
                     !simulatorDVDRead(&fileInfo, mCard.saveBanner, (gz_bnrSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
                     return false;
                 }
 
                 DVDClose(&fileInfo);
-                simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveBanner);
+                simulatorUnpackTexPalette((TEXPalette*)mCard.saveBanner);
                 mcardOpen(&mCard, MCARD_FILE_NAME, ZELDA_GC_JP, mCard.saveIcon, mCard.saveBanner, "ZELDAX",
                           &gSystemRomConfigurationList[i].currentControllerConfig, MCARD_FILE_SIZE, 0x8000);
 
             } else {
+#if VERSION == CE_P
+                strcat(buf1, Z_ICON_FILENAME);
+#endif
                 if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
                     !simulatorDVDRead(&fileInfo, mCard.saveIcon, (gz_iconSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
                     return false;
                 }
 
                 DVDClose(&fileInfo);
-                simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveIcon);
+                simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
+#if VERSION == CE_P
+                strcat(buf2, Z_BNR_FILENAME);
+#endif
                 if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
                     !simulatorDVDRead(&fileInfo, mCard.saveBanner, (gz_bnrSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
                     return false;
                 }
 
                 DVDClose(&fileInfo);
-                simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveBanner);
+                simulatorUnpackTexPalette((TEXPalette*)mCard.saveBanner);
                 mcardOpen(&mCard, MCARD_FILE_NAME, ZELDA_GC_JP, mCard.saveIcon, mCard.saveBanner, "ZELDA",
                           &gSystemRomConfigurationList[i].currentControllerConfig, MCARD_FILE_SIZE, 0x8000);
             }
+            mCard.file.game.offset = gLanguage; // ???
         } else {
             // debug rom?
+#if VERSION == CE_P
+            strcat(buf1, Z_ICON_FILENAME);
+#endif
             if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
                 !simulatorDVDRead(&fileInfo, mCard.saveIcon, (gz_iconSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
                 return false;
             }
 
             DVDClose(&fileInfo);
-            simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveIcon);
+            simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
+#if VERSION == CE_P
+            strcat(buf2, Z_BNR_FILENAME);
+#endif
             if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
                 !simulatorDVDRead(&fileInfo, mCard.saveBanner, (gz_bnrSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
                 return false;
             }
 
             DVDClose(&fileInfo);
-            simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveBanner);
+            simulatorUnpackTexPalette((TEXPalette*)mCard.saveBanner);
             mcardOpen(&mCard, "ZELDAD", "The Legend of Zelda Debug", mCard.saveIcon, mCard.saveBanner, "ZELDAD",
                       &gSystemRomConfigurationList[i].currentControllerConfig, 0xC000, 0x8000);
         }
@@ -692,21 +784,27 @@ STATIC bool systemSetupGameALL(System* pSystem) {
 
         anMode[4] = 0x17D9;
 
+#if VERSION == CE_P
+        strcat(buf1, Z_ICON_FILENAME);
+#endif
         if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
             !simulatorDVDRead(&fileInfo, mCard.saveIcon, (gz_iconSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
             return false;
         }
 
         DVDClose(&fileInfo);
-        simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveIcon);
+        simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
+#if VERSION == CE_P
+        strcat(buf2, Z_BNR_FILENAME);
+#endif
         if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
             !simulatorDVDRead(&fileInfo, mCard.saveBanner, (gz_bnrSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
             return false;
         }
 
         DVDClose(&fileInfo);
-        simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveBanner);
+        simulatorUnpackTexPalette((TEXPalette*)mCard.saveBanner);
         mcardOpen(&mCard, "ZELDA3", "Legend of Zelda", mCard.saveIcon, mCard.saveBanner, "ZELDA3",
                   &gSystemRomConfigurationList[i].currentControllerConfig, 0x24000, 0x20000);
 
@@ -771,40 +869,52 @@ STATIC bool systemSetupGameALL(System* pSystem) {
         pCPU->nCompileFlag |= 0x1010;
     } else if (romTestCode(pROM, "NPWE")) {
         // Pilotwings 64
+#if VERSION == CE_P
+        strcat(buf1, Z_ICON_FILENAME);
+#endif
         if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
             !simulatorDVDRead(&fileInfo, mCard.saveIcon, (gz_iconSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
             return false;
         }
 
         DVDClose(&fileInfo);
-        simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveIcon);
+        simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
+#if VERSION == CE_P
+        strcat(buf2, Z_BNR_FILENAME);
+#endif
         if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
             !simulatorDVDRead(&fileInfo, mCard.saveBanner, (gz_bnrSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
             return false;
         }
 
         DVDClose(&fileInfo);
-        simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveBanner);
+        simulatorUnpackTexPalette((TEXPalette*)mCard.saveBanner);
         mcardOpen(&mCard, "PILOT", "Pilotwings", mCard.saveIcon, mCard.saveBanner, "PILOT",
                   &gSystemRomConfigurationList[i].currentControllerConfig, 0x4000, 0x200);
     } else if (romTestCode(pROM, "NAFJ")) {
         // Animal Forest
+#if VERSION == CE_P
+        strcat(buf1, Z_ICON_FILENAME);
+#endif
         if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
             !simulatorDVDRead(&fileInfo, mCard.saveIcon, (gz_iconSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
             return false;
         }
 
         DVDClose(&fileInfo);
-        simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveIcon);
+        simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
+#if VERSION == CE_P
+        strcat(buf1, Z_ICON_FILENAME);
+#endif
         if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
             !simulatorDVDRead(&fileInfo, mCard.saveIcon, (gz_iconSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
             return false;
         }
 
         DVDClose(&fileInfo);
-        simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveIcon);
+        simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
         mcardOpen(&mCard, "AF", "Animal Forest", mCard.saveIcon, mCard.saveBanner, "AF",
                   &gSystemRomConfigurationList[i].currentControllerConfig, 0x24000, 0x20000);
     } else if (romTestCode(pROM, "NBCE")) {
@@ -820,21 +930,27 @@ STATIC bool systemSetupGameALL(System* pSystem) {
             }
         } else if (romTestCode(pROM, "NCUE")) {
             // Cruis'n USA
+#if VERSION == CE_P
+            strcat(buf1, Z_ICON_FILENAME);
+#endif
             if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
                 !simulatorDVDRead(&fileInfo, mCard.saveIcon, (gz_iconSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
                 return false;
             }
 
             DVDClose(&fileInfo);
-            simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveIcon);
+            simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
+#if VERSION == CE_P
+            strcat(buf1, Z_ICON_FILENAME);
+#endif
             if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
                 !simulatorDVDRead(&fileInfo, mCard.saveIcon, (gz_iconSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
                 return false;
             }
 
             DVDClose(&fileInfo);
-            simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveIcon);
+            simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
             mcardOpen(&mCard, "CRUISE", "Cruise 'n USA", mCard.saveIcon, mCard.saveBanner, "CRUISE",
                       &gSystemRomConfigurationList[i].currentControllerConfig, 0x4000, 0x200);
 
@@ -877,21 +993,27 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                     }
                 }
 
+#if VERSION == CE_P
+                strcat(buf1, Z_ICON_FILENAME);
+#endif
                 if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
                     !simulatorDVDRead(&fileInfo, mCard.saveIcon, (gz_iconSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
                     return false;
                 }
 
                 DVDClose(&fileInfo);
-                simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveIcon);
+                simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
+#if VERSION == CE_P
+                strcat(buf2, Z_BNR_FILENAME);
+#endif
                 if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
                     !simulatorDVDRead(&fileInfo, mCard.saveBanner, (gz_bnrSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
                     return false;
                 }
 
                 DVDClose(&fileInfo);
-                simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveBanner);
+                simulatorUnpackTexPalette((TEXPalette*)mCard.saveBanner);
                 mcardOpen(&mCard, "DRMARIO", "Dr. Mario", mCard.saveIcon, mCard.saveBanner, "DRMARIO",
                           &gSystemRomConfigurationList[i].currentControllerConfig, 0x4000, 0x200);
                 gpSystem->eTypeROM = SRT_DRMARIO;
@@ -933,21 +1055,27 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                 // Mario Kart 64
                 pSystem->eTypeROM = SRT_MARIOKART;
 
+#if VERSION == CE_P
+                strcat(buf1, Z_ICON_FILENAME);
+#endif
                 if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
                     !simulatorDVDRead(&fileInfo, mCard.saveIcon, (gz_iconSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
                     return false;
                 }
 
                 DVDClose(&fileInfo);
-                simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveIcon);
+                simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
+#if VERSION == CE_P
+                strcat(buf2, Z_BNR_FILENAME);
+#endif
                 if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
                     !simulatorDVDRead(&fileInfo, mCard.saveBanner, (gz_bnrSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
                     return false;
                 }
 
                 DVDClose(&fileInfo);
-                simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveBanner);
+                simulatorUnpackTexPalette((TEXPalette*)mCard.saveBanner);
                 mcardOpen(&mCard, "KART", "Mario Kart", mCard.saveIcon, mCard.saveBanner, "KART",
                           &gSystemRomConfigurationList[i].currentControllerConfig, 0x4000, 0x200);
                 pCPU->nCompileFlag |= 0x10;
@@ -969,102 +1097,132 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                 // Mario Party 1
                 pSystem->eTypeROM = SRT_MARIOPARTY1;
 
+#if VERSION == CE_P
+                strcat(buf1, Z_ICON_FILENAME);
+#endif
                 if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
                     !simulatorDVDRead(&fileInfo, mCard.saveIcon, (gz_iconSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
                     return false;
                 }
 
                 DVDClose(&fileInfo);
-                simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveIcon);
+                simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
+#if VERSION == CE_P
+                strcat(buf2, Z_BNR_FILENAME);
+#endif
                 if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
                     !simulatorDVDRead(&fileInfo, mCard.saveBanner, (gz_bnrSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
                     return false;
                 }
 
                 DVDClose(&fileInfo);
-                simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveBanner);
+                simulatorUnpackTexPalette((TEXPalette*)mCard.saveBanner);
                 mcardOpen(&mCard, "MP1", "Mario Party 1", mCard.saveIcon, mCard.saveBanner, "MP1",
                           &gSystemRomConfigurationList[i].currentControllerConfig, 0x4000, 0x200);
             } else if (romTestCode(pROM, "NMWE")) {
                 // Mario Party 2
                 pSystem->eTypeROM = SRT_MARIOPARTY2;
 
+#if VERSION == CE_P
+                strcat(buf1, Z_ICON_FILENAME);
+#endif
                 if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
                     !simulatorDVDRead(&fileInfo, mCard.saveIcon, (gz_iconSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
                     return false;
                 }
 
                 DVDClose(&fileInfo);
-                simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveIcon);
+                simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
+#if VERSION == CE_P
+                strcat(buf2, Z_BNR_FILENAME);
+#endif
                 if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
                     !simulatorDVDRead(&fileInfo, mCard.saveBanner, (gz_bnrSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
                     return false;
                 }
 
                 DVDClose(&fileInfo);
-                simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveBanner);
+                simulatorUnpackTexPalette((TEXPalette*)mCard.saveBanner);
                 mcardOpen(&mCard, "MP2", "Mario Party 2", mCard.saveIcon, mCard.saveBanner, "MP2",
                           &gSystemRomConfigurationList[i].currentControllerConfig, 0x4000, 0x200);
             } else if (romTestCode(pROM, "NMVE")) {
                 // Mario Party 3
                 pSystem->eTypeROM = SRT_MARIOPARTY3;
 
+#if VERSION == CE_P
+                strcat(buf1, Z_ICON_FILENAME);
+#endif
                 if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
                     !simulatorDVDRead(&fileInfo, mCard.saveIcon, (gz_iconSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
                     return false;
                 }
 
                 DVDClose(&fileInfo);
-                simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveIcon);
+                simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
+#if VERSION == CE_P
+                strcat(buf2, Z_BNR_FILENAME);
+#endif
                 if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
                     !simulatorDVDRead(&fileInfo, mCard.saveBanner, (gz_bnrSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
                     return false;
                 }
 
                 DVDClose(&fileInfo);
-                simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveBanner);
+                simulatorUnpackTexPalette((TEXPalette*)mCard.saveBanner);
                 mcardOpen(&mCard, "MP3", "Mario Party 3", mCard.saveIcon, mCard.saveBanner, "MP3",
                           &gSystemRomConfigurationList[i].currentControllerConfig, 0x4000, 0x800);
             } else if (!romTestCode(pROM, "NM3E") && !romTestCode(pROM, "NRIE")) {
                 if (romTestCode(pROM, "NMQE")) {
                     // Paper Mario
+#if VERSION == CE_P
+                    strcat(buf1, Z_ICON_FILENAME);
+#endif
                     if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
                         !simulatorDVDRead(&fileInfo, mCard.saveIcon, (gz_iconSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
                         return false;
                     }
 
                     DVDClose(&fileInfo);
-                    simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveIcon);
+                    simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
+#if VERSION == CE_P
+                    strcat(buf2, Z_BNR_FILENAME);
+#endif
                     if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
                         !simulatorDVDRead(&fileInfo, mCard.saveBanner, (gz_bnrSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
                         return false;
                     }
 
                     DVDClose(&fileInfo);
-                    simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveBanner);
+                    simulatorUnpackTexPalette((TEXPalette*)mCard.saveBanner);
 
                     mcardOpen(&mCard, "PaperMario", "Paper Mario", mCard.saveIcon, mCard.saveBanner, "PAPERMARIO",
                               &gSystemRomConfigurationList[i].currentControllerConfig, 0x24000, 0x20000);
                 } else if (romTestCode(pROM, "NPOE")) {
+#if VERSION == CE_P
+                    strcat(buf1, Z_ICON_FILENAME);
+#endif
                     if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
                         !simulatorDVDRead(&fileInfo, mCard.saveIcon, (gz_iconSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
                         return false;
                     }
 
                     DVDClose(&fileInfo);
-                    simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveIcon);
+                    simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
+#if VERSION == CE_P
+                    strcat(buf1, Z_ICON_FILENAME);
+#endif
                     if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
                         !simulatorDVDRead(&fileInfo, mCard.saveIcon, (gz_iconSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
                         return false;
                     }
 
                     DVDClose(&fileInfo);
-                    simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveIcon);
+                    simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
                     mcardOpen(&mCard, "PokemonStadium", "Pokemon Stadium", mCard.saveIcon, mCard.saveBanner,
                               "POKEMONSTADIUM", &gSystemRomConfigurationList[i].currentControllerConfig, 0x24000,
@@ -1089,21 +1247,27 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                     if (romTestCode(pROM, "NFXE") || romTestCode(pROM, "NFXJ")) {
                         pSystem->eTypeROM = SRT_STARFOX;
 
+#if VERSION == CE_P
+                        strcat(buf1, Z_ICON_FILENAME);
+#endif
                         if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
                             !simulatorDVDRead(&fileInfo, mCard.saveIcon, (gz_iconSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
                             return false;
                         }
 
                         DVDClose(&fileInfo);
-                        simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveIcon);
+                        simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
+#if VERSION == CE_P
+                        strcat(buf2, Z_BNR_FILENAME);
+#endif
                         if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
                             !simulatorDVDRead(&fileInfo, mCard.saveBanner, (gz_bnrSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
                             return false;
                         }
 
                         DVDClose(&fileInfo);
-                        simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveBanner);
+                        simulatorUnpackTexPalette((TEXPalette*)mCard.saveBanner);
                         mcardOpen(&mCard, "STARFOX", "Starfox", mCard.saveIcon, mCard.saveBanner, "STARFOX",
                                   &gSystemRomConfigurationList[i].currentControllerConfig, 0x4000, 0x200);
                         pCPU->nCompileFlag |= 0x110;
@@ -1150,21 +1314,27 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                             return false;
                         }
 
+#if VERSION == CE_P
+                        strcat(buf1, Z_ICON_FILENAME);
+#endif
                         if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
                             !simulatorDVDRead(&fileInfo, mCard.saveIcon, (gz_iconSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
                             return false;
                         }
 
                         DVDClose(&fileInfo);
-                        simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveIcon);
+                        simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
+#if VERSION == CE_P
+                        strcat(buf2, Z_BNR_FILENAME);
+#endif
                         if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
                             !simulatorDVDRead(&fileInfo, mCard.saveBanner, (gz_bnrSize + 0x1F) & 0xFFFFFFE0, 0, NULL)) {
                             return false;
                         }
 
                         DVDClose(&fileInfo);
-                        simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveBanner);
+                        simulatorUnpackTexPalette((TEXPalette*)mCard.saveBanner);
                         mcardOpen(&mCard, "1080", "1080", mCard.saveIcon, mCard.saveBanner, "1080",
                                   &gSystemRomConfigurationList[i].currentControllerConfig, 0xC000, 0x8000);
                     } else if (!romTestCode(pROM, "NTPE") && !romTestCode(pROM, "NEPE")) {
@@ -1178,6 +1348,9 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                                 return false;
                             }
 
+#if VERSION == CE_P
+                            strcat(buf1, Z_ICON_FILENAME);
+#endif
                             if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
                                 !simulatorDVDRead(&fileInfo, mCard.saveIcon, (gz_iconSize + 0x1F) & 0xFFFFFFE0, 0,
                                                   NULL)) {
@@ -1185,8 +1358,11 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                             }
 
                             DVDClose(&fileInfo);
-                            simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveIcon);
+                            simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
+#if VERSION == CE_P
+                            strcat(buf2, Z_BNR_FILENAME);
+#endif
                             if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
                                 !simulatorDVDRead(&fileInfo, mCard.saveBanner, (gz_bnrSize + 0x1F) & 0xFFFFFFE0, 0,
                                                   NULL)) {
@@ -1194,7 +1370,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                             }
 
                             DVDClose(&fileInfo);
-                            simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveBanner);
+                            simulatorUnpackTexPalette((TEXPalette*)mCard.saveBanner);
 
                             mcardOpen(&mCard, "PANEL", "Panel de Pon", mCard.saveIcon, mCard.saveBanner, "PANEL",
                                       &gSystemRomConfigurationList[i].currentControllerConfig, 0xC000, 0x8000);
@@ -1216,6 +1392,9 @@ STATIC bool systemSetupGameALL(System* pSystem) {
 
                             pCPU->nCompileFlag |= 0x10;
                         } else if (romTestCode(pROM, "NYSE")) {
+#if VERSION == CE_P
+                            strcat(buf1, Z_ICON_FILENAME);
+#endif
                             if (DVDOpen(Z_ICON_PATH, &fileInfo) == 1 &&
                                 !simulatorDVDRead(&fileInfo, mCard.saveIcon, (gz_iconSize + 0x1F) & 0xFFFFFFE0, 0,
                                                   NULL)) {
@@ -1223,8 +1402,11 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                             }
 
                             DVDClose(&fileInfo);
-                            simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveIcon);
+                            simulatorUnpackTexPalette((TEXPalette*)mCard.saveIcon);
 
+#if VERSION == CE_P
+                            strcat(buf2, Z_BNR_FILENAME);
+#endif
                             if (DVDOpen(Z_BNR_PATH, &fileInfo) == 1 &&
                                 !simulatorDVDRead(&fileInfo, mCard.saveBanner, (gz_bnrSize + 0x1F) & 0xFFFFFFE0, 0,
                                                   NULL)) {
@@ -1232,7 +1414,7 @@ STATIC bool systemSetupGameALL(System* pSystem) {
                             }
 
                             DVDClose(&fileInfo);
-                            simulatorUnpackTexPalette((TEXPalettePtr)mCard.saveBanner);
+                            simulatorUnpackTexPalette((TEXPalette*)mCard.saveBanner);
                             mcardOpen(&mCard, "YoshiStory", "YoshiStory", mCard.saveIcon, mCard.saveBanner,
                                       "YoshiStory", &gSystemRomConfigurationList[i].currentControllerConfig, 0x4000,
                                       0x800);

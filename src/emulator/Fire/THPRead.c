@@ -261,43 +261,65 @@ bool movieDrawImage(TEXPalettePtr tpl, s16 nX0, s16 nY0) {
     return true;
 }
 
+#define movieDrawErrorMessageImpl(movieMessage, coverOpen, wrongDisk, readingDisk, retryErr, fatalErr, noDisk)       \
+    {                                                                                                                \
+        switch ((movieMessage)) {                                                                                    \
+            case M_M_DISK_COVER_OPEN:                                                                                \
+                movieDrawImage(((TEXPalette*)(u8*)(coverOpen)),                                                      \
+                               160 - ((TEXPalette*)(u8*)(coverOpen))->descriptorArray->textureHeader->width / 2,     \
+                               120 - ((TEXPalette*)(u8*)(coverOpen))->descriptorArray->textureHeader->height / 2);   \
+                break;                                                                                               \
+            case M_M_DISK_WRONG_DISK:                                                                                \
+                movieDrawImage(((TEXPalette*)(u8*)(wrongDisk)),                                                      \
+                               160 - ((TEXPalette*)(u8*)(wrongDisk))->descriptorArray->textureHeader->width / 2,     \
+                               120 - ((TEXPalette*)(u8*)(wrongDisk))->descriptorArray->textureHeader->height / 2);   \
+                break;                                                                                               \
+            case M_M_DISK_READING_DISK:                                                                              \
+                movieDrawImage(((TEXPalette*)(u8*)(readingDisk)),                                                    \
+                               160 - ((TEXPalette*)(u8*)(readingDisk))->descriptorArray->textureHeader->width / 2,   \
+                               120 - ((TEXPalette*)(u8*)(readingDisk))->descriptorArray->textureHeader->height / 2); \
+                break;                                                                                               \
+            case M_M_DISK_RETRY_ERROR:                                                                               \
+                movieDrawImage(((TEXPalette*)(u8*)(retryErr)),                                                       \
+                               160 - ((TEXPalette*)(u8*)(retryErr))->descriptorArray->textureHeader->width / 2,      \
+                               120 - ((TEXPalette*)(u8*)(retryErr))->descriptorArray->textureHeader->height / 2);    \
+                break;                                                                                               \
+            case M_M_DISK_FATAL_ERROR:                                                                               \
+                movieDrawImage(((TEXPalette*)(u8*)(fatalErr)),                                                       \
+                               160 - ((TEXPalette*)(u8*)(fatalErr))->descriptorArray->textureHeader->width / 2,      \
+                               120 - ((TEXPalette*)(u8*)(fatalErr))->descriptorArray->textureHeader->height / 2);    \
+                break;                                                                                               \
+            case M_M_DISK_NO_DISK:                                                                                   \
+                movieDrawImage(((TEXPalette*)(u8*)(noDisk)),                                                         \
+                               160 - ((TEXPalette*)(u8*)(noDisk))->descriptorArray->textureHeader->width / 2,        \
+                               120 - ((TEXPalette*)(u8*)(noDisk))->descriptorArray->textureHeader->height / 2);      \
+                break;                                                                                               \
+            case M_M_DISK_DEFAULT_ERROR:                                                                             \
+                movieDrawImage(((TEXPalette*)(u8*)(fatalErr)),                                                       \
+                               160 - ((TEXPalette*)(u8*)(fatalErr))->descriptorArray->textureHeader->width / 2,      \
+                               120 - ((TEXPalette*)(u8*)(fatalErr))->descriptorArray->textureHeader->height / 2);    \
+                break;                                                                                               \
+        }                                                                                                            \
+    }
+
 bool movieDrawErrorMessage(MovieMessage movieMessage) {
-    switch (movieMessage) {
-        case M_M_DISK_COVER_OPEN:
-            movieDrawImage((TEXPalettePtr)(u8*)gcoverOpen,
-                           160 - ((TEXPalettePtr)(u8*)gcoverOpen)->descriptorArray->textureHeader->width / 2,
-                           120 - ((TEXPalettePtr)(u8*)gcoverOpen)->descriptorArray->textureHeader->height / 2);
-            break;
-        case M_M_DISK_WRONG_DISK:
-            movieDrawImage((TEXPalettePtr)(u8*)gwrongDisk,
-                           160 - ((TEXPalettePtr)(u8*)gwrongDisk)->descriptorArray->textureHeader->width / 2,
-                           120 - ((TEXPalettePtr)(u8*)gwrongDisk)->descriptorArray->textureHeader->height / 2);
-            break;
-        case M_M_DISK_READING_DISK:
-            movieDrawImage((TEXPalettePtr)(u8*)greadingDisk,
-                           160 - ((TEXPalettePtr)(u8*)greadingDisk)->descriptorArray->textureHeader->width / 2,
-                           120 - ((TEXPalettePtr)(u8*)greadingDisk)->descriptorArray->textureHeader->height / 2);
-            break;
-        case M_M_DISK_RETRY_ERROR:
-            movieDrawImage((TEXPalettePtr)(u8*)gretryErr,
-                           160 - ((TEXPalettePtr)(u8*)gretryErr)->descriptorArray->textureHeader->width / 2,
-                           120 - ((TEXPalettePtr)(u8*)gretryErr)->descriptorArray->textureHeader->height / 2);
-            break;
-        case M_M_DISK_FATAL_ERROR:
-            movieDrawImage((TEXPalettePtr)(u8*)gfatalErr,
-                           160 - ((TEXPalettePtr)(u8*)gfatalErr)->descriptorArray->textureHeader->width / 2,
-                           120 - ((TEXPalettePtr)(u8*)gfatalErr)->descriptorArray->textureHeader->height / 2);
-            break;
-        case M_M_DISK_NO_DISK:
-            movieDrawImage((TEXPalettePtr)(u8*)gnoDisk,
-                           160 - ((TEXPalettePtr)(u8*)gnoDisk)->descriptorArray->textureHeader->width / 2,
-                           120 - ((TEXPalettePtr)(u8*)gnoDisk)->descriptorArray->textureHeader->height / 2);
-            break;
-        case M_M_DISK_DEFAULT_ERROR:
-            movieDrawImage((TEXPalettePtr)(u8*)gfatalErr,
-                           160 - ((TEXPalettePtr)(u8*)gfatalErr)->descriptorArray->textureHeader->width / 2,
-                           120 - ((TEXPalettePtr)(u8*)gfatalErr)->descriptorArray->textureHeader->height / 2);
-            break;
+#if VERSION == CE_P
+    if (gLanguage == 1) {
+        movieDrawErrorMessageImpl(movieMessage, ggerman_coverOpen, ggerman_wrongDisk, ggerman_readingDisk,
+                                  ggerman_retryErr, ggerman_fatalErr, ggerman_noDisk);
+    } else if (gLanguage == 2) {
+        movieDrawErrorMessageImpl(movieMessage, gfrench_coverOpen, gfrench_wrongDisk, gfrench_readingDisk,
+                                  gfrench_retryErr, gfrench_fatalErr, gfrench_noDisk);
+    } else if (gLanguage == 3) {
+        movieDrawErrorMessageImpl(movieMessage, gspanish_coverOpen, gspanish_wrongDisk, gspanish_readingDisk,
+                                  gspanish_retryErr, gspanish_fatalErr, gspanish_noDisk);
+    } else if (gLanguage == 4) {
+        movieDrawErrorMessageImpl(movieMessage, gitalian_coverOpen, gitalian_wrongDisk, gitalian_readingDisk,
+                                  gitalian_retryErr, gitalian_fatalErr, gitalian_noDisk);
+    } else
+#endif
+    {
+        movieDrawErrorMessageImpl(movieMessage, gcoverOpen, gwrongDisk, greadingDisk, gretryErr, gfatalErr, gnoDisk);
     }
 
     return true;

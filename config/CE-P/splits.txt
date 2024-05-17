@@ -113,7 +113,7 @@ emulator/Fire/soundGCN.c:
 
 emulator/Fire/frame.c:
 	.text       start:0x8001D1C0 end:0x8002C888
-	.rodata     start:0x800D43E0 end:0x800D4460
+	.rodata     start:0x800D43E0 end:0x800D4420
 	.data       start:0x80136AE0 end:0x801375A8
 	.bss        start:0x801548A0 end:0x8017CBE0
 	.sdata      start:0x801810E8 end:0x80181170
@@ -122,6 +122,7 @@ emulator/Fire/frame.c:
 
 emulator/Fire/system.c:
 	.text       start:0x8002C888 end:0x800311B8
+	.rodata     start:0x800D4420 end:0x800D4460
 	.data       start:0x801375A8 end:0x80137948
 	.bss        start:0x8017CBE0 end:0x8017CD58
 	.sdata      start:0x80181170 end:0x801813C0
