@@ -71,8 +71,12 @@ Building
 ========
 
 - Extract the TGC file containing the N64 emulator from the disc of the version you want:
-  * Master Quest: ``zlj_REGION.tgc``, ``REGION`` being ``j`` for Japan, ``e`` for North America or ``p`` for Europe.
-  * Collector's Edition: ``120903_zelda.tgc``
+  * `mq-j` - `zlj_f.tgc`
+  * `mq-u` - `zle_f.tgc`
+  * `mq-e` - `zlp_f.tgc`
+  * `ce-j` - `120903_zelda.tgc`
+  * `ce-u` - `zelda_ENG_090903.tgc`
+  * `ce-e` - `zelda_PAL_093003.tgc`
 
 - Clone the repository:
 
@@ -92,7 +96,7 @@ Building
   python configure.py
   ```
 
-  To use a version other than `MQ-J`, specify it with `--version` (or `-v`) (example: ``python configure.py -v ce-j``).
+  To use a version other than `mq-e`, specify it with `--version` (or `-v`) (example: ``python configure.py -v ce-j``).
 - Build:
 
   ```sh
