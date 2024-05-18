@@ -30,11 +30,11 @@
 #define ZELDA_GC_JP "ゼルダの伝説　時のオカリナＧＣ"
 #define MCARD_FILE_NAME "ZELDA"
 #define MCARD_FILE_SIZE (0xC000 * 2)
-#elif VERSION == MQ_U
+#elif VERSION == MQ_U || VERSION == MQ_E
 #define ZELDA_GC_JP "Zelda: Ocarina of Time"
 #define MCARD_FILE_NAME "ZELDA"
 #define MCARD_FILE_SIZE (0xC000 * 2)
-#elif VERSION == CE_U || VERSION == MQ_E || VERSION == CE_E
+#elif VERSION == CE_U || VERSION == CE_E
 #define ZELDA_GC_JP "Zelda: Collector's Edition"
 #define MCARD_FILE_NAME "ZELDA1"
 #define MCARD_FILE_SIZE (0xC000)
@@ -46,25 +46,31 @@
 #endif
 
 #if VERSION == MQ_E || VERSION == CE_E
-#define Z_ICON_FILENAME "z_icon.tpl"
-#define Z_BNR_FILENAME "z_bnr.tpl"
-#define Z_ICON_PATH buf1
-#define Z_BNR_PATH buf2
 #define DVDOPEN_BNR_PATH Z_BNR_PATH
 #define MCARD_ICON mCard.saveIcon
 #define MCARD_BANNER mCard.saveBanner
 #define MCARD_ICON_SIZE gz_iconSize
 #define MCARD_BNR_SIZE gz_bnrSize
-#define ROMTESTCODE_NZLP || romTestCode(pROM, "NZLP")
-#define CZLJ_ELSE else if (romTestCode(pROM, "CZLJ"))
 #else
-#define Z_ICON_PATH "TPL/z_icon.tpl"
-#define Z_BNR_PATH "TPL/z_bnr.tpl"
 #define DVDOPEN_BNR_PATH Z_ICON_PATH
 #define MCARD_ICON mCard.saveIcon
 #define MCARD_BANNER mCard.saveIcon
 #define MCARD_ICON_SIZE gz_iconSize
 #define MCARD_BNR_SIZE gz_iconSize
+#endif
+
+#if VERSION == MQ_E || VERSION == CE_E
+#define Z_ICON_FILENAME "z_icon.tpl"
+#define Z_BNR_FILENAME "z_bnr.tpl"
+#define Z_ICON_PATH buf1
+#define Z_BNR_PATH buf2
+
+#define ROMTESTCODE_NZLP || romTestCode(pROM, "NZLP")
+#define CZLJ_ELSE else if (romTestCode(pROM, "CZLJ"))
+#else
+#define Z_ICON_PATH "TPL/z_icon.tpl"
+#define Z_BNR_PATH "TPL/z_bnr.tpl"
+
 #define ROMTESTCODE_NZLP
 #define CZLJ_ELSE else
 #endif
@@ -502,12 +508,14 @@ STATIC bool systemSetupGameALL(System* pSystem) {
     } else if (gLanguage == 2) {
         strcpy(buf1, "TPL/FRENCH/");
         strcpy(buf2, "TPL/FRENCH/");
+#if VERSION == CE_E
     } else if (gLanguage == 3) {
         strcpy(buf1, "TPL/SPANISH/");
         strcpy(buf2, "TPL/SPANISH/");
     } else if (gLanguage == 4) {
         strcpy(buf1, "TPL/ITALIAN/");
         strcpy(buf2, "TPL/ITALIAN/");
+#endif
     } else {
         strcpy(buf1, "TPL/ENGLISH/");
         strcpy(buf2, "TPL/ENGLISH/");

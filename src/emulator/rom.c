@@ -15,7 +15,7 @@
 #define ROMCACHEGAME_CHECK_OOT_VERSION (romTestCode(pROM, "CZLE") || romTestCode(pROM, "CZLJ"))
 #define ROMCACHEGAME_ELSE else
 #else
-#define ROMCACHEGAME_CHECK_OOT_VERSION (bIsCZLE || bIsCZLJ)
+#define ROMCACHEGAME_CHECK_OOT_VERSION (bIsCZLE || bZeldaJ)
 
 #if VERSION == MQ_U || VERSION == CE_U
 #define ROMCACHEGAME_IF if (bIsCZLE)
@@ -689,36 +689,22 @@ static bool romCacheGame_ZELDA(f32 rProgress) {
 
 #if VERSION == MQ_E || VERSION == CE_E
 bool romCacheGame(Rom* pROM) {
-    // Parameters
-    // struct __anon_0x509F2* pROM; // r31
-
-    // Local variables
-    s32 blockCount; // r1+0x14
-    bool bIsCZLJ;
-    bool bZeldaE; // r8
-    bool bZeldaF; // r6
-    bool bZeldaG; // r7
-    bool bZeldaI; // r9
-    bool bZeldaS; // r10
-    s32 nSize; // r30
-    char* szName; // r5
-    tXL_FILE* pFile; // r1+0xC
-
-    // References
-    // -> s32 gDVDResetToggle;
-    // -> u32 gnFlagZelda;
-    // -> s32 gbDisplayedError;
-    // -> static s32 gbProgress;
-    // -> static void* gpImageBack;
-    // -> static u32 ganOffsetBlock_URAZLP[198];
-    // -> static u32 ganOffsetBlock_ZLP[198];
-    // -> u8 gLanguage;
+    s32 blockCount;
+    bool bZeldaJ;
+    bool bZeldaE;
+    bool bZeldaF;
+    bool bZeldaG;
+    bool bZeldaI;
+    bool bZeldaS;
+    s32 nSize;
+    char* szName;
+    tXL_FILE* pFile;
 
     blockCount = 0;
     gDVDResetToggle = true;
 
     bZeldaE = romTestCode(pROM, "CZLE");
-    bIsCZLJ = romTestCode(pROM, "CZLJ");
+    bZeldaJ = romTestCode(pROM, "CZLJ");
 
     bZeldaS = false;
     bZeldaI = false;
@@ -737,28 +723,36 @@ bool romCacheGame(Rom* pROM) {
         bZeldaE = true;
     }
 
-    if (bZeldaE || bIsCZLJ || bZeldaF || bZeldaG || bZeldaI || bZeldaS) {
+    if (bZeldaE || bZeldaJ || bZeldaF || bZeldaG || bZeldaI || bZeldaS) {
         if (gnFlagZelda & 2) {
-            if (!bZeldaE && !bIsCZLJ && (bZeldaE ||bZeldaF || bZeldaG || bZeldaI || bZeldaS)) {
+            if (!bZeldaE && !bZeldaJ && (bZeldaE || bZeldaF || bZeldaG || bZeldaI || bZeldaS)) {
                 pROM->anOffsetBlock = OFFSET_BLOCK_ARRAY;
                 pROM->nCountOffsetBlocks = 0xC6;
             }
-        } else if (!bZeldaE && !bIsCZLJ && (bZeldaE ||bZeldaF || bZeldaG || bZeldaI || bZeldaS)) {
+        } else if (!bZeldaE && !bZeldaJ && (bZeldaE || bZeldaF || bZeldaG || bZeldaI || bZeldaS)) {
             pROM->anOffsetBlock = MQ_OFFSET_BLOCK_ARRAY;
             pROM->nCountOffsetBlocks = 0xC6;
         }
+
         if (bZeldaE) {
             szName = gnFlagZelda & 2 ? "zle.tpl" : "urazle.tpl";
         } else if (bZeldaF) {
             szName = gnFlagZelda & 2 ? "zlf.tpl" : "urazlf.tpl";
         } else if (bZeldaG) {
             szName = gnFlagZelda & 2 ? "zlg.tpl" : "urazlg.tpl";
-        } else if (bIsCZLJ) {
+        } else if (bZeldaJ) {
             szName = gnFlagZelda & 2 ? "zlj.tpl" : "urazlj.tpl";
+#if VERSION == CE_E
         } else if (bZeldaI) {
             szName = gnFlagZelda & 2 ? "zli.tpl" : "urazli.tpl";
         } else if (bZeldaS) {
             szName = gnFlagZelda & 2 ? "zls.tpl" : "urazls.tpl";
+#else
+        } else if (bZeldaI) {
+            szName = gnFlagZelda & 2 ? "zle.tpl" : "urazle.tpl";
+        } else if (bZeldaS) {
+            szName = gnFlagZelda & 2 ? "zle.tpl" : "urazle.tpl";
+#endif
         } else {
             szName = "";
         }
@@ -817,7 +811,7 @@ static bool romCacheGame(Rom* pROM) {
     char* szName;
 #if VERSION >= MQ_U
     s32 bIsCZLE;
-    s32 bIsCZLJ;
+    s32 bZeldaJ;
 #endif
     tXL_FILE* pFile;
 
@@ -826,7 +820,7 @@ static bool romCacheGame(Rom* pROM) {
 
 #if VERSION >= MQ_U
     bIsCZLE = romTestCode(pROM, "CZLE");
-    bIsCZLJ = romTestCode(pROM, "CZLJ");
+    bZeldaJ = romTestCode(pROM, "CZLJ");
 #endif
 
     if (ROMCACHEGAME_CHECK_OOT_VERSION) {
@@ -851,7 +845,7 @@ static bool romCacheGame(Rom* pROM) {
 #else
         if (bIsCZLE) {
             szName = gnFlagZelda & 2 ? "zle.tpl" : "urazle.tpl";
-        } else if (bIsCZLJ) {
+        } else if (bZeldaJ) {
             szName = gnFlagZelda & 2 ? "zlj.tpl" : "urazlj.tpl";
         } else {
             szName = "";

@@ -37,7 +37,7 @@ static void xlCoreInitRenderMode(GXRenderModeObj* mode) {
         return;
     }
 
-#if VERSION == MQ_E || VERSION == CE_E
+#if VERSION == CE_E
     rmode = &GXEurgb60Hz480IntDf;
     rmode->viXOrigin -= 0x20;
     rmode->viWidth += 0x40;
@@ -67,8 +67,15 @@ static void xlCoreInitRenderMode(GXRenderModeObj* mode) {
         case 2:
             rmode = &GXMpal480IntDf;
             break;
+#if VERSION == MQ_E
+        case 5:
+            rmode = &GXEurgb60Hz480IntDf;
+            rmode->viXOrigin -= 0x20;
+            rmode->viWidth += 0x40;
+            break;
+#endif
         default:
-            OSPanic("xlCoreGCN.c", 182, "DEMOInit: invalid TV format\n");
+            OSPanic("xlCoreGCN.c", VERSION == MQ_E ? 189 : 182, "DEMOInit: invalid TV format\n");
             break;
     }
 #endif
@@ -244,7 +251,11 @@ int main(int nCount, char** aszArgument) {
         return false;
     }
 
-    OSPanic("xlCoreGCN.c", VERSION == MQ_E || VERSION == CE_E ? 593 : 577, "CORE DONE!");
+    OSPanic(
+        "xlCoreGCN.c",
+        VERSION == MQ_E ? 584 : VERSION == CE_E ? 593 : 577,
+        "CORE DONE!"
+    );
     return false;
 }
 
