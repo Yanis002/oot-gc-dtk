@@ -69,7 +69,7 @@ typedef struct RomLoadState {
     /* 0x2C */ u32 nSizeRead;
 } RomLoadState; // size = 0x30
 
-#if VERSION == CE_E
+#if VERSION == MQ_E || VERSION == CE_E
 // __anon_0x504C3
 typedef struct RomTagFile {
     /* 0x0 */ s32 nMode;
@@ -99,7 +99,7 @@ typedef struct Rom {
     /* 0x10E70 */ u8 acHeader[64];
     /* 0x10EB0 */ u32* anOffsetBlock;
     /* 0x10EB4 */ s32 nCountOffsetBlocks;
-#if VERSION == CE_E
+#if VERSION == MQ_E || VERSION == CE_E
     /* 0x10EB8 */ RomTagFile tagFile;
     /* 0x10EC8 */ u32 nChecksum;
 #endif

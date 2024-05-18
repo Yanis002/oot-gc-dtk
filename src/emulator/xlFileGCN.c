@@ -3,7 +3,7 @@
 #include "emulator/xlHeap.h"
 #include "emulator/xlObject.h"
 
-#if VERSION == CE_E
+#if VERSION == MQ_E || VERSION == CE_E
 extern _XL_OBJECTTYPE gTypeFile;
 #else
 // this variable is inside xlFile.c on CE-EU
@@ -130,7 +130,7 @@ bool xlFileSetPosition(tXL_FILE* pFile, s32 nOffset) {
     return false;
 }
 
-#if VERSION == CE_E
+#if VERSION == MQ_E || VERSION == CE_E
 s32 xlFileGetPosition(tXL_FILE* pFile, s32* pnOffset) {
     if (pnOffset != NULL) {
         *pnOffset = pFile->nOffset;
@@ -145,7 +145,7 @@ bool xlFileEvent(tXL_FILE* pFile, s32 nEvent, void* pArgument) {
             pFile->nSize = 0;
             pFile->nOffset = 0;
             pFile->pData = NULL;
-#if VERSION == CE_E
+#if VERSION == MQ_E || VERSION == CE_E
             pFile->acLine = NULL;
 #endif
             if (!xlHeapTake(&pFile->pBuffer, 0x1024 | 0x30000000)) {
@@ -153,7 +153,7 @@ bool xlFileEvent(tXL_FILE* pFile, s32 nEvent, void* pArgument) {
             }
             break;
         case 3:
-#if VERSION == CE_E
+#if VERSION == MQ_E || VERSION == CE_E
             if ((pFile->acLine != NULL) && !xlHeapFree(&pFile->acLine)) {
                 return 0;
             }

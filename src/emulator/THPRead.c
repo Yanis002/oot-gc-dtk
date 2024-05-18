@@ -303,7 +303,7 @@ bool movieDrawImage(TEXPalettePtr tpl, s16 nX0, s16 nY0) {
     }
 
 bool movieDrawErrorMessage(MovieMessage movieMessage) {
-#if VERSION == CE_E
+#if VERSION == MQ_E || VERSION == CE_E
     if (gLanguage == 1) {
         movieDrawErrorMessageImpl(movieMessage, ggerman_coverOpen, ggerman_wrongDisk, ggerman_readingDisk,
                                   ggerman_retryErr, ggerman_fatalErr, ggerman_noDisk);

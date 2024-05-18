@@ -17,7 +17,7 @@
 #include "string.h"
 
 // clang-format off
-#if VERSION == CE_E
+#if VERSION == MQ_E || VERSION == CE_E
 #include "gcoverOpen.inc"
 #include "gnoDisk.inc"
 #include "gretryErr.inc"
@@ -79,7 +79,7 @@
 // clang-format on
 
 #undef INLINE
-#if VERSION == CE_E
+#if VERSION == MQ_E || VERSION == CE_E
 #define INLINE
 #else
 #define INLINE inline
@@ -389,7 +389,7 @@ bool simulatorDVDShowError(s32 nStatus, void* anData, s32 nSizeRead, u32 nOffset
                 nMessage = S_M_DISK_DEFAULT_ERROR;
                 xlPostText(
                     "ShowError: Unknown FileInfoStatus: %d", "simGCN.c",
-                    VERSION == MQ_J ? 750 : VERSION == CE_E ? 865 : 763,
+                    VERSION == MQ_J ? 750 : VERSION == MQ_E || VERSION == CE_E ? 865 : 763,
                     nStatus
                 );
                 break;
@@ -1375,7 +1375,7 @@ static INLINE bool simulatorDrawOKMessageLoop(TEXPalettePtr simulatorMessage) {
     }
 
     PAD_STACK();
-#if VERSION == CE_E
+#if VERSION == MQ_E || VERSION == CE_E
     NO_INLINE();
 #endif
     return false;
@@ -2096,7 +2096,7 @@ bool simulatorTestReset(bool IPL, bool forceMenu, bool allowReset, bool usePrevi
 bool simulatorDrawMCardText(void) {
 #if VERSION >= MQ_U
     if ((s32)(((TEXPalettePtr)gpErrorMessageBuffer)->versionNumber) == 0) {
-        xlPostText("Invalid Message Image Data - Assuming SV09", "simGCN.c",  VERSION == CE_E ? 1924 : 1623);
+        xlPostText("Invalid Message Image Data - Assuming SV09", "simGCN.c",  VERSION == MQ_E || VERSION == CE_E ? 1924 : 1623);
         simulatorPrepareMessage(S_M_CARD_SV09);
     }
 #endif
@@ -2119,7 +2119,7 @@ s32 simulatorMCardPollDrawBar(void) {
 
 #if VERSION >= MQ_U
     if ((s32)(((TEXPalettePtr)gpErrorMessageBuffer)->versionNumber) == 0) {
-        xlPostText("Invalid Message Image Data - Assuming SV09", "simGCN.c",  VERSION == CE_E ? 1924 : 1623);
+        xlPostText("Invalid Message Image Data - Assuming SV09", "simGCN.c",  VERSION == MQ_E || VERSION == CE_E ? 1924 : 1623);
         simulatorPrepareMessage(S_M_CARD_SV09);
     }
 #endif
@@ -2143,7 +2143,7 @@ s32 simulatorMCardPollDrawFormatBar(void) {
 
 #if VERSION >= MQ_U
     if ((s32)(((TEXPalettePtr)gpErrorMessageBuffer)->versionNumber) == 0) {
-        xlPostText("Invalid Message Image Data - Assuming SV09", "simGCN.c", VERSION == CE_E ? 1924 : 1623);
+        xlPostText("Invalid Message Image Data - Assuming SV09", "simGCN.c", VERSION == MQ_E || VERSION == CE_E ? 1924 : 1623);
         simulatorPrepareMessage(S_M_CARD_SV09);
     }
 #endif
@@ -2378,7 +2378,7 @@ bool xlMain(void) {
     VISetBlack(false);
     VIFlush();
 
-#if VERSION == CE_E
+#if VERSION == MQ_E || VERSION == CE_E
     gLanguage = OSGetLanguage();
 
     switch (gLanguage) {
@@ -2454,7 +2454,7 @@ bool xlMain(void) {
             simulatorUnpackTexPalette((TEXPalettePtr)gyes);
             simulatorUnpackTexPalette((TEXPalettePtr)gno);
             simulatorUnpackTexPalette((TEXPalettePtr)gmesgOK);
-#if VERSION == CE_E
+#if VERSION == MQ_E || VERSION == CE_E
             break;
     }
 #endif
