@@ -10,12 +10,12 @@ This repository does **not** contain any game assets or assembly whatsoever. An 
 
 Supported versions:
 
-- `mq-j`: Master Quest - JP
-- `mq-u`: Master Quest - US
-- `mq-e`: Master Quest - PAL
-- `ce-j`: Collector's Edition - JP
-- `ce-u`: Collector's Edition - US
-- `ce-e`: Collector's Edition - PAL
+- `mq-j`: Master Quest - Japan
+- `mq-u`: Master Quest - North America
+- `mq-e`: Master Quest - Europe/Australia
+- `ce-j`: Collector's Edition - Japan
+- `ce-u`: Collector's Edition - North America
+- `ce-e`: Collector's Edition - Europe/Australia
 
 The progress of this project will be synced with the main repo: [zeldaret/oot-gc](https://github.com/zeldaret/oot-gc).
 
