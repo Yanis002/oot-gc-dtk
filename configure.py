@@ -324,7 +324,7 @@ config.libs = [
             Object(Matching, "emulator/codeGCN.c"),
             Object(NonMatching, "emulator/soundGCN.c"),
             Object(NonMatching, "emulator/frame.c"),
-            Object(NonMatching, "emulator/system.c"),
+            Object(Matching, "emulator/system.c"),
             Object(NonMatching, "emulator/cpu.c"),
             Object(Matching, "emulator/pif.c"),
             Object(Matching, "emulator/ram.c"),

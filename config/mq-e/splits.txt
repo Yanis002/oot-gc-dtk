@@ -79,6 +79,7 @@ emulator/THPDraw.c:
 
 emulator/THPRead.c:
 	.text       start:0x80010888 end:0x800121D4
+	.rodata     start:0x800D2DF0 end:0x800D2E80
 	.data       start:0x8010DA30 end:0x8010DAD8
 	.bss        start:0x8011E680 end:0x8011FAB0
 	.sbss       start:0x80158A60 end:0x80158A78
