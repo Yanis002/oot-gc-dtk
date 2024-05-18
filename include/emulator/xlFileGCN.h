@@ -13,7 +13,7 @@ typedef enum XlFileType {
     XLFT_BINARY = 1,
 } XlFileType;
 
-#if VERSION == MQ_E || VERSION == CE_E // PZLP01
+#if VERSION == MQ_E || VERSION == CE_E
 typedef struct tXL_SAVE {
     /* 0x0 */ s32 nPosition;
     /* 0x4 */ s32 nLineNumber;

@@ -310,12 +310,15 @@ bool movieDrawErrorMessage(MovieMessage movieMessage) {
     } else if (gLanguage == 2) {
         movieDrawErrorMessageImpl(movieMessage, gfrench_coverOpen, gfrench_wrongDisk, gfrench_readingDisk,
                                   gfrench_retryErr, gfrench_fatalErr, gfrench_noDisk);
+#if VERSION == CE_E
     } else if (gLanguage == 3) {
         movieDrawErrorMessageImpl(movieMessage, gspanish_coverOpen, gspanish_wrongDisk, gspanish_readingDisk,
                                   gspanish_retryErr, gspanish_fatalErr, gspanish_noDisk);
     } else if (gLanguage == 4) {
         movieDrawErrorMessageImpl(movieMessage, gitalian_coverOpen, gitalian_wrongDisk, gitalian_readingDisk,
                                   gitalian_retryErr, gitalian_fatalErr, gitalian_noDisk);
+#endif
+
     } else
 #endif
     {

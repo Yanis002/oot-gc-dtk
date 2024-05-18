@@ -38,6 +38,7 @@ emulator/xlHeap.c:
 
 emulator/xlFile.c:
 	.text       start:0x80007B6C end:0x80008224
+	.data       start:0x800DB4E0 end:0x800DB580
 	.sdata      start:0x801580E0 end:0x801580F8
 
 emulator/xlObject.c:

@@ -28,7 +28,7 @@ bool xlFileSetRead(DVDReadCallback pfRead) {
     return true;
 }
 
-#if VERSION < CE_E
+#if VERSION != MQ_E && VERSION != CE_E
 // this function is inside xlFile.c on CE-EU
 bool xlFileGetSize(s32* pnSize, char* szFileName) {
     tXL_FILE* pFile;
