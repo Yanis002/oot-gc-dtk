@@ -512,6 +512,12 @@ dolphin/demo/DEMOStats.c:
 	.sbss       start:0x8018BCE8 end:0x8018BD50
 	.sdata2     start:0x8018C438 end:0x8018C448
 
+metrotrk/mem_TRK.c:
+	.init       start:0x800033A8 end:0x800033CC
+
+metrotrk/__exception.c:
+	.init       start:0x800033CC end:0x80005300
+
 dolphin/ai/ai.c:
 	.text       start:0x800B6CD8 end:0x800B75F8
 	.data       start:0x800F48E8 end:0x800F4930
@@ -606,12 +612,6 @@ dolphin/tex/texPalette.c:
 	.text       start:0x800C7B34 end:0x800C7C18
 	.sdata2     start:0x8018C468 end:0x8018C470
 
-metrotrk/mem_TRK.c:
-	.init       start:0x800033A8 end:0x800033CC
-
-metrotrk/__exception.c:
-	.init       start:0x800033CC end:0x80005300
-
 metrotrk/mainloop.c:
 	.text       start:0x800C7C18 end:0x800C7D80
 
@@ -680,6 +680,9 @@ metrotrk/dolphin_trk_glue.c:
 	.text       start:0x800CBFE4 end:0x800CC33C
 	.data       start:0x800F4E78 end:0x800F4E94
 
+libc/ansi_files.c:
+	.data       start:0x800F4E98 end:0x800F4F70
+
 metrotrk/targcont.c:
 	.text       start:0x800CC33C end:0x800CC370
 
@@ -693,12 +696,6 @@ runtime/global_destructor_chain.c:
 runtime/runtime.c:
 	.text       start:0x800CC4AC end:0x800CCBBC
 	.rodata     start:0x800D1EF0 end:0x800D1F08
-
-runtime/__mem.c:
-	.init       start:0x80005320 end:0x80005464
-
-libc/ansi_files.c:
-	.data       start:0x800F4E98 end:0x800F4F70
 
 libc/abort_exit.c:
 	.text       start:0x800CCBBC end:0x800CCCC8
@@ -717,7 +714,7 @@ libc/ansi_fp.c:
 libc/buffer_io.c:
 	.text       start:0x800CD07C end:0x800CD17C
 
-PowerPC_EABI_Support/MSL/MSL_C/PPC_EABI/SRC/critical_regions.ppc_eabi.c:
+libc/critical_regions.ppc_eabi.c:
 	.text       start:0x800CD17C end:0x800CD180
 
 libc/ctype.c:
@@ -818,9 +815,12 @@ libc/trigf.c:
 libc/common_float_tables.c:
 	.data       start:0x800F51F0 end:0x800F5238
 
-PowerPC_EABI_Support/MSL/MSL_C/PPC_EABI/SRC/math_inlines.c:
+libc/math_inlines.c:
 	.text       start:0x800D101C end:0x800D10AC
 	.sdata2     start:0x8018C638 end:0x8018C650
+
+runtime/__mem.c:
+	.init       start:0x80005320 end:0x80005464
 
 debugger/AmcExi2Stubs.c:
 	.text       start:0x800D10AC end:0x800D10DC

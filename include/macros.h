@@ -10,6 +10,10 @@
 
 #define OFFSETOF(p, field) ((u8*)&(p)->field - (u8*)(p))
 
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#define MAX(a, b) ((a) < (b) ? (b) : (a))
+#define SQ(x) ((x) * (x))
+
 #if VERSION == MQ_J
 #define INLINE
 #else

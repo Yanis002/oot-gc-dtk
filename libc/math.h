@@ -86,6 +86,7 @@ double asin(double x);
 double acos(double x);
 float acosf(float x);
 double log(double x);
+float log10f(float);
 double exp(double x);
 
 double ldexp(double x, int exp);

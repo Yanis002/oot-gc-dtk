@@ -95,7 +95,7 @@ extern u8 gfrench_yes[];
 extern u8 gfrench_no[];
 extern u8 gfrench_mesgOK[];
 
-#if VERSION == VERSION == CE_E
+#if VERSION == CE_E
 extern u8 gspanish_coverOpen[];
 extern u8 gspanish_wrongDisk[];
 extern u8 gspanish_readingDisk[];
