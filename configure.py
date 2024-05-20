@@ -322,7 +322,7 @@ config.libs = [
         [
             Object(NonMatching, "emulator/mcardGCN.c"),
             Object(Matching, "emulator/codeGCN.c"),
-            Object(NonMatching, "emulator/soundGCN.c"),
+            Object(Matching, "emulator/soundGCN.c"),
             Object(NonMatching, "emulator/frame.c"),
             Object(Matching, "emulator/system.c"),
             Object(NonMatching, "emulator/cpu.c"),
