@@ -1,3 +1,7 @@
+ARCHIVED - This project was moved to https://github.com/zeldaret/oot-gc.
+
+
+---
 [![Discord Badge]][discord]
 =============
 
